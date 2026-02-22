@@ -4,6 +4,8 @@ A premium, fully responsive browser-based application designed to help users mem
 
 Built entirely with modern Web Technologies, this app operates entirely locally in the browser, offering a highly responsive, offline-capable, and private environment to study.
 
+![Mushaf Plus Screenshot](screenshot.png)
+
 ## ✨ Key Features
 
 - **Centralized Bosnian Translation**: Fully localized interface using a custom `i18n.js` translation engine.
