@@ -1,0 +1,287 @@
+/**
+ * @file styles.css
+ * @description Custom styles for the Mushaf Plus app
+ */
+
+/* ===== Custom Font ===== */
+@font-face {
+  font-family: "KFGQPC Uthmanic Script HAFS Regular";
+  src: url("../fonts/KFGQPCHAFSUthmanicScript-Regular.woff2") format("woff2");
+  font-display: swap;
+}
+
+/* ===== Theme Variables ===== */
+:root {
+  --theme-400: 52 211 153;
+  --theme-500: 16 185 129;
+  --theme-600: 5 150 105;
+  --theme-700: 4 120 87;
+  --theme-800: 6 95 70;
+  --theme-900: 6 78 59;
+  --theme-950: 2 44 34;
+
+  --slate-50: 248 250 252;
+  --slate-100: 241 245 249;
+  --slate-200: 226 232 240;
+  --slate-300: 203 213 225;
+  --slate-400: 148 163 184;
+  --slate-500: 100 116 139;
+  --slate-600: 71 85 105;
+  --slate-700: 51 65 85;
+  --slate-800: 30 41 59;
+  --slate-900: 15 23 42;
+  --slate-950: 2 6 23;
+}
+
+/* ===== Light Mode ===== */
+.light {
+  --slate-950: 248 250 252;
+  --slate-900: 241 245 249;
+  --slate-800: 226 232 240;
+  --slate-700: 203 213 225;
+  --slate-600: 148 163 184;
+  --slate-500: 100 116 139;
+  --slate-400: 71 85 105;
+  --slate-300: 51 65 85;
+  --slate-200: 30 41 59;
+  --slate-100: 15 23 42;
+  --slate-50: 2 6 23;
+}
+
+/* --- Light mode: force white text on emerald buttons --- */
+.light button#record-btn,
+.light button#next-btn,
+.light button#ayah-play-btn,
+.light button#user-play-btn {
+  color: #ffffff !important;
+}
+
+/* --- Light mode: force readable text on slate buttons --- */
+.light button#valid-btn,
+.light button#bookmark-btn,
+.light button#prev-btn,
+.light button#ayah-speed-btn,
+.light button#ayah-loop-btn,
+.light button#sidebar-close,
+.light button#settings-close,
+.light button#settings-toggle,
+.light button#mobile-grid-toggle {
+  color: #1e293b !important;
+}
+
+/* --- Light mode: Ayah grid cells — dark bg, white text --- */
+.light .ayah-cell {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+}
+.light .ayah-cell:hover {
+  background-color: #475569 !important;
+}
+.light .ayah-cell.bg-emerald-600 {
+  background-color: rgb(var(--theme-600)) !important;
+  color: #ffffff !important;
+}
+.light .ayah-cell.bg-emerald-800 {
+  background-color: rgb(var(--theme-700)) !important;
+  color: #ffffff !important;
+}
+
+/* --- Light mode: notes textarea --- */
+.light #ayah-notes {
+  background-color: #ffffff !important;
+  border-color: #94a3b8 !important;
+  color: #1e293b !important;
+}
+.light #ayah-notes::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* --- Light mode: notes section label --- */
+.light #ayah-notes-container {
+  opacity: 1 !important;
+}
+.light #ayah-notes-container .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* --- Light mode: header gets a white background with shadow --- */
+.light header {
+  background-color: #ffffff;
+  border-bottom-color: rgb(var(--theme-500));
+  box-shadow: 0 1px 6px rgba(0,0,0,0.12);
+}
+
+/* --- Light mode: sidebar darker so cells stand out --- */
+.light aside#sidebar {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* --- Light mode: main card brighter background --- */
+.light #arabic-display {
+  color: rgb(var(--slate-50)) !important;
+}
+
+/* --- Light mode: scrollbar --- */
+.light ::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+.light ::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+}
+.light ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* ===== Color Themes ===== */
+[data-theme="blue"] {
+  --theme-400: 96 165 250;
+  --theme-500: 59 130 246;
+  --theme-600: 37 99 235;
+  --theme-700: 29 78 216;
+  --theme-800: 30 64 175;
+  --theme-900: 30 58 138;
+  --theme-950: 23 37 84;
+}
+
+[data-theme="amber"] {
+  --theme-400: 251 191 36;
+  --theme-500: 245 158 11;
+  --theme-600: 217 119 6;
+  --theme-700: 180 83 9;
+  --theme-800: 146 64 14;
+  --theme-900: 120 53 15;
+  --theme-950: 69 26 3;
+}
+
+[data-theme="rose"] {
+  --theme-400: 251 113 133;
+  --theme-500: 244 63 94;
+  --theme-600: 225 29 72;
+  --theme-700: 190 18 60;
+  --theme-800: 159 18 57;
+  --theme-900: 136 19 55;
+  --theme-950: 76 5 25;
+}
+
+[data-theme="purple"] {
+  --theme-400: 192 132 252;
+  --theme-500: 168 85 247;
+  --theme-600: 147 51 234;
+  --theme-700: 126 34 206;
+  --theme-800: 107 33 168;
+  --theme-900: 88 28 135;
+  --theme-950: 59 7 100;
+}
+
+[data-theme="teal"] {
+  --theme-400: 45 212 191;
+  --theme-500: 20 184 166;
+  --theme-600: 13 148 136;
+  --theme-700: 15 118 110;
+  --theme-800: 17 94 89;
+  --theme-900: 19 78 74;
+  --theme-950: 4 47 46;
+}
+
+/* ===== Quran Text ===== */
+.quran-text {
+  line-height: 2.5;
+  direction: rtl;
+}
+
+/* ===== Scrollbar Utilities ===== */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* ===== Tajweed Colors ===== */
+.tajweed-active span.rule-LAFZATULLAH {
+  color: #81c784;
+}
+.tajweed-active span.rule-izhar {
+  color: #6ff0f5;
+}
+.tajweed-active span.rule-ikhfaa {
+  color: #fa4444;
+}
+.tajweed-active span.rule-idghamWithGhunna {
+  color: #f06292;
+}
+.tajweed-active span.rule-iqlab {
+  color: #3b82f6;
+}
+.tajweed-active span.rule-qalqala {
+  color: #d6f046;
+}
+.tajweed-active span.rule-idghamWithoutGhunna,
+.tajweed-active span.rule-alefTafreeq,
+.tajweed-active span.rule-hamzatulWasli {
+  color: #9e9e9e;
+}
+.tajweed-active span.rule-ghunna {
+  color: #f97316;
+}
+.tajweed-active span.rule-prolonging {
+  color: #bfa5ec;
+}
+
+.tajweed-active span[class^="rule-"] {
+  transition: color 0.3s ease;
+}
+
+/* ===== Tajweed Tooltips ===== */
+.tajweed-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgb(var(--theme-800));
+  color: #f8fafc;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 400;
+  text-align: center;
+  white-space: normal;
+  width: max-content;
+  max-width: 400px;
+  direction: ltr;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.25);
+  z-index: 50;
+  pointer-events: none;
+  margin-bottom: 6px;
+  animation: tooltipIn 0.15s ease;
+}
+.tajweed-tooltip strong {
+  font-weight: 700;
+}
+@keyframes tooltipIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
