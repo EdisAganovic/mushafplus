@@ -2,6 +2,8 @@
 
 Vrhunska, potpuno responzivna aplikacija bazirana na web pretraživaču, dizajnirana da pomogne korisnicima u učenju napamet i usavršavanju učenja Kur'ana (Tedžvid) sa korisničkim interfejsom na bosanskom jeziku.
 
+![Mushaf Plus Screenshot](screenshot.png)
+
 Izgrađena isključivo modernim web tehnologijama, ova aplikacija radi u potpunosti lokalno u pretraživaču, nudeći visoko responzivno, offline sposobno i privatno okruženje za proučavanje.
 
 ## ✨ Ključne Karakteristike
