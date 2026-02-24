@@ -135,6 +135,64 @@ window.renderAyah = function () {
   els.currentAyahNum.textContent = AppState.currentAyahIndex + 1;
   els.totalAyahsNum.textContent = AppState.currentSurah.verses.length;
 
+  // Juz & Page metadata (Medina Mushaf)
+  if (typeof window.getJuzNumber === "function") {
+    const juzEl = document.getElementById("current-juz-num");
+    const pageEl = document.getElementById("current-page-num");
+    if (juzEl) juzEl.textContent = window.getJuzNumber(AppState.currentSurah.id, ayah.id);
+    if (pageEl) pageEl.textContent = window.getPageNumber(AppState.currentSurah.id, ayah.id);
+  }
+
+  // Tajweed Legend — show rules present in this ayah (controlled by settings)
+  const legendContainer = document.getElementById("tajweed-legend-container");
+  const legendEl = document.getElementById("tajweed-legend");
+  if (legendContainer && legendEl) {
+    legendEl.innerHTML = "";
+    const tajweedEnabled = AppState.settings?.tajweed !== false;
+    const legendEnabled = AppState.settings?.tajweedLegend !== false;
+    if (tajweedEnabled && legendEnabled && window.Tajweed) {
+      // Colour map matching styles.css .tajweed-active span.rule-*
+      const RULE_COLORS = {
+        LAFZATULLAH: "#81c784",
+        izhar: "#6ff0f5",
+        ikhfaa: "#fa4444",
+        idghamWithGhunna: "#f06292",
+        iqlab: "#3b82f6",
+        qalqala: "#d6f046",
+        idghamWithoutGhunna: "#9e9e9e",
+        alefTafreeq: "#9e9e9e",
+        hamzatulWasli: "#9e9e9e",
+        ghunna: "#f97316",
+        prolonging: "#bfa5ec",
+      };
+      const seenRules = new Set();
+      const allTokens = window.Tajweed.tokenize(ayah.ar);
+      allTokens.forEach((t) => {
+        if (t.rule && t.rule !== "none" && RULE_COLORS[t.rule]) {
+          seenRules.add(t.rule);
+        }
+      });
+
+      if (seenRules.size > 0) {
+        seenRules.forEach((rule) => {
+          const tip = TAJWEED_TOOLTIPS[rule];
+          const color = RULE_COLORS[rule];
+          const chip = document.createElement("span");
+          chip.style.cssText = `color:${color}; background:${color}18; border:1px solid ${color}55;`;
+          chip.className = "text-[10px] font-bold px-2 py-1 rounded-xl cursor-default text-center whitespace-nowrap transition-all hover:opacity-80";
+          chip.title = tip ? tip.desc : rule;
+          chip.textContent = tip ? tip.name : rule;
+          legendEl.appendChild(chip);
+        });
+        legendContainer.classList.remove("hidden");
+      } else {
+        legendContainer.classList.add("hidden");
+      }
+    } else {
+      legendContainer.classList.add("hidden");
+    }
+  }
+
   // 3. Sync Recording State
   if (AppState.recordings[key]) {
     els.userAudioContainer.classList.remove("hidden");

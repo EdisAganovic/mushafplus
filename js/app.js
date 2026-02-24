@@ -47,6 +47,8 @@ async function init() {
       document.body.classList.add("tajweed-active");
     }
 
+    els.tajweedLegendToggle.checked = AppState.settings.tajweedLegend;
+
     els.lightmodeToggle.checked = AppState.settings.lightMode;
     if (AppState.settings.lightMode) {
       document.documentElement.classList.add("light");
@@ -383,6 +385,13 @@ function setupEventListeners() {
     } else {
       document.body.classList.remove("tajweed-active");
     }
+    renderAyah();
+  };
+
+  els.tajweedLegendToggle.onchange = (e) => {
+    AppState.settings.tajweedLegend = e.target.checked;
+    localStorage.setItem("quran_tajweed_legend", e.target.checked);
+    renderAyah();
   };
 
   els.lightmodeToggle.onchange = (e) => {

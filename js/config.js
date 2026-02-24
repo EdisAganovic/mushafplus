@@ -42,6 +42,7 @@ window.AppState = {
       bsSize: migrateSize("quran_bs_size", "100"),
       arLineHeight: parseFloat(localStorage.getItem("quran_ar_lh") || "1.6"),
       tajweed: localStorage.getItem("quran_tajweed") !== "false",
+      tajweedLegend: localStorage.getItem("quran_tajweed_legend") !== "false",
       lightMode: localStorage.getItem("quran_lightmode") === "true",
     };
   })(),
@@ -142,6 +143,7 @@ window.els = {
   themeSelect: document.getElementById("theme-select"),
   autoplayToggle: document.getElementById("autoplay-toggle"),
   tajweedToggle: document.getElementById("tajweed-toggle"),
+  tajweedLegendToggle: document.getElementById("tajweed-legend-toggle"),
   lightmodeToggle: document.getElementById("lightmode-toggle"),
 
   // Swipe UX Elements

@@ -47,7 +47,6 @@ window.T = {
 
   // Settings Drawer
   preferences: "Postavke",
-  settings: "Podešavanja",
   arabicFontSize: "Veličina arapskog fonta",
   translationFontSize: "Veličina prijevoda",
   arabicLineHeight: "Razmak redova (arapski)",

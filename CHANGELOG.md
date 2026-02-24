@@ -6,7 +6,16 @@ All notable changes to the Mushaf Plus project will be documented in this file.
 
 ### Added
 
-- **Formal Build System**: Initialized `package.json` and installed Tailwind CSS v3 locally. This allows for proper recompilation of the design system, ensuring all new design classes (like `hidden md:flex`) are correctly generated and visible in the production build.
+- **Juz & Page Badges**: Added two new info badges next to the Ayah counter — Džuz number (sky blue) and page number in the Medina Mushaf (violet). Powered by a new `quranMeta.js` file containing the full Tanzil juz/page boundary tables.
+- **Tajweed Rules Legend**: A live legend of tajweed rules present in the current ayah now appears directly below the Arabic text. Each rule is shown as a colored chip using the exact same colors as the in-text tajweed highlighting.
+- **Tajweed Legend Setting**: New toggle in Settings — *"Nazivi tedžvidskih pravila"* — to show/hide the legend. Persisted to localStorage.
+- **Tailwind Build Script**: Added `build-css.bat` — double-click to recompile `tailwind-output.css` without needing to open a terminal.
+- **Formal Build System**: Initialized `package.json` and installed Tailwind CSS v3 locally for proper class generation.
+
+### Changed
+
+- **Tajweed Legend Position**: Legend rendered directly beneath Arabic text (above translation) for maximum contextual relevance.
+- **Legend Chip Style**: Chips use `rounded-xl`, matching the button style in the Ayah card, with centered text and `whitespace-nowrap`.
 
 ## [0.0.2] - 2026-02-24
 
