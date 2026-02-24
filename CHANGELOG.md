@@ -22,6 +22,8 @@ All notable changes to the Mushaf Plus project will be documented in this file.
 ### Fixed
 
 - **Firefox Caching Issues**: Implemented CSS versioning (`?v=1.0.4`) to force browsers to reload the latest styles, resolving rendering bugs in Firefox.
+- **Tajweed Arabic Rendering**: Fixed a critical bug where applying Tajweed tooltips caused Arabic letters within a single word to visibly break apart and disconnect. Tooltips now use a global fixed-positioning system that completely preserves native font ligatures.
+- **Tooltip Text Wrapping**: Fixed awkward line breaks in the Tajweed rule descriptions. Tooltips now feature a responsive layout with increased width, smooth modern wrapping, and boundary collision detection.
 
 ## [0.0.4] - 2026-02-24
 

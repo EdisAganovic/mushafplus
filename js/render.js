@@ -51,6 +51,52 @@ const TAJWEED_TOOLTIPS = {
   },
 };
 
+/**
+ * GLOBAL TAJWEED TOOLTIP MANAGEMENT
+ * Prevents "breaking" Arabic letters by avoiding position:relative on inline segments.
+ */
+let globalTajweedTooltip = null;
+
+function getGlobalTooltip() {
+  if (!globalTajweedTooltip) {
+    globalTajweedTooltip = document.createElement("div");
+    globalTajweedTooltip.className = "tajweed-tooltip";
+    // We force some styles here to ensure it works globally
+    globalTajweedTooltip.style.position = "fixed";
+    globalTajweedTooltip.style.display = "none";
+    globalTajweedTooltip.style.zIndex = "9999";
+    document.body.appendChild(globalTajweedTooltip);
+  }
+  return globalTajweedTooltip;
+}
+
+function showTajweedTooltip(target, tip) {
+  const tooltip = getGlobalTooltip();
+  tooltip.innerHTML = `<strong>${tip.name}</strong><div class="mt-1 opacity-90">${tip.desc}</div>`;
+
+  tooltip.style.display = "block";
+  const rect = target.getBoundingClientRect();
+  const tooltipRect = tooltip.getBoundingClientRect();
+
+  // Position it above the span, centered horizontally
+  let left = rect.left + rect.width / 2;
+
+  // Basic screen boundary check
+  if (left - tooltipRect.width / 2 < 10) left = tooltipRect.width / 2 + 10;
+  if (left + tooltipRect.width / 2 > window.innerWidth - 10)
+    left = window.innerWidth - tooltipRect.width / 2 - 10;
+
+  tooltip.style.left = left + "px";
+  tooltip.style.top = "auto";
+  tooltip.style.bottom = window.innerHeight - rect.top + 10 + "px";
+}
+
+function hideTajweedTooltip() {
+  if (globalTajweedTooltip) {
+    globalTajweedTooltip.style.display = "none";
+  }
+}
+
 window.renderAyah = function () {
   const ayah = AppState.currentSurah.verses[AppState.currentAyahIndex];
   const key = `${AppState.currentSurah.id}-${ayah.id}`;
@@ -97,20 +143,11 @@ window.renderAyah = function () {
           tSpan.classList.add(`rule-${token.rule}`);
           const tip = TAJWEED_TOOLTIPS[token.rule];
           if (tip) {
-            tSpan.style.position = "relative";
             tSpan.addEventListener("mouseenter", function () {
-              const el = document.createElement("div");
-              el.className = "tajweed-tooltip";
-              const words = tip.desc.split(" ");
-              const line1 = words.slice(0, 7).join(" ");
-              const line2 = words.slice(7).join(" ");
-              const descHtml = line2 ? `${line1}<br>${line2}` : line1;
-              el.innerHTML = `<strong>${tip.name}</strong><br>${descHtml}`;
-              tSpan.appendChild(el);
+              showTajweedTooltip(tSpan, tip);
             });
             tSpan.addEventListener("mouseleave", function () {
-              const t = tSpan.querySelector(".tajweed-tooltip");
-              if (t) t.remove();
+              hideTajweedTooltip();
             });
           }
         }
