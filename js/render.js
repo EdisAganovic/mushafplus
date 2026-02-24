@@ -42,8 +42,8 @@ const TAJWEED_TOOLTIPS = {
     desc: "Duženje samoglasnika preko uobičajenog trajanja",
   },
   alefTafreeq: {
-    name: "Alef tefrik",
-    desc: "Alef koji se piše ali se ne izgovara",
+    name: "Elif tefrik",
+    desc: "Elif koji se piše ali se ne izgovara",
   },
   hamzatulWasli: {
     name: "Hemzetul-vasl",
@@ -159,10 +159,10 @@ window.renderAyah = function () {
         idghamWithGhunna: "#f06292",
         iqlab: "#3b82f6",
         qalqala: "#d6f046",
-        idghamWithoutGhunna: "#9e9e9e",
-        alefTafreeq: "#9e9e9e",
+        idghamWithoutGhunna: "#2dd4bf",
+        alefTafreeq: "#e879f9",
         hamzatulWasli: "#9e9e9e",
-        ghunna: "#f97316",
+        ghunna: "#eab308",
         prolonging: "#bfa5ec",
       };
       const seenRules = new Set();
