@@ -149,12 +149,16 @@ window.toggleCheckmark = function () {
     AppState.checkedAyats.add(key);
   }
 
-  localStorage.setItem(
+  debouncedStorageSave(
     "quran_checked",
     JSON.stringify([...AppState.checkedAyats]),
   );
   renderAyah();
-  renderAyahGrid();
+  if (typeof updateGridCellState === "function") {
+    updateGridCellState(AppState.currentAyahIndex);
+  } else {
+    renderAyahGrid();
+  }
   updateProgress();
 };
 
@@ -172,7 +176,7 @@ window.toggleBookmark = function () {
     AppState.bookmarks.add(key);
   }
 
-  localStorage.setItem(
+  debouncedStorageSave(
     "quran_bookmarks",
     JSON.stringify([...AppState.bookmarks]),
   );
@@ -193,7 +197,7 @@ window.toggleWordHighlight = function (ayahKey, wordIdx) {
   } else {
     AppState.highlights[ayahKey].push(wordIdx);
   }
-  localStorage.setItem("quran_highlights", JSON.stringify(AppState.highlights));
+  debouncedStorageSave("quran_highlights", JSON.stringify(AppState.highlights));
   renderAyah();
 };
 

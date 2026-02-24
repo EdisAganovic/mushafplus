@@ -106,9 +106,18 @@ window.renderAyah = function () {
   const activeHighlights = AppState.highlights[key] || [];
 
   // Parse text using Tajweed tokenizer if available, otherwise fallback to single plain token
-  const tokens = window.Tajweed
-    ? window.Tajweed.tokenize(ayah.ar)
-    : [{ text: ayah.ar, rule: "none" }];
+  if (!window._tajweedCache) window._tajweedCache = new Map();
+  let tokens;
+  if (window.Tajweed) {
+    if (window._tajweedCache.has(key)) {
+      tokens = window._tajweedCache.get(key);
+    } else {
+      tokens = window.Tajweed.tokenize(ayah.ar);
+      window._tajweedCache.set(key, tokens);
+    }
+  } else {
+    tokens = [{ text: ayah.ar, rule: "none" }];
+  }
 
   let wordIndex = 0;
   let currentWordSpan = document.createElement("span");
@@ -205,8 +214,7 @@ window.renderAyah = function () {
         prolonging: "#bfa5ec",
       };
       const seenRules = new Set();
-      const allTokens = window.Tajweed.tokenize(ayah.ar);
-      allTokens.forEach((t) => {
+      tokens.forEach((t) => {
         if (t.rule && t.rule !== "none" && RULE_COLORS[t.rule]) {
           seenRules.add(t.rule);
         }
@@ -263,6 +271,18 @@ window.renderAyah = function () {
   }
   els.ayahAudioContainer.classList.remove("hidden");
 
+  // Zero-Latency Audio Preloading for the next Ayah
+  const nextIdx = AppState.currentAyahIndex + 1;
+  if (nextIdx < AppState.currentSurah.verses.length) {
+    const nextAyah = AppState.currentSurah.verses[nextIdx];
+    const nextSrc = getAyahAudioUrl(AppState.currentSurah.id, nextAyah.id);
+    if (!window._audioPreloader) window._audioPreloader = new Audio();
+    if (!window._audioPreloader.src.includes(nextSrc)) {
+      window._audioPreloader.src = nextSrc;
+      window._audioPreloader.preload = "auto";
+    }
+  }
+
   // 5. Notes, Checkmarks, & Bookmarks
   els.ayahNotes.value = AppState.notes[key] || "";
   if (AppState.checkedAyats.has(key)) {
@@ -283,72 +303,15 @@ window.renderAyah = function () {
     els.bookmarkBtn.querySelector("ion-icon").name = "bookmark-outline";
   }
 
-  // 6. Highlight active grid cell (O(1) — only touch prev + current)
-  const cells = els.ayahGrid.children;
-  // Deactivate previously active cell
-  if (AppState._prevGridIndex != null && cells[AppState._prevGridIndex]) {
-    const prev = cells[AppState._prevGridIndex];
-    prev.classList.remove(
-      "bg-slate-800",
-      "text-emerald-400",
-      "border",
-      "border-emerald-500",
-      "shadow-md",
-      "shadow-emerald-500/20",
-    );
-    // Restore original background if it wasn't checked/valid
-    if (!prev.classList.contains("bg-emerald-600")) {
-      prev.classList.remove("text-white");
-
-      const isHifzInRange =
-        AppState.hifzEnabled &&
-        AppState.hifzRange.start !== null &&
-        AppState.hifzRange.end !== null &&
-        AppState._prevGridIndex >=
-          Math.min(AppState.hifzRange.start, AppState.hifzRange.end) &&
-        AppState._prevGridIndex <=
-          Math.max(AppState.hifzRange.start, AppState.hifzRange.end);
-
-      if (isHifzInRange) {
-        prev.classList.add(
-          "bg-rose-500/10",
-          "border",
-          "border-dashed",
-          "border-rose-500/30",
-          "text-rose-300",
-        );
-      } else {
-        prev.classList.add(
-          "bg-slate-800",
-          "text-slate-300",
-          "border",
-          "border-slate-700",
-        );
-      }
-    }
+  // 6. Highlight active grid cell (O(1))
+  if (AppState._prevGridIndex != null) {
+    updateGridCellState(AppState._prevGridIndex);
   }
-  // Activate current cell
+  updateGridCellState(AppState.currentAyahIndex);
+
+  const cells = els.ayahGrid.children;
   const cur = cells[AppState.currentAyahIndex];
   if (cur) {
-    cur.classList.remove(
-      "text-slate-300",
-      "bg-slate-800",
-      "border",
-      "border-slate-700",
-      "bg-rose-500/10",
-      "border-dashed",
-      "border-rose-500/30",
-      "text-rose-300",
-      "bg-emerald-600",
-    );
-    cur.classList.add(
-      "bg-slate-800",
-      "text-emerald-400",
-      "border",
-      "border-emerald-500",
-      "shadow-md",
-      "shadow-emerald-500/20",
-    );
     cur.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
   AppState._prevGridIndex = AppState.currentAyahIndex;
@@ -379,6 +342,90 @@ window.renderAyah = function () {
     }
 
     AppState.swipeDirection = null;
+  }
+};
+
+/**
+ * Updates a single grid cell's state classes (O(1) update) instead of rebuilding the entire grid.
+ */
+window.updateGridCellState = function (idx) {
+  if (!els.ayahGrid || !els.ayahGrid.children[idx]) return;
+  const cell = els.ayahGrid.children[idx];
+  const surahId = AppState.currentSurah.id;
+  const verse = AppState.currentSurah.verses[idx];
+  const key = `${surahId}-${verse.id}`;
+
+  const isActive = idx === AppState.currentAyahIndex;
+  const isChecked = AppState.checkedAyats.has(key);
+  const hasNotes = !!AppState.notes[key];
+
+  const hifzActive = AppState.hifzEnabled;
+  const hifzHasRange =
+    hifzActive &&
+    AppState.hifzRange.start !== null &&
+    AppState.hifzRange.end !== null;
+  const hifzMin = hifzHasRange
+    ? Math.min(AppState.hifzRange.start, AppState.hifzRange.end)
+    : null;
+  const hifzMax = hifzHasRange
+    ? Math.max(AppState.hifzRange.start, AppState.hifzRange.end)
+    : null;
+  const isHifzRange = hifzMin !== null && idx >= hifzMin && idx <= hifzMax;
+
+  // Remove existing state classes
+  cell.classList.remove(
+    "bg-slate-800",
+    "text-emerald-400",
+    "border-emerald-500",
+    "shadow-md",
+    "shadow-emerald-500/20",
+    "bg-emerald-600",
+    "text-white",
+    "bg-rose-500/10",
+    "border-dashed",
+    "border-rose-500/30",
+    "text-rose-300",
+    "hover:bg-rose-500/20",
+    "text-slate-300",
+    "border-slate-700",
+    "hover:bg-slate-600",
+  );
+
+  // Apply new state classes
+  if (isActive) {
+    cell.classList.add(
+      "bg-slate-800",
+      "text-emerald-400",
+      "border",
+      "border-emerald-500",
+      "shadow-md",
+      "shadow-emerald-500/20",
+    );
+  } else if (isChecked) {
+    cell.classList.add("bg-emerald-600", "text-white");
+  } else if (isHifzRange) {
+    cell.classList.add(
+      "bg-rose-500/10",
+      "border",
+      "border-dashed",
+      "border-rose-500/30",
+      "text-rose-300",
+      "hover:bg-rose-500/20",
+    );
+  } else {
+    cell.classList.add(
+      "bg-slate-800",
+      "text-slate-300",
+      "border",
+      "border-slate-700",
+      "hover:bg-slate-600",
+    );
+  }
+
+  if (hasNotes) {
+    cell.style.borderBottom = "2px solid #f59e0b";
+  } else {
+    cell.style.borderBottom = "";
   }
 };
 

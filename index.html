@@ -7,14 +7,14 @@
     <title>Mushaf Plus</title>
 
     <!-- Tailwind CSS (Static Production Build) -->
-    <link rel="stylesheet" href="css/tailwind-output.css?v=1.0.4">
+    <link rel="stylesheet" href="css/tailwind-output.css?v=0.0.5">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
         rel="stylesheet">
 
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="css/styles.css?v=1.0.4">
+    <link rel="stylesheet" href="css/styles.css?v=0.0.5">
 
     <!-- Ionicons -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -114,7 +114,7 @@
 
                 <!-- Navigation Hint -->
                 <div class="w-full text-center opacity-40 mb-1">
-                    <span class="text-[9px] uppercase tracking-[0.2em] text-slate-500 font-bold">
+                    <span data-i18n="quickJump" class="text-[9px] uppercase tracking-[0.2em] text-slate-500 font-bold">
                         Brzi skok: Klikni na broj
                     </span>
                 </div>
@@ -123,7 +123,7 @@
                 <div class="w-full flex justify-center mt-1.5 mb-3 sm:mb-6 gap-1.5 flex-wrap">
                     <!-- Ayah Badge -->
                     <div class="text-[11px] sm:text-sm font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20 flex items-center shadow-md">
-                        <label for="ayah-input" class="cursor-pointer mr-1 opacity-90">Ajet</label>
+                        <label for="ayah-input" data-i18n="ayahLabel" class="cursor-pointer mr-1 opacity-90">Ajet</label>
                         <input type="number" id="ayah-input" min="1" max="286" placeholder="0"
                             class="bg-transparent border-none text-emerald-400 font-bold w-9 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                         <span class="opacity-90 ml-1">/ <span id="total-ayahs-num">0</span></span>
@@ -131,14 +131,14 @@
 
                     <!-- Juz Badge -->
                     <div class="text-[11px] sm:text-sm font-mono text-amber-500 bg-amber-500/10 px-3 py-1.5 rounded-full border border-amber-500/20 flex items-center gap-1 shadow-md">
-                        <label for="juz-input" class="opacity-90 cursor-pointer">Džuz</label>
+                        <label for="juz-input" data-i18n="juzLabel" class="opacity-90 cursor-pointer">Džuz</label>
                         <input type="number" id="juz-input" min="1" max="30" placeholder="0"
                             class="bg-transparent border-none text-amber-400 font-bold w-5 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                     </div>
 
                     <!-- Page Badge -->
                     <div class="text-[11px] sm:text-sm font-mono text-blue-400 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20 flex items-center gap-1 shadow-md">
-                        <label for="page-input" class="opacity-90 cursor-pointer">Str.</label>
+                        <label for="page-input" data-i18n="pageLabel" class="opacity-90 cursor-pointer">Str.</label>
                         <input type="number" id="page-input" min="1" max="604" placeholder="0"
                             class="bg-transparent border-none text-blue-300 font-bold w-10 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                     </div>
@@ -209,7 +209,7 @@
                         <div class="flex-1 flex flex-col gap-1 pr-1 sm:pr-2">
                             <div
                                 class="flex items-center justify-between text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-widest font-bold">
-                                <span id="reciter-name-label">Recitacija</span>
+                                <span id="reciter-name-label" data-i18n="recitation">Recitacija</span>
                                 <span id="ayah-audio-time">0:00 / 0:00</span>
                             </div>
                             <div id="ayah-progress-bg"
@@ -220,10 +220,10 @@
                         </div>
 
                         <div class="flex items-center gap-1 sm:gap-2 ml-1 shrink-0">
-                            <button id="ayah-speed-btn"
+                            <button id="ayah-speed-btn" data-i18n-title="playbackSpeed"
                                 class="text-[9px] sm:text-[10px] font-bold text-slate-300 hover:text-emerald-400 bg-slate-900/80 rounded px-1.5 py-0.5 sm:px-2 sm:py-1 border border-slate-700 transition-colors w-8 sm:w-10 text-center"
                                 title="Brzina">1x</button>
-                            <button id="ayah-loop-btn"
+                            <button id="ayah-loop-btn" data-i18n-title="loopAyah"
                                 class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-lg sm:text-xl text-slate-500 hover:text-emerald-400 transition-colors rounded-full hover:bg-slate-800"
                                 title="Ponavljaj ajet">
                                 <ion-icon name="repeat"></ion-icon>
@@ -550,8 +550,8 @@
                 <div
                     class="pt-2 flex items-center justify-between bg-slate-950/30 p-3 rounded-xl border border-slate-800 mt-2">
                     <div class="flex flex-col">
-                        <span class="text-sm font-bold text-slate-300">Nazivi tedžvidskih pravila</span>
-                        <span class="text-[10px] text-slate-500">Prikaži legendu ispod ajeta</span>
+                        <span class="text-sm font-bold text-slate-300" data-i18n="tajweedLegend">Nazivi tedžvidskih pravila</span>
+                        <span class="text-[10px] text-slate-500" data-i18n="tajweedLegendDesc">Prikaži legendu ispod ajeta</span>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" id="tajweed-legend-toggle" class="sr-only peer" checked>
@@ -603,21 +603,21 @@
     </div>
 
     <!-- Core Data -->
-    <script src="data/quran_data.js?v=1.0.0"></script>
-    <script src="js/tajweed.js?v=1.0.0"></script>
-    <script src="js/i18n.js?v=1.0.0"></script>
+    <script src="data/quran_data.js?v=0.0.5"></script>
+    <script src="js/tajweed.js?v=0.0.5"></script>
+    <script src="js/i18n.js?v=0.0.5"></script>
 
     <!-- App Modular Logic -->
-    <script src="js/config.js?v=1.0.0"></script>
-    <script src="js/utils.js?v=1.0.0"></script>
-    <script src="js/effects.js?v=1.0.0"></script>
-    <script src="js/audio.js?v=1.0.0"></script>
-    <script src="js/render.js?v=1.0.0"></script>
-    <script src="js/actions.js?v=1.0.0"></script>
-    <script src="js/quranMeta.js?v=1.0.0"></script>
+    <script src="js/config.js?v=0.0.5"></script>
+    <script src="js/utils.js?v=0.0.5"></script>
+    <script src="js/effects.js?v=0.0.5"></script>
+    <script src="js/audio.js?v=0.0.5"></script>
+    <script src="js/render.js?v=0.0.5"></script>
+    <script src="js/actions.js?v=0.0.5"></script>
+    <script src="js/quranMeta.js?v=0.0.5"></script>
 
     <!-- Entry Point -->
-    <script src="js/app.js?v=1.0.0"></script>
+    <script src="js/app.js?v=0.0.5"></script>
 </body>
 
 </html>

@@ -101,68 +101,85 @@ function setupEventListeners() {
   els.nextBtn.onclick = nextAyah;
   els.prevBtn.onclick = prevAyah;
 
-  // Search logic — shared between desktop and mobile
+  // Search logic — shared between desktop and mobile via Web Worker
   let debounceTimeout;
+
   function handleSearchInput(query, inputEl, containerEl, listEl, emptyEl) {
+    if (!window.searchWorker) {
+      window.searchWorker = new Worker("js/searchWorker.js");
+      window.searchWorker.postMessage({ type: "init", data: AppState.data });
+    }
+
     clearTimeout(debounceTimeout);
     if (query.trim().length < 2) {
       containerEl.classList.add("hidden");
       return;
     }
-    debounceTimeout = setTimeout(() => {
-      const results = searchQuran(query);
-      listEl.innerHTML = "";
-      if (results.length === 0) {
-        emptyEl.classList.remove("hidden");
-        containerEl.classList.remove("hidden");
-        return;
-      }
-      emptyEl.classList.add("hidden");
 
-      // Highlight helper
-      const escapeRegExp = (string) =>
-        string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const escapedQ = escapeRegExp(query.trim());
-      const highlightRegex = new RegExp(`(${escapedQ})`, "gi");
-      const highlightMatch = (text) => {
-        if (!text) return "";
-        return text.replace(
-          highlightRegex,
-          `<strong style="background-color: rgba(16, 185, 129, 0.3); color: #6ee7b7; padding: 0 4px; border-radius: 4px;">$&</strong>`,
-        );
+    debounceTimeout = setTimeout(() => {
+      window.searchWorker.onmessage = function (e) {
+        if (e.data.type === "results") {
+          const results = e.data.results;
+          listEl.innerHTML = "";
+          if (results.length === 0) {
+            emptyEl.classList.remove("hidden");
+            containerEl.classList.remove("hidden");
+            return;
+          }
+          emptyEl.classList.add("hidden");
+
+          // Highlight helper
+          const escapeRegExp = (string) =>
+            string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+          const escapedQ = escapeRegExp(query.trim());
+          const highlightRegex = new RegExp(`(${escapedQ})`, "gi");
+          const highlightMatch = (text) => {
+            if (!text) return "";
+            return text.replace(
+              highlightRegex,
+              `<strong style="background-color: rgba(16, 185, 129, 0.3); color: #6ee7b7; padding: 0 4px; border-radius: 4px;">$&</strong>`,
+            );
+          };
+
+          results.forEach((res) => {
+            const item = document.createElement("div");
+            item.className =
+              "p-3 hover:bg-slate-800 border-b border-slate-800 cursor-pointer transition-colors";
+
+            const arHighlighted = highlightMatch(res.textAr);
+            const bsHighlighted = highlightMatch(res.textBs);
+
+            item.innerHTML = `
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-xs font-bold text-emerald-500">${res.surahName} ${res.surahId}:${res.ayahId}</span>
+              </div>
+              <div class="text-sm text-slate-200 line-clamp-2 leading-relaxed" dir="rtl">${arHighlighted}</div>
+              <div class="text-[11px] text-slate-400 mt-1 truncate">${bsHighlighted}</div>
+            `;
+            item.onclick = () => {
+              containerEl.classList.add("hidden");
+              inputEl.value = "";
+              els.surahSelect.value = res.surahId;
+              AppState.currentSurah = AppState.data.find(
+                (s) => s.id === res.surahId,
+              );
+              AppState.currentAyahIndex = res.ayahIndex;
+              localStorage.setItem("last_surah", res.surahId);
+              renderAyah();
+              if (typeof updateGridCellState === "function") {
+                updateGridCellState(AppState.currentAyahIndex);
+              } else {
+                renderAyahGrid();
+              }
+              updateProgress();
+            };
+            listEl.appendChild(item);
+          });
+          containerEl.classList.remove("hidden");
+        }
       };
 
-      results.forEach((res) => {
-        const item = document.createElement("div");
-        item.className =
-          "p-3 hover:bg-slate-800 border-b border-slate-800 cursor-pointer transition-colors";
-
-        const arHighlighted = highlightMatch(res.textAr);
-        const bsHighlighted = highlightMatch(res.textBs);
-
-        item.innerHTML = `
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-xs font-bold text-emerald-500">${res.surahName} ${res.surahId}:${res.ayahId}</span>
-          </div>
-          <div class="text-sm text-slate-200 line-clamp-2 leading-relaxed" dir="rtl">${arHighlighted}</div>
-          <div class="text-[11px] text-slate-400 mt-1 truncate">${bsHighlighted}</div>
-        `;
-        item.onclick = () => {
-          containerEl.classList.add("hidden");
-          inputEl.value = "";
-          els.surahSelect.value = res.surahId;
-          AppState.currentSurah = AppState.data.find(
-            (s) => s.id === res.surahId,
-          );
-          AppState.currentAyahIndex = res.ayahIndex;
-          localStorage.setItem("last_surah", res.surahId);
-          renderAyah();
-          renderAyahGrid();
-          updateProgress();
-        };
-        listEl.appendChild(item);
-      });
-      containerEl.classList.remove("hidden");
+      window.searchWorker.postMessage({ type: "search", query: query });
     }, 300);
   }
 
@@ -249,8 +266,12 @@ function setupEventListeners() {
     const val = e.target.value;
     if (val.trim()) AppState.notes[key] = val;
     else delete AppState.notes[key];
-    localStorage.setItem("quran_notes", JSON.stringify(AppState.notes));
-    renderAyahGrid(); // Update grid indicator immediately
+    debouncedStorageSave("quran_notes", JSON.stringify(AppState.notes));
+    if (typeof updateGridCellState === "function") {
+      updateGridCellState(AppState.currentAyahIndex);
+    } else {
+      renderAyahGrid();
+    }
   };
 
   // --- JUZ / PAGE / AYAH NAVIGATION (Smart Auto-Jump & Sync) ---

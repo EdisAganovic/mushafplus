@@ -66,91 +66,31 @@ window.updateProgress = function () {
 };
 
 /**
- * Searches the entire Quran dataset for a given query.
- * Supports patterns like "2:255" or free-text matching in Bosnian/Arabic.
- * @param {string} query
- * @returns {Array} List of matching result objects
+ * Asynchronously debounces saving data to localStorage to avoid blocking the main thread.
  */
-window.searchQuran = function (query) {
-  if (!query || query.trim().length < 2) return [];
-  const q = query.trim().toLowerCase();
+let debounceTimer = null;
+let storageQueue = {};
 
-  // Check for Ayah exact reference "surah:ayah" e.g "2:255"
-  const refMatch = q.match(/^(\d+):(\d+)$/);
-  if (refMatch) {
-    const sId = parseInt(refMatch[1], 10);
-    const aId = parseInt(refMatch[2], 10);
-    const surah = AppState.data.find((s) => s.id === sId);
-    if (surah && surah.verses[aId - 1]) {
-      return [
-        {
-          surahId: sId,
-          surahName: surah.trans,
-          ayahId: aId,
-          ayahIndex: aId - 1,
-          textAr: surah.verses[aId - 1].ar,
-          textBs: surah.verses[aId - 1].bs,
-          score: 100, // Direct reference matches score highest
-        },
-      ];
+window.debouncedStorageSave = function (key, data) {
+  storageQueue[key] = data;
+
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    const saveToDisk = () => {
+      for (const k in storageQueue) {
+        try {
+          localStorage.setItem(k, storageQueue[k]);
+        } catch (e) {
+          console.error("Storage save error", e);
+        }
+      }
+      storageQueue = {};
+    };
+
+    if (window.requestIdleCallback) {
+      requestIdleCallback(saveToDisk, { timeout: 1000 });
+    } else {
+      saveToDisk();
     }
-    return [];
-  }
-
-  // Free text search
-  const results = [];
-
-  // Helper to escape regex special characters
-  const escapeRegExp = (string) =>
-    string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const escapedQ = escapeRegExp(q);
-  // Boundary regex for multi-language (matches start/end of string or common punctuation/spaces)
-  const boundaryRegex = new RegExp(
-    `(^|[\\s.,!?;:'"()\\-])(${escapedQ})([\\s.,!?;:'"()\\-]|$)(?![^<]*>)`,
-    "i",
-  );
-
-  for (let s of AppState.data) {
-    for (let i = 0; i < s.verses.length; i++) {
-      const v = s.verses[i];
-      const bsLower = v.bs.toLowerCase();
-      const sTransLower = s.trans.toLowerCase();
-
-      let matched = false;
-      let score = 0;
-
-      // Check Bosnian Translation
-      if (bsLower.includes(q)) {
-        matched = true;
-        score += boundaryRegex.test(bsLower) ? 10 : 1;
-      }
-      // Check Arabic Text
-      if (v.ar.includes(q)) {
-        matched = true;
-        score += boundaryRegex.test(v.ar) ? 10 : 1;
-      }
-      // Check Surah Name
-      if (sTransLower.includes(q)) {
-        matched = true;
-        score += boundaryRegex.test(sTransLower) ? 10 : 1;
-      }
-
-      if (matched) {
-        results.push({
-          surahId: s.id,
-          surahName: s.trans,
-          ayahId: v.id,
-          ayahIndex: i,
-          textAr: v.ar,
-          textBs: v.bs,
-          score: score,
-        });
-      }
-    }
-  }
-
-  // Sort descending by score
-  results.sort((a, b) => b.score - a.score);
-
-  return results.slice(0, 50); // Cap results for performance
+  }, 300);
 };

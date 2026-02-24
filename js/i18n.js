@@ -10,7 +10,11 @@ window.T = {
   noResults: "Nema rezultata",
 
   // Ayah Card
-  record: "",
+  quickJump: "Brzi skok: Klikni na broj",
+  ayahLabel: "Ajet",
+  juzLabel: "Džuz",
+  pageLabel: "Str.",
+  record: "Snimi",
   recordAgain: "Snimi ponovo",
   stop: "Stop",
   valid: "Tačno",
@@ -23,7 +27,7 @@ window.T = {
   loopAyah: "Ponavljaj ajet",
 
   // Notes
-  notesTitle: "Lične bilješke",
+  notesTitle: "Lične bilješke (Automatski se snimaju)",
   notesPlaceholder:
     "Dodaj podsjetnik (npr. 'Obrati pažnju na tedžvid kod riječi X')...",
 
@@ -63,6 +67,8 @@ window.T = {
   autoPlayDesc: "Nastavi kad audio završi",
   tajweedFormatting: "Tedžvidska pravila",
   tajweedDesc: "Pravila učenja u bojama",
+  tajweedLegend: "Nazivi tedžvidskih pravila",
+  tajweedLegendDesc: "Prikaži legendu ispod ajeta",
 
   // Data Transfer
   dataTransfer: "Backup",
@@ -93,6 +99,11 @@ window.applyTranslations = function () {
   document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
     const key = el.getAttribute("data-i18n-placeholder");
     if (T[key] !== undefined) el.placeholder = T[key];
+  });
+  // Titles (Tooltips)
+  document.querySelectorAll("[data-i18n-title]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-title");
+    if (T[key] !== undefined) el.title = T[key];
   });
   // Title & page title
   const titleEl = document.getElementById("app-title");

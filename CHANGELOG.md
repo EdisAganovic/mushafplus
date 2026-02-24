@@ -6,6 +6,9 @@ All notable changes to the Mushaf Plus project will be documented in this file.
 
 ### Added
 
+- **Zero-Latency Audio Preloading**: Implemented an intelligent background preloading mechanism that silently fetches the next Ayah's audio while the current one plays, ensuring perfectly seamless playback transitions without network delays.
+- **Search Web Worker**: Extracted the heavy text searching functionality into a dedicated background Web Worker (`searchWorker.js`), ensuring the UI and css animations remain perfectly smooth (60 FPS) while querying the 6,200+ Ayah dataset.
+- **Tajweed Token Caching**: Added memory caching for the expensive Tajweed regex tokenization process, resulting in instantaneous highlights when revisiting previously rendered Ayahs.
 - **Integrated Ayah Navigation**: The Ayah counter on the main card is now an interractive input field, allowing users to jump to any Ayah in the current Surah instantly.
 - **Smart Focus UX**:
   - **Auto-Clear on Focus**: Clicking any navigation badge (Ayah, Juz, Page) automatically clears the field for immediate typing.
@@ -13,6 +16,8 @@ All notable changes to the Mushaf Plus project will be documented in this file.
 
 ### Changed
 
+- **O(1) Grid Updates**: Refactored the Ayah Grid sidebar rendering logic. Interactions like navigating, checking, or bookmarking an Ayah now perform a targeted, O(1) DOM class toggle on a single DOM node instead of destroying and rebuilding the entire 286-node grid, completely eliminating layout thrashing.
+- **Debounced LocalStorage I/O**: Replaced blocking, synchronous `localStorage` saves with a custom `requestIdleCallback` queued saving mechanism. Frequent actions like typing long notes or spam-clicking checks now save asynchronously, fully unblocking the main browser thread.
 - **Refined Navigation Design**: Overhauled the Ayah card navigation badges (Ajet, Džuz, Str.) for a more balanced and premium look:
   - **Standardized Typography**: Uniform font sizes across all labels and inputs.
   - **Modern Geometry**: Switched from `rounded-full` to a more professional `rounded-xl` corner radius.
@@ -21,6 +26,9 @@ All notable changes to the Mushaf Plus project will be documented in this file.
 
 ### Fixed
 
+- **UI Translation Completeness**: Discovered and connected multiple hardcoded HTML UI labels (Džuz, Str., Ajet, Recitacija) to the robust `i18n.js` translation ecosystem.
+- **Dynamic Tooltips**: Expanded the `i18n.js` engine to support scanning and translating raw HTML `title` attributes (`data-i18n-title`) for hover tooltips.
+- **Cache Busting Strategy**: Enforced strict `?v=0.0.5` query-string versioning across all static asset payloads (CSS, Scripts, JSON data) to guarantee existing users receive new translation strings and features without needing to perform manual hard-refreshes.
 - **Firefox Caching Issues**: Implemented CSS versioning (`?v=1.0.4`) to force browsers to reload the latest styles, resolving rendering bugs in Firefox.
 - **Tajweed Arabic Rendering**: Fixed a critical bug where applying Tajweed tooltips caused Arabic letters within a single word to visibly break apart and disconnect. Tooltips now use a global fixed-positioning system that completely preserves native font ligatures.
 - **Tooltip Text Wrapping**: Fixed awkward line breaks in the Tajweed rule descriptions. Tooltips now feature a responsive layout with increased width, smooth modern wrapping, and boundary collision detection.
