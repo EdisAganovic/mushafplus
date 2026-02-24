@@ -310,9 +310,12 @@ window.renderAyahGrid = function () {
 
   // Use DocumentFragment for batch DOM insertion
   const frag = document.createDocumentFragment();
+  const surahId = AppState.currentSurah.id;
+  const hasMetadata = typeof window.getJuzStartAt === "function";
+
   AppState.currentSurah.verses.forEach((verse, index) => {
     const cell = document.createElement("div");
-    const key = `${AppState.currentSurah.id}-${verse.id}`;
+    const key = `${surahId}-${verse.id}`;
     cell.className =
       "ayah-cell h-8 w-8 flex items-center justify-center rounded-md text-xs font-bold cursor-pointer transition-all active:scale-95 ";
 
@@ -336,6 +339,27 @@ window.renderAyahGrid = function () {
       }
       cell.classList.add("ring-2", "ring-emerald-500/50", "text-white");
       cell.classList.remove("text-slate-400", "bg-slate-800", "bg-slate-700");
+    }
+
+    // Juz & Page start indicators (inline styles — not subject to Tailwind purge)
+    if (hasMetadata) {
+      const juzStart = window.getJuzStartAt(surahId, verse.id);
+      const pageStart = window.getPageStartAt(surahId, verse.id);
+      const tooltipParts = [];
+
+      if (juzStart !== null) {
+        // Sky-blue top border = start of a new Juz (matches Džuz badge color)
+        cell.style.borderTop = "2px solid #38bdf8";
+        tooltipParts.push(`Džuz ${juzStart}`);
+      }
+      if (pageStart !== null) {
+        // Violet left border = start of a new page (matches Str. badge color)
+        cell.style.borderLeft = "2px solid #a78bfa";
+        tooltipParts.push(`Str. ${pageStart}`);
+      }
+      if (tooltipParts.length > 0) {
+        cell.title = tooltipParts.join(" · ");
+      }
     }
 
     cell.textContent = index + 1;
