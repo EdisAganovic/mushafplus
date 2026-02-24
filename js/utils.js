@@ -22,12 +22,12 @@ window.formatTime = function (seconds) {
  */
 window.applySettings = function () {
   els.arSizeSlider.value = AppState.settings.arSize;
-  els.arSizeVal.innerText = `${AppState.settings.arSize}px`;
-  els.arabicDisplay.style.fontSize = `${AppState.settings.arSize}px`;
+  els.arSizeVal.innerText = `${AppState.settings.arSize}%`;
+  els.arabicDisplay.style.fontSize = `${AppState.settings.arSize / 100}rem`;
 
   els.bsSizeSlider.value = AppState.settings.bsSize;
-  els.bsSizeVal.innerText = `${AppState.settings.bsSize}px`;
-  els.translationDisplay.style.fontSize = `${AppState.settings.bsSize}px`;
+  els.bsSizeVal.innerText = `${AppState.settings.bsSize}%`;
+  els.translationDisplay.style.fontSize = `${AppState.settings.bsSize / 100}rem`;
 
   els.arLhSlider.value = AppState.settings.arLineHeight;
   els.arLhVal.innerText = AppState.settings.arLineHeight;
@@ -37,11 +37,11 @@ window.applySettings = function () {
   const previewAr = document.getElementById("settings-preview-ar");
   const previewBs = document.getElementById("settings-preview-bs");
   if (previewAr) {
-    previewAr.style.fontSize = `${AppState.settings.arSize}px`;
+    previewAr.style.fontSize = `${AppState.settings.arSize / 100}rem`;
     previewAr.style.lineHeight = AppState.settings.arLineHeight;
   }
   if (previewBs) {
-    previewBs.style.fontSize = `${AppState.settings.bsSize}px`;
+    previewBs.style.fontSize = `${AppState.settings.bsSize / 100}rem`;
   }
 };
 
@@ -90,6 +90,7 @@ window.searchQuran = function (query) {
           ayahIndex: aId - 1,
           textAr: surah.verses[aId - 1].ar,
           textBs: surah.verses[aId - 1].bs,
+          score: 100, // Direct reference matches score highest
         },
       ];
     }
@@ -98,14 +99,43 @@ window.searchQuran = function (query) {
 
   // Free text search
   const results = [];
+
+  // Helper to escape regex special characters
+  const escapeRegExp = (string) =>
+    string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escapedQ = escapeRegExp(q);
+  // Boundary regex for multi-language (matches start/end of string or common punctuation/spaces)
+  const boundaryRegex = new RegExp(
+    `(^|[\\s.,!?;:'"()\\-])(${escapedQ})([\\s.,!?;:'"()\\-]|$)(?![^<]*>)`,
+    "i",
+  );
+
   for (let s of AppState.data) {
     for (let i = 0; i < s.verses.length; i++) {
       const v = s.verses[i];
-      if (
-        v.bs.toLowerCase().includes(q) ||
-        v.ar.includes(q) ||
-        s.trans.toLowerCase().includes(q)
-      ) {
+      const bsLower = v.bs.toLowerCase();
+      const sTransLower = s.trans.toLowerCase();
+
+      let matched = false;
+      let score = 0;
+
+      // Check Bosnian Translation
+      if (bsLower.includes(q)) {
+        matched = true;
+        score += boundaryRegex.test(bsLower) ? 10 : 1;
+      }
+      // Check Arabic Text
+      if (v.ar.includes(q)) {
+        matched = true;
+        score += boundaryRegex.test(v.ar) ? 10 : 1;
+      }
+      // Check Surah Name
+      if (sTransLower.includes(q)) {
+        matched = true;
+        score += boundaryRegex.test(sTransLower) ? 10 : 1;
+      }
+
+      if (matched) {
         results.push({
           surahId: s.id,
           surahName: s.trans,
@@ -113,10 +143,14 @@ window.searchQuran = function (query) {
           ayahIndex: i,
           textAr: v.ar,
           textBs: v.bs,
+          score: score,
         });
-        if (results.length > 50) return results; // Cap results for performance
       }
     }
   }
-  return results;
+
+  // Sort descending by score
+  results.sort((a, b) => b.score - a.score);
+
+  return results.slice(0, 50); // Cap results for performance
 };

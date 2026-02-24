@@ -29,13 +29,22 @@ window.AppState = {
   ),
   notes: JSON.parse(localStorage.getItem("quran_notes") || "{}"),
   highlights: JSON.parse(localStorage.getItem("quran_highlights") || "{}"),
-  settings: {
-    arSize: parseInt(localStorage.getItem("quran_ar_size") || "18"),
-    bsSize: parseInt(localStorage.getItem("quran_bs_size") || "18"),
-    arLineHeight: parseFloat(localStorage.getItem("quran_ar_lh") || "1.4"),
-    tajweed: localStorage.getItem("quran_tajweed") !== "false",
-    lightMode: localStorage.getItem("quran_lightmode") === "true",
-  },
+  settings: (() => {
+    // Helper: migrate old px/rem values to percentage (run once per load)
+    const migrateSize = (key, fallback) => {
+      const v = parseFloat(localStorage.getItem(key) || fallback);
+      if (v < 10) return Math.round(v * 100); // was rem
+      if (v > 10 && v < 80) return Math.round((v / 16) * 100); // was px
+      return v; // already %
+    };
+    return {
+      arSize: migrateSize("quran_ar_size", "140"),
+      bsSize: migrateSize("quran_bs_size", "100"),
+      arLineHeight: parseFloat(localStorage.getItem("quran_ar_lh") || "1.6"),
+      tajweed: localStorage.getItem("quran_tajweed") !== "false",
+      lightMode: localStorage.getItem("quran_lightmode") === "true",
+    };
+  })(),
 };
 
 window.els = {
@@ -134,4 +143,7 @@ window.els = {
   autoplayToggle: document.getElementById("autoplay-toggle"),
   tajweedToggle: document.getElementById("tajweed-toggle"),
   lightmodeToggle: document.getElementById("lightmode-toggle"),
+
+  // Swipe UX Elements
+  swipeToast: document.getElementById("swipe-toast"),
 };

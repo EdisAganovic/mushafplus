@@ -67,7 +67,7 @@ window.renderAyah = function () {
   let wordIndex = 0;
   let currentWordSpan = document.createElement("span");
   currentWordSpan.className =
-    "quran-word px-1 rounded-md transition-all cursor-pointer hover:bg-emerald-500/20";
+    "quran-word px-0.5 rounded-md transition-all cursor-pointer hover:bg-emerald-500/20";
 
   function finishWord() {
     if (activeHighlights.includes(wordIndex)) {
@@ -84,7 +84,7 @@ window.renderAyah = function () {
     // Reset for next word
     currentWordSpan = document.createElement("span");
     currentWordSpan.className =
-      "quran-word px-1 rounded-md transition-all cursor-pointer hover:bg-emerald-500/20";
+      "quran-word px-0.5 rounded-md transition-all cursor-pointer hover:bg-emerald-500/20";
   }
 
   tokens.forEach((token) => {
@@ -187,35 +187,71 @@ window.renderAyah = function () {
     els.bookmarkBtn.querySelector("ion-icon").name = "bookmark-outline";
   }
 
-  // 6. Highlight active grid cell
-  document.querySelectorAll(".ayah-cell").forEach((cell) => {
-    cell.classList.remove(
+  // 6. Highlight active grid cell (O(1) — only touch prev + current)
+  const cells = els.ayahGrid.children;
+  // Deactivate previously active cell
+  if (AppState._prevGridIndex != null && cells[AppState._prevGridIndex]) {
+    const prev = cells[AppState._prevGridIndex];
+    prev.classList.remove(
       "ring-4",
       "ring-emerald-500/50",
-      "bg-slate-700",
-      "bg-emerald-500/20",
+      "bg-emerald-800",
       "text-white",
     );
-    if (!cell.classList.contains("bg-emerald-600")) {
-      cell.classList.add("text-slate-400", "bg-slate-800");
+    if (!prev.classList.contains("bg-emerald-600")) {
+      prev.classList.add("text-slate-400", "bg-slate-800");
     }
-    if (parseInt(cell.dataset.index) === AppState.currentAyahIndex) {
-      if (!cell.classList.contains("bg-emerald-600")) {
-        cell.classList.add("bg-emerald-800");
-      }
-      cell.classList.add("ring-4", "ring-emerald-500/50", "text-white");
-      cell.classList.remove("text-slate-400", "bg-slate-800", "bg-slate-700");
-      cell.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  // Activate current cell
+  const cur = cells[AppState.currentAyahIndex];
+  if (cur) {
+    if (!cur.classList.contains("bg-emerald-600")) {
+      cur.classList.add("bg-emerald-800");
     }
-  });
+    cur.classList.add("ring-4", "ring-emerald-500/50", "text-white");
+    cur.classList.remove("text-slate-400", "bg-slate-800", "bg-slate-700");
+    cur.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  AppState._prevGridIndex = AppState.currentAyahIndex;
+
+  // 7. Swipe UX: Slide-fade transition (mobile only)
+  if (AppState.swipeDirection) {
+    if (window.innerWidth < 768) {
+      const animClass =
+        AppState.swipeDirection === "left"
+          ? "animate-slide-left"
+          : "animate-slide-right";
+      els.arabicDisplay.classList.remove(
+        "animate-slide-left",
+        "animate-slide-right",
+      );
+      els.translationDisplay.classList.remove(
+        "animate-slide-left",
+        "animate-slide-right",
+      );
+      void els.arabicDisplay.offsetWidth; // force reflow
+      els.arabicDisplay.classList.add(animClass);
+      els.translationDisplay.classList.add(animClass);
+    }
+
+    // Play the physical swipe effect
+    if (typeof window.playSwipeEffect === "function") {
+      window.playSwipeEffect(AppState.swipeDirection);
+    }
+
+    AppState.swipeDirection = null;
+  }
 };
 
 /**
  * Rebuilds the scrollable Ayah grid in the sidebar.
- * Adds visual indicators for checked ayats (green) and those with notes (amber bottom border).
+ * Uses event delegation — one handler on parent instead of per-cell.
  */
 window.renderAyahGrid = function () {
   els.ayahGrid.innerHTML = "";
+
+  // Use DocumentFragment for batch DOM insertion
+  const frag = document.createDocumentFragment();
   AppState.currentSurah.verses.forEach((verse, index) => {
     const cell = document.createElement("div");
     const key = `${AppState.currentSurah.id}-${verse.id}`;
@@ -246,12 +282,20 @@ window.renderAyahGrid = function () {
 
     cell.textContent = index + 1;
     cell.dataset.index = index;
-    cell.onclick = () => {
-      AppState.currentAyahIndex = index;
-      renderAyah();
-    };
-    els.ayahGrid.appendChild(cell);
+    frag.appendChild(cell);
   });
+  els.ayahGrid.appendChild(frag);
+
+  // Event delegation — single click handler on the grid parent
+  els.ayahGrid.onclick = (e) => {
+    const cell = e.target.closest(".ayah-cell");
+    if (!cell || cell.dataset.index == null) return;
+    AppState.currentAyahIndex = parseInt(cell.dataset.index);
+    renderAyah();
+  };
+
+  // Reset tracked index for the O(1) cell update in renderAyah
+  AppState._prevGridIndex = AppState.currentAyahIndex;
 };
 
 /**

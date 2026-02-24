@@ -55,6 +55,21 @@ async function init() {
     applySettings();
     applyTranslations();
     if (els.syncStatus) els.syncStatus.innerText = T.ready;
+
+    // Swipe UX: Show tutorial toast on first visit (mobile only)
+    if (
+      !localStorage.getItem("swipe_tutorial_seen") &&
+      window.innerWidth < 768
+    ) {
+      setTimeout(() => {
+        if (els.swipeToast) {
+          els.swipeToast.classList.add("show");
+          localStorage.setItem("swipe_tutorial_seen", "true");
+          // Remove after animation completes
+          setTimeout(() => els.swipeToast.classList.remove("show"), 3600);
+        }
+      }, 1200);
+    }
   } catch (error) {
     console.error("Init failed:", error);
     if (els.syncStatus) els.syncStatus.innerText = T.error;
@@ -84,44 +99,55 @@ function setupEventListeners() {
   els.nextBtn.onclick = nextAyah;
   els.prevBtn.onclick = prevAyah;
 
-  // Search logic and UI dropdown
+  // Search logic — shared between desktop and mobile
   let debounceTimeout;
-  els.searchInput.oninput = (e) => {
+  function handleSearchInput(query, inputEl, containerEl, listEl, emptyEl) {
     clearTimeout(debounceTimeout);
-    const query = e.target.value;
-
     if (query.trim().length < 2) {
-      els.searchResultsContainer.classList.add("hidden");
+      containerEl.classList.add("hidden");
       return;
     }
-
     debounceTimeout = setTimeout(() => {
       const results = searchQuran(query);
-      els.searchResultsList.innerHTML = "";
-
+      listEl.innerHTML = "";
       if (results.length === 0) {
-        els.searchEmptyState.classList.remove("hidden");
-        els.searchResultsContainer.classList.remove("hidden");
+        emptyEl.classList.remove("hidden");
+        containerEl.classList.remove("hidden");
         return;
       }
+      emptyEl.classList.add("hidden");
 
-      els.searchEmptyState.classList.add("hidden");
+      // Highlight helper
+      const escapeRegExp = (string) =>
+        string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const escapedQ = escapeRegExp(query.trim());
+      const highlightRegex = new RegExp(`(${escapedQ})`, "gi");
+      const highlightMatch = (text) => {
+        if (!text) return "";
+        return text.replace(
+          highlightRegex,
+          `<strong style="background-color: rgba(16, 185, 129, 0.3); color: #6ee7b7; padding: 0 4px; border-radius: 4px;">$&</strong>`,
+        );
+      };
 
       results.forEach((res) => {
         const item = document.createElement("div");
         item.className =
           "p-3 hover:bg-slate-800 border-b border-slate-800 cursor-pointer transition-colors";
+
+        const arHighlighted = highlightMatch(res.textAr);
+        const bsHighlighted = highlightMatch(res.textBs);
+
         item.innerHTML = `
           <div class="flex justify-between items-center mb-1">
             <span class="text-xs font-bold text-emerald-500">${res.surahName} ${res.surahId}:${res.ayahId}</span>
           </div>
-          <div class="text-sm text-slate-200 line-clamp-2 leading-relaxed" dir="rtl">${res.textAr}</div>
-          <div class="text-[11px] text-slate-400 mt-1 truncate">${res.textBs}</div>
+          <div class="text-sm text-slate-200 line-clamp-2 leading-relaxed" dir="rtl">${arHighlighted}</div>
+          <div class="text-[11px] text-slate-400 mt-1 truncate">${bsHighlighted}</div>
         `;
-
         item.onclick = () => {
-          els.searchResultsContainer.classList.add("hidden");
-          els.searchInput.value = "";
+          containerEl.classList.add("hidden");
+          inputEl.value = "";
           els.surahSelect.value = res.surahId;
           AppState.currentSurah = AppState.data.find(
             (s) => s.id === res.surahId,
@@ -132,12 +158,31 @@ function setupEventListeners() {
           renderAyahGrid();
           updateProgress();
         };
-        els.searchResultsList.appendChild(item);
+        listEl.appendChild(item);
       });
-
-      els.searchResultsContainer.classList.remove("hidden");
+      containerEl.classList.remove("hidden");
     }, 300);
-  };
+  }
+
+  els.searchInput.oninput = (e) =>
+    handleSearchInput(
+      e.target.value,
+      els.searchInput,
+      els.searchResultsContainer,
+      els.searchResultsList,
+      els.searchEmptyState,
+    );
+
+  if (els.searchInputMobile) {
+    els.searchInputMobile.oninput = (e) =>
+      handleSearchInput(
+        e.target.value,
+        els.searchInputMobile,
+        els.searchResultsContainerMobile,
+        els.searchResultsListMobile,
+        els.searchEmptyStateMobile,
+      );
+  }
 
   // Hide search when clicking outside
   document.addEventListener("click", (e) => {
@@ -155,56 +200,6 @@ function setupEventListeners() {
       els.searchResultsContainerMobile.classList.add("hidden");
     }
   });
-
-  // Mobile search logic
-  if (els.searchInputMobile) {
-    let debounceTimeoutMobile;
-    els.searchInputMobile.oninput = (e) => {
-      clearTimeout(debounceTimeoutMobile);
-      const query = e.target.value;
-      if (query.trim().length < 2) {
-        els.searchResultsContainerMobile.classList.add("hidden");
-        return;
-      }
-      debounceTimeoutMobile = setTimeout(() => {
-        const results = searchQuran(query);
-        els.searchResultsListMobile.innerHTML = "";
-        if (results.length === 0) {
-          els.searchEmptyStateMobile.classList.remove("hidden");
-          els.searchResultsContainerMobile.classList.remove("hidden");
-          return;
-        }
-        els.searchEmptyStateMobile.classList.add("hidden");
-        results.forEach((res) => {
-          const item = document.createElement("div");
-          item.className =
-            "p-3 hover:bg-slate-800 border-b border-slate-800 cursor-pointer transition-colors";
-          item.innerHTML = `
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-xs font-bold text-emerald-500">${res.surahName} ${res.surahId}:${res.ayahId}</span>
-            </div>
-            <div class="text-sm text-slate-200 line-clamp-2 leading-relaxed" dir="rtl">${res.textAr}</div>
-            <div class="text-[11px] text-slate-400 mt-1 truncate">${res.textBs}</div>
-          `;
-          item.onclick = () => {
-            els.searchResultsContainerMobile.classList.add("hidden");
-            els.searchInputMobile.value = "";
-            els.surahSelect.value = res.surahId;
-            AppState.currentSurah = AppState.data.find(
-              (s) => s.id === res.surahId,
-            );
-            AppState.currentAyahIndex = res.ayahIndex;
-            localStorage.setItem("last_surah", res.surahId);
-            renderAyah();
-            renderAyahGrid();
-            updateProgress();
-          };
-          els.searchResultsListMobile.appendChild(item);
-        });
-        els.searchResultsContainerMobile.classList.remove("hidden");
-      }, 300);
-    };
-  }
 
   // --- MOBILE MENU ---
   const openSidebar = () => {
@@ -345,16 +340,16 @@ function setupEventListeners() {
 
   els.arSizeSlider.oninput = (e) => {
     AppState.settings.arSize = e.target.value;
-    els.arSizeVal.innerText = `${e.target.value}px`;
-    els.arabicDisplay.style.fontSize = `${e.target.value}px`;
-    if (previewAr) previewAr.style.fontSize = `${e.target.value}px`;
+    els.arSizeVal.innerText = `${e.target.value}%`;
+    els.arabicDisplay.style.fontSize = `${e.target.value / 100}rem`;
+    if (previewAr) previewAr.style.fontSize = `${e.target.value / 100}rem`;
     localStorage.setItem("quran_ar_size", e.target.value);
   };
   els.bsSizeSlider.oninput = (e) => {
     AppState.settings.bsSize = e.target.value;
-    els.bsSizeVal.innerText = `${e.target.value}px`;
-    els.translationDisplay.style.fontSize = `${e.target.value}px`;
-    if (previewBs) previewBs.style.fontSize = `${e.target.value}px`;
+    els.bsSizeVal.innerText = `${e.target.value}%`;
+    els.translationDisplay.style.fontSize = `${e.target.value / 100}rem`;
+    if (previewBs) previewBs.style.fontSize = `${e.target.value / 100}rem`;
     localStorage.setItem("quran_bs_size", e.target.value);
   };
   els.arLhSlider.oninput = (e) => {
@@ -444,6 +439,59 @@ function setupEventListeners() {
       }
     }
   };
+
+  // --- SWIPE GESTURES ---
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let swipeActive = false;
+  const SWIPE_THRESHOLD = 60;
+
+  document.addEventListener(
+    "touchstart",
+    (e) => {
+      const target = e.target;
+      if (
+        target.closest("#sidebar") ||
+        target.closest("#settings-drawer") ||
+        target.closest("#search-results-container") ||
+        target.closest("#search-results-container-mobile") ||
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT"
+      ) {
+        swipeActive = false;
+        return;
+      }
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+      swipeActive = true;
+    },
+    { passive: true },
+  );
+
+  document.addEventListener(
+    "touchend",
+    (e) => {
+      if (!swipeActive) return;
+      swipeActive = false;
+
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      const diffX = Math.abs(touchEndX - touchStartX);
+      const diffY = Math.abs(touchEndY - touchStartY);
+
+      if (diffX > diffY && diffX > SWIPE_THRESHOLD) {
+        if (touchEndX < touchStartX) {
+          AppState.swipeDirection = "left";
+          nextAyah();
+        } else {
+          AppState.swipeDirection = "right";
+          prevAyah();
+        }
+      }
+    },
+    { passive: true },
+  );
 }
 
 // BOOT APPLICATION

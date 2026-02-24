@@ -108,7 +108,7 @@
 .light header {
   background-color: #ffffff;
   border-bottom-color: rgb(var(--theme-500));
-  box-shadow: 0 1px 6px rgba(0,0,0,0.12);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
 }
 
 /* --- Light mode: sidebar darker so cells stand out --- */
@@ -283,5 +283,77 @@
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ===== Swipe UX: Slide-Fade Transition ===== */
+@keyframes slideInFromRight {
+  0%   { opacity: 0; transform: translateX(30px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInFromLeft {
+  0%   { opacity: 0; transform: translateX(-30px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-left {
+  animation: slideInFromRight 0.3s ease-out both;
+}
+.animate-slide-right {
+  animation: slideInFromLeft 0.3s ease-out both;
+}
+
+/* ===== Swipe UX: Toast Overlay ===== */
+@keyframes toastSlideUp {
+  0%   { opacity: 0; transform: translate(-50%, 20px); }
+  15%  { opacity: 1; transform: translate(-50%, 0); }
+  85%  { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -8px); }
+}
+
+.swipe-toast {
+  position: fixed;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: rgba(var(--slate-900), 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(var(--theme-500), 0.25);
+  border-radius: 1rem;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+  opacity: 0;
+}
+.swipe-toast.show {
+  animation: toastSlideUp 3.5s ease-in-out forwards;
+}
+.swipe-toast .toast-direction {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgb(var(--theme-400));
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.swipe-toast .toast-direction ion-icon {
+  font-size: 1.1rem;
+}
+.swipe-toast .toast-divider {
+  width: 1px;
+  height: 1.4rem;
+  background: rgba(var(--slate-600), 0.5);
+}
+
+/* Hide swipe-related elements on desktop */
+@media (min-width: 768px) {
+  .swipe-toast {
+    display: none !important;
   }
 }

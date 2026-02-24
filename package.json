@@ -1,0 +1,24 @@
+{
+  "name": "preslusavanje",
+  "version": "1.0.0",
+  "description": "A premium, fully responsive browser-based application designed to help users memorize and perfect their Quranic recitation (Tajweed) with Bosnian localized interface.",
+  "main": "tailwind.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EdisAganovic/mushafplus.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/EdisAganovic/mushafplus/issues"
+  },
+  "homepage": "https://github.com/EdisAganovic/mushafplus#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

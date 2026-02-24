@@ -26,6 +26,7 @@ window.loadSurah = function (id) {
  */
 window.nextAyah = function () {
   if (!AppState.currentSurah) return;
+  if (!AppState.swipeDirection) AppState.swipeDirection = "left";
   if (AppState.currentAyahIndex < AppState.currentSurah.verses.length - 1) {
     AppState.currentAyahIndex++;
     renderAyah();
@@ -43,6 +44,7 @@ window.nextAyah = function () {
  */
 window.prevAyah = function () {
   if (!AppState.currentSurah) return;
+  if (!AppState.swipeDirection) AppState.swipeDirection = "right";
   if (AppState.currentAyahIndex > 0) {
     AppState.currentAyahIndex--;
     renderAyah();

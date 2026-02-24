@@ -10,11 +10,11 @@ window.T = {
   noResults: "Nema rezultata",
 
   // Ayah Card
-  record: "Snimi",
+  record: "",
   recordAgain: "Snimi ponovo",
   stop: "Stop",
   valid: "Tačno",
-  bookmark: "Zapamti",
+  bookmark: "Snimi",
 
   // Audio Players
   recitation: "Recitacija",

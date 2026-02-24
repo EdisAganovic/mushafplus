@@ -21,53 +21,68 @@
 <body class="bg-slate-950 text-slate-50 font-outfit h-screen overflow-hidden flex flex-col">
 
     <!-- Header -->
-    <header class="bg-slate-900 border-b-2 border-emerald-800 px-[0.75rem] sm:px-[1rem] py-[0.5rem] sm:py-[0.75rem] flex flex-wrap items-center gap-[0.5rem] shadow-lg z-10 shrink-0">
-        <!-- Left group: title + desktop search -->
-        <div class="hidden sm:flex items-center gap-[0.5rem] shrink-0">
-            <span class="text-[1.5rem] hidden md:inline">📖</span>
-            <h1 id="app-title" class="text-[1.125rem] font-bold bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent whitespace-nowrap">
-                Mushaf Plus
-            </h1>
-            <div class="relative group z-50">
-                <div class="relative">
-                    <input type="text" id="search-input" data-i18n-placeholder="searchPlaceholder" placeholder="Pretraži tekst ili ajet (2:255)..." class="bg-slate-950 border border-slate-700 text-slate-100 py-[0.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-[16rem] text-[0.875rem] placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
-                    <ion-icon name="search-outline" class="absolute left-[0.75rem] top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors"></ion-icon>
+    <header class="bg-slate-900 border-b-2 border-emerald-800 shadow-lg z-10 shrink-0 w-full">
+      <!-- Desktop/Tablet Header row -->
+      <div class="max-w-[1400px] mx-auto flex flex-col md:flex-row w-full items-center">
+          
+        <!-- Mimic Main Content Area Structure -->
+        <div class="hidden md:flex flex-1 px-3 sm:px-6 py-[0.5rem] sm:py-[0.75rem] w-full justify-center items-center">
+            <div class="w-full max-w-4xl flex items-center justify-between">
+                <!-- Left group: title -->
+                <div class="hidden md:flex items-center gap-[0.5rem] shrink-0">
+                    <span class="text-[1.5rem] hidden md:inline">📖</span>
+                    <h1 id="app-title" class="text-[1.125rem] font-bold bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent whitespace-nowrap">
+                        Mushaf Plus
+                    </h1>
                 </div>
-                <div id="search-results-container" class="absolute top-[3rem] right-0 w-[22rem] max-h-[24rem] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-y-auto hidden flex-col custom-scrollbar">
-                    <div id="search-results-list" class="flex flex-col"></div>
-                    <div id="search-empty-state" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden" data-i18n="noResults">
-                        Nema rezultata
+
+                <!-- Desktop Search -->
+                <div class="relative group z-50 hidden sm:flex shrink-0 ml-4">
+                    <div class="relative w-full">
+                        <input type="text" id="search-input" data-i18n-placeholder="searchPlaceholder" placeholder="Pretraži tekst ili ajet (2:255)..." class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-[16rem] text-[0.875rem] placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
+                        <ion-icon name="search-outline" class="absolute left-[0.75rem] top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors"></ion-icon>
+                    </div>
+                    <div id="search-results-container" class="absolute top-[3rem] right-0 w-[22rem] max-h-[24rem] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-y-auto hidden flex-col custom-scrollbar">
+                        <div id="search-results-list" class="flex flex-col"></div>
+                        <div id="search-empty-state" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden" data-i18n="noResults">
+                            Nema rezultata
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Right group: surah select + buttons -->
-        <div class="flex items-center gap-[0.5rem] flex-1 sm:flex-none sm:ml-auto overflow-hidden">
-            <select id="surah-select" class="bg-slate-950 border border-slate-700 text-slate-100 py-[0.5rem] px-[0.5rem] rounded-lg outline-none focus:border-emerald-500 transition-colors cursor-pointer text-[0.875rem] min-w-0 w-0 flex-grow sm:w-auto sm:flex-grow-0 overflow-hidden text-ellipsis">
+        <!-- Mimic Sidebar Structure -->
+        <div class="flex items-center justify-between md:justify-end px-3 sm:px-6 pt-3 md:pt-0 md:mt-0 pb-1 sm:py-[0.75rem] w-full md:w-80 shrink-0 gap-[0.5rem]">
+            <select id="surah-select" class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] px-[0.5rem] rounded-lg outline-none focus:border-emerald-500 transition-colors cursor-pointer text-[0.875rem] min-w-0 w-0 flex-grow sm:w-auto sm:flex-grow-0 overflow-hidden text-ellipsis">
                 <option value="" disabled selected class="bg-slate-900" data-i18n="selectSurah">Izaberi suru...</option>
             </select>
-            <button id="settings-toggle" class="text-slate-300 hover:text-emerald-500 bg-slate-950 border border-slate-700 hover:bg-slate-800 transition-colors w-[2.5rem] h-[2.5rem] text-[1.25rem] rounded-lg flex items-center justify-center shrink-0">
-                <ion-icon name="options-outline"></ion-icon>
-            </button>
-            <button id="mobile-grid-toggle" class="md:hidden text-slate-100 hover:text-emerald-500 transition-colors w-[2.5rem] h-[2.5rem] text-[1.25rem] rounded-lg hover:bg-slate-800 bg-slate-950 border border-slate-700 flex items-center justify-center shrink-0">
-                <ion-icon name="menu-outline"></ion-icon>
-            </button>
+            
+            <div class="flex items-center gap-[0.5rem] shrink-0">
+                <button id="settings-toggle" class="text-slate-300 hover:text-emerald-500 bg-slate-950 border border-slate-700 hover:bg-slate-800 transition-colors w-[2.5rem] h-[2.5rem] text-[1.25rem] rounded-lg flex items-center justify-center shrink-0">
+                    <ion-icon name="options-outline"></ion-icon>
+                </button>
+                <button id="mobile-grid-toggle" class="md:hidden text-slate-100 hover:text-emerald-500 transition-colors w-[2.5rem] h-[2.5rem] text-[1.25rem] rounded-lg hover:bg-slate-800 bg-slate-950 border border-slate-700 flex items-center justify-center shrink-0">
+                    <ion-icon name="menu-outline"></ion-icon>
+                </button>
+            </div>
         </div>
 
-        <!-- Mobile search row -->
-        <div class="relative group z-40 w-full sm:hidden order-last">
-            <div class="relative">
-                <input type="text" id="search-input-mobile" data-i18n-placeholder="searchPlaceholder" placeholder="Pretraži tekst ili ajet (2:255)..." class="bg-slate-950 border border-slate-700 text-slate-100 py-[0.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-full text-[0.875rem] placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
-                <ion-icon name="search-outline" class="absolute left-[0.75rem] top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors"></ion-icon>
-            </div>
-            <div id="search-results-container-mobile" class="absolute top-[3rem] left-0 right-0 max-h-[24rem] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-y-auto hidden flex-col custom-scrollbar z-50">
-                <div id="search-results-list-mobile" class="flex flex-col"></div>
-                <div id="search-empty-state-mobile" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden" data-i18n="noResults">
-                    Nema rezultata
-                </div>
-            </div>
-        </div>
+      </div>
+
+      <!-- Mobile search row -->
+      <div class="relative group z-40 w-full md:hidden flex px-[0.75rem] mt-1 pb-3">
+          <div class="relative w-full">
+              <input type="text" id="search-input-mobile" data-i18n-placeholder="searchPlaceholder" placeholder="Pretraži tekst ili ajet (2:255)..." class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-full text-[0.875rem] placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
+              <ion-icon name="search-outline" class="absolute left-[0.75rem] top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors"></ion-icon>
+          </div>
+          <div id="search-results-container-mobile" class="absolute top-[3rem] left-[0.75rem] right-[0.75rem] max-h-[24rem] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-y-auto hidden flex-col custom-scrollbar z-50">
+              <div id="search-results-list-mobile" class="flex flex-col"></div>
+              <div id="search-empty-state-mobile" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden" data-i18n="noResults">
+                  Nema rezultata
+              </div>
+          </div>
+      </div>
     </header>
 
     <!-- Main Container -->
@@ -79,35 +94,52 @@
             <!-- Ayah Card -->
             <div class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-8 shadow-2xl flex flex-col items-center min-h-[250px] sm:min-h-[400px] justify-center relative shrink-0">
                 
-                <!-- Transcription & Validation Actions -->
-                <div class="flex items-center gap-2 sm:gap-4 mt-6 sm:mt-0 mb-4 sm:mb-10 w-full justify-center flex-wrap">
-                    <button id="record-btn" class="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-8 py-2 sm:py-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 transition-all font-bold active:scale-95 shadow-lg shadow-emerald-900/20 relative overflow-hidden group shrink-0 text-xs sm:text-base">
+                <!-- Ayah Badge -->
+                <div class="w-full flex justify-center mt-2 mb-4 sm:mb-6">
+                    <div class="text-[10px] sm:text-xs font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+                        Ajet <span id="current-ayah-num">0</span> / <span id="total-ayahs-num">0</span>
+                    </div>
+                </div>
+
+                <div id="arabic-display" class="font-quran quran-text text-[1.5rem] sm:text-4xl md:text-5xl text-right w-full mb-3 sm:mb-8 text-slate-100 selection:bg-emerald-800 transition-all duration-300">
+                </div>
+                
+                <div id="translation-display" class="text-sm sm:text-lg md:text-xl text-slate-400 text-left max-w-2xl w-full">
+                </div>
+
+                <!-- Actions & Navigation -->
+                <div class="flex items-center gap-2 sm:gap-3 mt-6 sm:mt-8 w-full max-w-lg">
+                    <button id="prev-btn" class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all active:scale-95 shrink-0">
+                        <ion-icon name="arrow-back-outline" class="text-lg sm:text-xl"></ion-icon>
+                    </button>
+
+                    <button id="record-btn" class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-700 hover:bg-emerald-600 transition-all active:scale-95 shadow-lg shadow-emerald-900/20 relative overflow-hidden shrink-0">
                         <div id="mic-meter-container" class="absolute inset-0 bg-emerald-900/20 hidden">
                             <div id="mic-meter-bar" class="h-full bg-emerald-400/30 transition-all duration-75 w-0"></div>
                         </div>
-                        <ion-icon name="mic-outline" class="text-base sm:text-xl relative z-10"></ion-icon>
-                        <span id="record-text" class="whitespace-nowrap relative z-10" data-i18n="record">Snimi</span>
+                        <ion-icon name="mic-outline" class="text-lg sm:text-xl relative z-10"></ion-icon>
+                        <span id="record-text" class="hidden" data-i18n="record">Snimi</span>
                     </button>
 
-                    <button id="valid-btn" class="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent shrink-0 text-xs sm:text-base">
+                    <button id="valid-btn" class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-3 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent text-xs sm:text-base">
                         <ion-icon name="checkmark-circle-outline" class="text-base sm:text-xl"></ion-icon>
                         <span data-i18n="valid">Tačno</span>
                     </button>
 
-                    <button id="bookmark-btn" class="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent shrink-0 text-xs sm:text-base">
+                    <button id="bookmark-btn" class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-3 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent text-xs sm:text-base">
                         <ion-icon name="bookmark-outline" class="text-base sm:text-xl"></ion-icon>
                         <span data-i18n="bookmark">Označi</span>
                     </button>
-                </div>
-                
-                <div id="arabic-display" class="font-quran quran-text text-[1.5rem] sm:text-4xl md:text-5xl text-right w-full mb-3 sm:mb-8 text-slate-100 selection:bg-emerald-800 transition-all duration-300">
-                </div>
-                
-                <div id="translation-display" class="text-sm sm:text-lg md:text-xl text-slate-400 text-center max-w-2xl">
+
+                    <button id="next-btn" class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all active:scale-95 shrink-0">
+                        <ion-icon name="arrow-forward-outline" class="text-lg sm:text-xl"></ion-icon>
+                    </button>
                 </div>
 
+
+
                 <!-- Navigation Controls -->
-                <div id="ayah-audio-container" class="mt-4 sm:mt-10 hidden w-full max-w-lg flex flex-col items-center gap-2">
+                <div id="ayah-audio-container" class="mt-6 sm:mt-8 hidden w-full max-w-lg flex flex-col items-center gap-2">
                     <div class="flex items-center gap-2 sm:gap-4 w-full bg-slate-800/40 p-2 sm:p-3 rounded-2xl border border-slate-700/50 backdrop-blur-sm shadow-inner">
                         <button id="ayah-play-btn" class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-500 transition-all active:scale-90 shadow-lg shadow-emerald-900/40 group overflow-hidden shrink-0">
                             <ion-icon name="play" id="ayah-play-icon" class="text-xl ml-1"></ion-icon>
@@ -155,7 +187,7 @@
                 </div>
 
                 <!-- Notes Section -->
-                <div id="ayah-notes-container" class="mt-2 sm:mt-8 w-full max-w-lg flex flex-col gap-2 opacity-60 hover:opacity-100 transition-opacity">
+                <div id="ayah-notes-container" class="mt-4 sm:mt-6 w-full max-w-lg flex flex-col gap-2 opacity-60 hover:opacity-100 transition-opacity">
                     <div class="flex items-center gap-2 text-[10px] text-slate-500 uppercase tracking-widest font-bold ml-1">
                         <ion-icon name="create-outline"></ion-icon>
                         <span data-i18n="notesTitle">Lične bilješke</span>
@@ -163,24 +195,7 @@
                     <textarea id="ayah-notes" data-i18n-placeholder="notesPlaceholder" placeholder="Dodaj podsjetnik (npr. 'Obrati pažnju na tedžvid kod riječi X')..." class="w-full bg-slate-950/50 border border-slate-800 rounded-xl p-3 text-sm text-slate-300 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all resize-none h-16 sm:h-20 placeholder:text-slate-700"></textarea>
                 </div>
 
-                <!-- Floating Ayah Badge -->
-                <div class="absolute top-3 left-3 sm:top-4 sm:left-4 text-[10px] sm:text-xs font-mono text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">
-                    Ajet <span id="current-ayah-num">0</span> / <span id="total-ayahs-num">0</span>
-                </div>
 
-                <!-- Navigation Controls (inside card) -->
-                <div class="w-full mt-6 pt-4 border-t border-slate-800 flex items-center justify-center gap-3 sm:gap-6">
-                    <button id="prev-btn" class="flex items-center gap-2 sm:gap-3 px-5 sm:px-10 py-3 sm:py-4 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-bold active:scale-95 group shrink-0 text-xs sm:text-base">
-                        <ion-icon name="arrow-back-outline" class="group-hover:-translate-x-1 transition-transform text-lg sm:text-xl"></ion-icon>
-                        <span data-i18n="previous">Prethodni</span>
-                    </button>
-
-                    <button id="next-btn" class="flex items-center gap-2 sm:gap-3 px-5 sm:px-10 py-3 sm:py-4 rounded-xl bg-emerald-700 hover:bg-emerald-600 transition-all font-bold active:scale-95 shadow-lg shadow-emerald-900/20 group shrink-0 text-xs sm:text-base">
-                        <span data-i18n="next">Sljedeći</span>
-                        <ion-icon name="arrow-forward-outline" class="group-hover:translate-x-1 transition-transform text-lg sm:text-xl"></ion-icon>
-                    </button>
-                </div>
-            </div>
 
             <!-- Scroll Spacer -->
             <div class="h-16 w-full shrink-0"></div>
@@ -294,37 +309,37 @@
                     <div>
                         <div class="flex justify-between mb-1 translate-y-1">
                             <label class="text-[10px] text-slate-400 uppercase tracking-wider" data-i18n="arabicFontSize">Veličina arapskog fonta</label>
-                            <span id="ar-size-val" class="text-xs font-bold text-emerald-400">18px</span>
+                            <span id="ar-size-val" class="text-xs font-bold text-emerald-400">140%</span>
                         </div>
-                        <input type="range" id="ar-size-slider" min="14" max="96" value="18" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+                        <input type="range" id="ar-size-slider" min="80" max="600" step="10" value="140" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
                     </div>
 
                     <div>
                         <div class="flex justify-between mb-1 translate-y-1">
                             <label class="text-[10px] text-slate-400 uppercase tracking-wider" data-i18n="translationFontSize">Veličina prijevoda</label>
-                            <span id="bs-size-val" class="text-xs font-bold text-emerald-400">18px</span>
+                            <span id="bs-size-val" class="text-xs font-bold text-emerald-400">100%</span>
                         </div>
-                        <input type="range" id="bs-size-slider" min="14" max="32" value="18" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+                        <input type="range" id="bs-size-slider" min="80" max="250" step="10" value="100" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
                     </div>
 
                     <div>
                         <div class="flex justify-between mb-1 translate-y-1">
                             <label class="text-[10px] text-slate-400 uppercase tracking-wider" data-i18n="arabicLineHeight">Razmak redova (arapski)</label>
-                            <span id="ar-lh-val" class="text-xs font-bold text-emerald-400">1.4</span>
+                            <span id="ar-lh-val" class="text-xs font-bold text-emerald-400">1.6</span>
                         </div>
-                        <input type="range" id="ar-lh-slider" min="1.0" max="4.0" step="0.1" value="1.4" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+                        <input type="range" id="ar-lh-slider" min="1.0" max="4.0" step="0.1" value="1.6" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
                     </div>
 
                     <!-- Live Preview: Arabic -->
                     <div class="mt-2 p-3 bg-slate-950/50 rounded-xl border border-slate-800">
                         <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Prikaz — Arapski</div>
-                        <div id="settings-preview-ar" class="font-quran text-slate-100 text-right" dir="rtl" style="font-size:18px; line-height:1.4">قُلْ هُوَ ٱللَّهُ أَحَدٌ ١ ٱللَّهُ ٱلصَّمَدُ ٢</div>
+                        <div id="settings-preview-ar" class="font-quran text-slate-100 text-right" dir="rtl" style="font-size:1.4rem; line-height:1.6">قُلْ هُوَ ٱللَّهُ أَحَدٌ ١ ٱللَّهُ ٱلصَّمَدُ ٢</div>
                     </div>
 
                     <!-- Live Preview: Translation -->
                     <div class="mt-2 p-3 bg-slate-950/50 rounded-xl border border-slate-800">
                         <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Prikaz — Prijevod</div>
-                        <div id="settings-preview-bs" class="font-outfit text-slate-400 text-center" style="font-size:18px">Reci: "On je Allah - Jedan! Allah je Utočište svakom."</div>
+                        <div id="settings-preview-bs" class="font-outfit text-slate-400 text-center" style="font-size:1rem">Reci: "On je Allah - Jedan! Allah je Utočište svakom."</div>
                     </div>
 
                     <div class="pt-2">
@@ -398,6 +413,19 @@
     <!-- Hidden audio element for playback -->
     <audio id="audio-playback" class="hidden"></audio>
 
+    <!-- Swipe UX: First-time Toast -->
+    <div id="swipe-toast" class="swipe-toast">
+        <div class="toast-direction">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+            <span>Prethodni ajet</span>
+        </div>
+        <div class="toast-divider"></div>
+        <div class="toast-direction">
+            <span>Slijedeći ajet</span>
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+        </div>
+    </div>
+
     <!-- Core Data -->
     <script src="data/quran_data.js?v=1.0.0"></script>
     <script src="js/tajweed.js?v=1.0.0"></script>
@@ -406,6 +434,7 @@
     <!-- App Modular Logic -->
     <script src="js/config.js?v=1.0.0"></script>
     <script src="js/utils.js?v=1.0.0"></script>
+    <script src="js/effects.js?v=1.0.0"></script>
     <script src="js/audio.js?v=1.0.0"></script>
     <script src="js/render.js?v=1.0.0"></script>
     <script src="js/actions.js?v=1.0.0"></script>
