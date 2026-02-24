@@ -2,13 +2,57 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.0.5] - 2026-02-24
+
+### Added
+
+- **Integrated Ayah Navigation**: The Ayah counter on the main card is now an interractive input field, allowing users to jump to any Ayah in the current Surah instantly.
+- **Smart Focus UX**:
+  - **Auto-Clear on Focus**: Clicking any navigation badge (Ayah, Juz, Page) automatically clears the field for immediate typing.
+  - **Auto-Restore on Blur**: If a field is left empty, it automatically restores the previous value to maintain UI consistency.
+
+### Changed
+
+- **Refined Navigation Design**: Overhauled the Ayah card navigation badges (Ajet, Džuz, Str.) for a more balanced and premium look:
+  - **Standardized Typography**: Uniform font sizes across all labels and inputs.
+  - **Modern Geometry**: Switched from `rounded-full` to a more professional `rounded-xl` corner radius.
+  - **Mobile Optimized Gaps**: Tightened internal spacing and horizontal gaps to ensure the navigation row fits perfectly on smaller screens.
+- **Header Layout Fixes**: Restructured the header HTML to fix alignment issues and expanded the search results width for better readability.
+
+### Fixed
+
+- **Firefox Caching Issues**: Implemented CSS versioning (`?v=1.0.4`) to force browsers to reload the latest styles, resolving rendering bugs in Firefox.
+
+## [0.0.4] - 2026-02-24
+
+### Added
+
+- **Minimalist Juz & Page Navigation**: Jump to any Juz (1-30) or Page (1-604) directly from the header via input boxes.
+  - **Smart Auto-Jump**: Debounced input that automatically navigates to your selection after typing (no Enter required).
+  - **Instant Input Sync**: Typing in the Juz box instantly calculates the starting Page, and vice-versa, keeping your position context always clear.
+- **Hifz Mode (Memorization)**: A dedicated mode for looping specific Ayah ranges. Select a start and end Ayah, enable Auto-play, and the app will continuously loop within your selection.
+  - **Auto-Navigation**: Automatically jumps to the first Ayah of the range once selection is finished.
+  - **Red Selection Theme**: Hifz range highlights and toggles now use a consistent Rose/Red theme to distinguish from normal navigation.
+- **Remote Reciters (EveryAyah)**: Access multiple world-class reciters (Mishary Alafasy, Al-Sudais, Al-Husary, Al-Muaiqly, ash-Shuraym) in the Settings to stream high-quality audio directly from EveryAyah.com.
+- **Dynamic Reciter Display**: The audio player UI now shows the name of the currently selected reciter (e.g., "Mishary Alafasy") instead of a static "Recitacija" label.
+
+### Changed
+
+- **Detailed Progress Tracking**: The sidebar progress label now shows the exact count of recited Ayahs versus the total (e.g., "12 / 114") instead of a generic percentage. Localized label to "Proučeno ajeta".
+- **Clean Ayah Grid Design**: Completely redesigned the Ayah sidebar grid for better readability and precision:
+  - **Pill-shaped Cells**: Larger, accessible button-style cells with a fixed 5-column grid alignment.
+  - **Active Ayah Indicator**: New "Border-only" theme-colored highlight (Emerald) to keep focus without overwhelming with background colors.
+  - **Dot-based Markers**: Replaced heavy icons with minimalist colored dots (Red = Hifz, Amber = Juz, Blue = Page).
+  - **Automatic Vertical Layout**: If an Ayah has markers, the layout automatically stacks them vertically to maintain alignment and prevent overflow.
+- **Color Consistency**: Synchronized Juz (Amber) and Page (Blue) indicator colors across the entire UI, including header inputs, info badges, and grid legend.
+
 ## [0.0.3] - 2026-02-24
 
 ### Added
 
 - **Juz & Page Badges**: Added two new info badges next to the Ayah counter — Džuz number (sky blue) and page number in the Medina Mushaf (violet). Powered by a new `quranMeta.js` file containing the full Tanzil juz/page boundary tables.
 - **Tajweed Rules Legend**: A live legend of tajweed rules present in the current ayah now appears directly below the Arabic text. Each rule is shown as a colored chip using the exact same colors as the in-text tajweed highlighting.
-- **Tajweed Legend Setting**: New toggle in Settings — *"Nazivi tedžvidskih pravila"* — to show/hide the legend. Persisted to localStorage.
+- **Tajweed Legend Setting**: New toggle in Settings — _"Nazivi tedžvidskih pravila"_ — to show/hide the legend. Persisted to localStorage.
 - **Tailwind Build Script**: Added `build-css.bat` — double-click to recompile `tailwind-output.css` without needing to open a terminal.
 - **Formal Build System**: Initialized `package.json` and installed Tailwind CSS v3 locally for proper class generation.
 

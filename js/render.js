@@ -132,15 +132,17 @@ window.renderAyah = function () {
 
   // 2. Translation & Metadata
   els.translationDisplay.textContent = ayah.bs;
-  els.currentAyahNum.textContent = AppState.currentAyahIndex + 1;
+  els.ayahInput.value = AppState.currentAyahIndex + 1;
   els.totalAyahsNum.textContent = AppState.currentSurah.verses.length;
 
   // Juz & Page metadata (Medina Mushaf)
   if (typeof window.getJuzNumber === "function") {
-    const juzEl = document.getElementById("current-juz-num");
-    const pageEl = document.getElementById("current-page-num");
-    if (juzEl) juzEl.textContent = window.getJuzNumber(AppState.currentSurah.id, ayah.id);
-    if (pageEl) pageEl.textContent = window.getPageNumber(AppState.currentSurah.id, ayah.id);
+    const juzNum = window.getJuzNumber(AppState.currentSurah.id, ayah.id);
+    const pageNum = window.getPageNumber(AppState.currentSurah.id, ayah.id);
+
+    // Sync card inputs
+    if (els.juzInput) els.juzInput.value = juzNum;
+    if (els.pageInput) els.pageInput.value = pageNum;
   }
 
   // Tajweed Legend — show rules present in this ayah (controlled by settings)
@@ -179,7 +181,8 @@ window.renderAyah = function () {
           const color = RULE_COLORS[rule];
           const chip = document.createElement("span");
           chip.style.cssText = `color:${color}; background:${color}18; border:1px solid ${color}55;`;
-          chip.className = "text-[10px] font-bold px-2 py-1 rounded-xl cursor-default text-center whitespace-nowrap transition-all hover:opacity-80";
+          chip.className =
+            "text-[10px] font-bold px-2 py-1 rounded-xl cursor-default text-center whitespace-nowrap transition-all hover:opacity-80";
           chip.title = tip ? tip.desc : rule;
           chip.textContent = tip ? tip.name : rule;
           legendEl.appendChild(chip);
@@ -213,11 +216,9 @@ window.renderAyah = function () {
   }
 
   // 4. Sync Recitation Audio
-  const suraStr = String(AppState.currentSurah.id).padStart(3, "0");
-  const ayahStr = String(ayah.id).padStart(3, "0");
-  const expectedSrc = `mp3/${suraStr}${ayahStr}.mp3`;
+  const expectedSrc = getAyahAudioUrl(AppState.currentSurah.id, ayah.id);
 
-  if (!els.ayahAudio.src.endsWith(expectedSrc)) {
+  if (!els.ayahAudio.src.includes(expectedSrc)) {
     els.ayahAudio.pause();
     els.ayahAudio.src = expectedSrc;
     els.ayahAudio.load();
@@ -251,23 +252,66 @@ window.renderAyah = function () {
   if (AppState._prevGridIndex != null && cells[AppState._prevGridIndex]) {
     const prev = cells[AppState._prevGridIndex];
     prev.classList.remove(
-      "ring-4",
-      "ring-emerald-500/50",
-      "bg-emerald-800",
-      "text-white",
+      "bg-slate-800",
+      "text-emerald-400",
+      "border",
+      "border-emerald-500",
+      "shadow-md",
+      "shadow-emerald-500/20",
     );
+    // Restore original background if it wasn't checked/valid
     if (!prev.classList.contains("bg-emerald-600")) {
-      prev.classList.add("text-slate-400", "bg-slate-800");
+      prev.classList.remove("text-white");
+
+      const isHifzInRange =
+        AppState.hifzEnabled &&
+        AppState.hifzRange.start !== null &&
+        AppState.hifzRange.end !== null &&
+        AppState._prevGridIndex >=
+          Math.min(AppState.hifzRange.start, AppState.hifzRange.end) &&
+        AppState._prevGridIndex <=
+          Math.max(AppState.hifzRange.start, AppState.hifzRange.end);
+
+      if (isHifzInRange) {
+        prev.classList.add(
+          "bg-rose-500/10",
+          "border",
+          "border-dashed",
+          "border-rose-500/30",
+          "text-rose-300",
+        );
+      } else {
+        prev.classList.add(
+          "bg-slate-800",
+          "text-slate-300",
+          "border",
+          "border-slate-700",
+        );
+      }
     }
   }
   // Activate current cell
   const cur = cells[AppState.currentAyahIndex];
   if (cur) {
-    if (!cur.classList.contains("bg-emerald-600")) {
-      cur.classList.add("bg-emerald-800");
-    }
-    cur.classList.add("ring-4", "ring-emerald-500/50", "text-white");
-    cur.classList.remove("text-slate-400", "bg-slate-800", "bg-slate-700");
+    cur.classList.remove(
+      "text-slate-300",
+      "bg-slate-800",
+      "border",
+      "border-slate-700",
+      "bg-rose-500/10",
+      "border-dashed",
+      "border-rose-500/30",
+      "text-rose-300",
+      "bg-emerald-600",
+    );
+    cur.classList.add(
+      "bg-slate-800",
+      "text-emerald-400",
+      "border",
+      "border-emerald-500",
+      "shadow-md",
+      "shadow-emerald-500/20",
+    );
     cur.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
   AppState._prevGridIndex = AppState.currentAyahIndex;
@@ -303,66 +347,113 @@ window.renderAyah = function () {
 
 /**
  * Rebuilds the scrollable Ayah grid in the sidebar.
- * Uses event delegation — one handler on parent instead of per-cell.
+ * Uses pill-shaped cells with inline icons for Juz/Page/Hifz indicators.
  */
 window.renderAyahGrid = function () {
   els.ayahGrid.innerHTML = "";
 
-  // Use DocumentFragment for batch DOM insertion
   const frag = document.createDocumentFragment();
   const surahId = AppState.currentSurah.id;
   const hasMetadata = typeof window.getJuzStartAt === "function";
 
-  AppState.currentSurah.verses.forEach((verse, index) => {
-    const cell = document.createElement("div");
-    const key = `${surahId}-${verse.id}`;
-    cell.className =
-      "ayah-cell h-8 w-8 flex items-center justify-center rounded-md text-xs font-bold cursor-pointer transition-all active:scale-95 ";
+  // Pre-compute hifz boundaries
+  const hifzActive = AppState.hifzEnabled;
+  const hifzHasRange =
+    hifzActive &&
+    AppState.hifzRange.start !== null &&
+    AppState.hifzRange.end !== null;
+  const hifzMin = hifzHasRange
+    ? Math.min(AppState.hifzRange.start, AppState.hifzRange.end)
+    : null;
+  const hifzMax = hifzHasRange
+    ? Math.max(AppState.hifzRange.start, AppState.hifzRange.end)
+    : null;
 
-    if (AppState.checkedAyats.has(key)) {
+  AppState.currentSurah.verses.forEach((verse, index) => {
+    const cell = document.createElement("button");
+    const key = `${surahId}-${verse.id}`;
+
+    const isActive = index === AppState.currentAyahIndex;
+    const isChecked = AppState.checkedAyats.has(key);
+    const isHifzRange =
+      hifzMin !== null && index >= hifzMin && index <= hifzMax;
+    const hasNotes = !!AppState.notes[key];
+
+    // 1. Detect juz/page starts
+    let juzStart = null;
+    let pageStart = null;
+    if (hasMetadata) {
+      juzStart = window.getJuzStartAt(surahId, verse.id);
+      pageStart = window.getPageStartAt(surahId, verse.id);
+    }
+
+    // 2. Collect indicators (dots)
+    const dots = [];
+    if (isHifzRange && hifzActive) {
+      dots.push('<div class="w-2 h-2 bg-rose-400 rounded-full"></div>');
+    }
+    if (juzStart !== null) {
+      dots.push('<div class="w-2 h-2 bg-amber-500 rounded-full"></div>');
+      cell.title = `Džuz ${juzStart}`;
+    }
+    if (pageStart !== null) {
+      dots.push('<div class="w-2 h-2 bg-blue-400 rounded-full"></div>');
+      cell.title = cell.title
+        ? cell.title + ` · Str. ${pageStart}`
+        : `Str. ${pageStart}`;
+    }
+
+    // 3. Base class & Dynamic layout
+    cell.className =
+      "ayah-cell relative h-11 w-full px-1 flex rounded-lg text-xs font-medium transition-all active:scale-95 ";
+
+    let html = "";
+    if (dots.length > 0) {
+      cell.classList.add("flex-col", "items-center", "justify-center", "gap-1");
+      html = `<span class="text-[10px] leading-none">${index + 1}</span>
+                <div class="flex items-center justify-center gap-1 opacity-90 w-full">${dots.join("")}</div>`;
+    } else {
+      cell.classList.add("items-center", "justify-center");
+      html = `<span class="text-xs">${index + 1}</span>`;
+    }
+
+    cell.innerHTML = html;
+
+    // 4. State styling
+    if (isActive) {
+      cell.classList.add(
+        "bg-slate-800",
+        "text-emerald-400",
+        "border",
+        "border-emerald-500",
+        "shadow-md",
+        "shadow-emerald-500/20",
+      );
+    } else if (isChecked) {
       cell.classList.add("bg-emerald-600", "text-white");
+    } else if (isHifzRange) {
+      cell.classList.add(
+        "bg-rose-500/10",
+        "border",
+        "border-dashed",
+        "border-rose-500/30",
+        "text-rose-300",
+        "hover:bg-rose-500/20",
+      );
     } else {
       cell.classList.add(
         "bg-slate-800",
-        "text-slate-400",
-        "hover:bg-slate-700",
+        "text-slate-300",
+        "border",
+        "border-slate-700",
+        "hover:bg-slate-600",
       );
     }
 
-    if (AppState.notes[key]) {
-      cell.classList.add("border-b-2", "border-amber-500", "rounded-b-none");
+    if (hasNotes) {
+      cell.style.borderBottom = "2px solid #f59e0b";
     }
 
-    if (index === AppState.currentAyahIndex) {
-      if (!cell.classList.contains("bg-emerald-600")) {
-        cell.classList.add("bg-emerald-800");
-      }
-      cell.classList.add("ring-2", "ring-emerald-500/50", "text-white");
-      cell.classList.remove("text-slate-400", "bg-slate-800", "bg-slate-700");
-    }
-
-    // Juz & Page start indicators (inline styles — not subject to Tailwind purge)
-    if (hasMetadata) {
-      const juzStart = window.getJuzStartAt(surahId, verse.id);
-      const pageStart = window.getPageStartAt(surahId, verse.id);
-      const tooltipParts = [];
-
-      if (juzStart !== null) {
-        // Sky-blue top border = start of a new Juz (matches Džuz badge color)
-        cell.style.borderTop = "2px solid #38bdf8";
-        tooltipParts.push(`Džuz ${juzStart}`);
-      }
-      if (pageStart !== null) {
-        // Violet left border = start of a new page (matches Str. badge color)
-        cell.style.borderLeft = "2px solid #a78bfa";
-        tooltipParts.push(`Str. ${pageStart}`);
-      }
-      if (tooltipParts.length > 0) {
-        cell.title = tooltipParts.join(" · ");
-      }
-    }
-
-    cell.textContent = index + 1;
     cell.dataset.index = index;
     frag.appendChild(cell);
   });
@@ -372,8 +463,31 @@ window.renderAyahGrid = function () {
   els.ayahGrid.onclick = (e) => {
     const cell = e.target.closest(".ayah-cell");
     if (!cell || cell.dataset.index == null) return;
-    AppState.currentAyahIndex = parseInt(cell.dataset.index);
-    renderAyah();
+    const idx = parseInt(cell.dataset.index);
+
+    if (AppState.hifzEnabled) {
+      if (
+        AppState.hifzRange.start === null ||
+        (AppState.hifzRange.start !== null && AppState.hifzRange.end !== null)
+      ) {
+        AppState.hifzRange.start = idx;
+        AppState.hifzRange.end = null;
+        els.hifzRangeText.innerText = `Opseg: ${idx + 1} - ...`;
+      } else {
+        AppState.hifzRange.end = idx;
+        const min = Math.min(AppState.hifzRange.start, AppState.hifzRange.end);
+        const max = Math.max(AppState.hifzRange.start, AppState.hifzRange.end);
+        els.hifzRangeText.innerText = `Opseg: ${min + 1} - ${max + 1}`;
+
+        // Automatically jump to the first ayah of the selected range
+        AppState.currentAyahIndex = min;
+        renderAyah();
+      }
+      renderAyahGrid(); // Full re-render to show markers
+    } else {
+      AppState.currentAyahIndex = idx;
+      renderAyah();
+    }
   };
 
   // Reset tracked index for the O(1) cell update in renderAyah

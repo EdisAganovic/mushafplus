@@ -8,6 +8,9 @@ Izgrađena isključivo modernim web tehnologijama, ova aplikacija radi u potpuno
 
 ## ✨ Ključne Karakteristike
 
+- **Minimalistička Navigacija po Džuzu i Stranici**: Skočite direktno na bilo koji džuz (1-30) ili stranicu (1-604) unosom u polja u zaglavlju aplikacije.
+- **Hifz Mod (Učenje napamet)**: Namjenski mod za ponavljanje određenog opsega ajeta. Odaberite početni (S) i krajnji (E) ajet na mreži, omogućite "Automatski sljedeći" i audio će se neprestano ponavljati.
+- **Odabir Učača (EveryAyah)**: Pristup vrhunskim svjetskim učačima (Mishary Alafasy, Al-Sudais, itd.) sa EveryAyah.com direktno unutar izbornika u postavkama.
 - **Centralizirani Prijevod na Bosanski**: Potpuno lokalizovan interfejs koristeći prilagođeni `i18n.js` mehanizam za prevođenje.
 - **Označavanje Tedžvida Bojama & Info Oblačići Značenja**: Napredni tekstualni engine koji ističe pravila Tedžvida (Ihfa, Izhar, Kalkala, itd.) sa info oblačićima (tooltips) u stvarnom vremenu koji objašnjavaju svako pravilo pri kliku.
 - **Globalni Pretraživač**: Trenutno pretraživanje kroz cijeli Kur'an po tekstualnom sadržaju ili referenci (npr. "2:255"). Radi uz pomoć padajućeg menija s odgođenim (debounced) rezultatima.

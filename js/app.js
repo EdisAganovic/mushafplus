@@ -253,6 +253,85 @@ function setupEventListeners() {
     renderAyahGrid(); // Update grid indicator immediately
   };
 
+  // --- JUZ / PAGE / AYAH NAVIGATION (Smart Auto-Jump & Sync) ---
+  let navDebounce;
+  const handleNavInput = (value, type) => {
+    clearTimeout(navDebounce);
+    if (!value || isNaN(value)) return;
+
+    const num = parseInt(value);
+
+    // Instant Sibling Update (Juz/Page only)
+    if (type === "juz" && num >= 1 && num <= 30) {
+      const [s, a] = window.JUZ_DATA[num];
+      els.pageInput.value = window.getPageNumber(s, a);
+    } else if (type === "page" && num >= 1 && num <= 604) {
+      const [s, a] = window.PAGE_DATA[num];
+      els.juzInput.value = window.getJuzNumber(s, a);
+    }
+
+    navDebounce = setTimeout(() => {
+      if (type === "juz") {
+        if (num >= 1 && num <= 30) goToJuz(num);
+      } else if (type === "page") {
+        if (num >= 1 && num <= 604) goToPage(num);
+      } else if (type === "ayah") {
+        if (
+          AppState.currentSurah &&
+          num >= 1 &&
+          num <= AppState.currentSurah.verses.length
+        ) {
+          goToAyah(num);
+        }
+      }
+    }, 800);
+  };
+
+  els.juzInput.oninput = (e) => handleNavInput(e.target.value, "juz");
+  els.pageInput.oninput = (e) => handleNavInput(e.target.value, "page");
+  els.ayahInput.oninput = (e) => handleNavInput(e.target.value, "ayah");
+
+  // Clear input on focus for easier typing, restore if left empty
+  const setupAutoClear = (el) => {
+    let originalVal = "";
+    el.onfocus = (e) => {
+      originalVal = e.target.value;
+      e.target.value = "";
+    };
+    el.onblur = (e) => {
+      if (!e.target.value.trim()) {
+        e.target.value = originalVal;
+      }
+    };
+  };
+
+  setupAutoClear(els.juzInput);
+  setupAutoClear(els.pageInput);
+  setupAutoClear(els.ayahInput);
+
+  const handleEnterKey = (e, type, min, max) => {
+    if (e.key === "Enter") {
+      clearTimeout(navDebounce);
+      const val = parseInt(e.target.value);
+      if (val >= min && val <= max) {
+        if (type === "juz") goToJuz(val);
+        else if (type === "page") goToPage(val);
+        else if (type === "ayah") goToAyah(val);
+        e.target.blur();
+      }
+    }
+  };
+
+  els.juzInput.onkeydown = (e) => handleEnterKey(e, "juz", 1, 30);
+  els.pageInput.onkeydown = (e) => handleEnterKey(e, "page", 1, 604);
+  els.ayahInput.onkeydown = (e) =>
+    handleEnterKey(
+      e,
+      "ayah",
+      1,
+      AppState.currentSurah ? AppState.currentSurah.verses.length : 286,
+    );
+
   // --- AUDIO UI (RECITATION) ---
   els.ayahPlayBtn.onclick = () =>
     els.ayahAudio.paused ? els.ayahAudio.play() : els.ayahAudio.pause();
@@ -292,7 +371,23 @@ function setupEventListeners() {
 
     // Auto-advance logic
     if (els.autoplayToggle.checked && !els.ayahAudio.loop) {
-      nextAyah();
+      if (
+        AppState.hifzEnabled &&
+        AppState.hifzRange.start !== null &&
+        AppState.hifzRange.end !== null
+      ) {
+        const min = Math.min(AppState.hifzRange.start, AppState.hifzRange.end);
+        const max = Math.max(AppState.hifzRange.start, AppState.hifzRange.end);
+
+        if (AppState.currentAyahIndex >= max) {
+          AppState.currentAyahIndex = min;
+        } else {
+          AppState.currentAyahIndex++;
+        }
+      } else {
+        nextAyah();
+      }
+      renderAyah();
       // Need a slight delay to allow rendering and audio loading
       setTimeout(() => {
         els.ayahAudio.play();
@@ -402,6 +497,32 @@ function setupEventListeners() {
     } else {
       document.documentElement.classList.remove("light");
     }
+  };
+
+  const updateReciterLabel = () => {
+    if (els.reciterNameLabel && els.reciterSelect.options.length > 0) {
+      els.reciterNameLabel.innerText =
+        els.reciterSelect.options[els.reciterSelect.selectedIndex].text;
+    }
+  };
+
+  els.reciterSelect.value = AppState.currentReciter;
+  updateReciterLabel();
+
+  els.reciterSelect.onchange = (e) => {
+    AppState.currentReciter = e.target.value;
+    localStorage.setItem("quran_reciter", e.target.value);
+    updateReciterLabel();
+    renderAyah();
+  };
+
+  els.hifzToggle.onchange = (e) => {
+    AppState.hifzEnabled = e.target.checked;
+    if (!AppState.hifzEnabled) {
+      AppState.hifzRange = { start: null, end: null };
+      els.hifzRangeText.innerText = "Klikni na ajet za opseg";
+    }
+    renderAyahGrid();
   };
 
   // --- GLOBAL KEYBOARD SHORTCUTS ---

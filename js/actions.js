@@ -22,6 +22,82 @@ window.loadSurah = function (id) {
 };
 
 /**
+ * Jumps to the first ayah of a given Juz.
+ * @param {number} juz - Juz number (1-30)
+ */
+window.goToJuz = function (juz) {
+  if (juz < 1 || juz > 30) return;
+  const juzData = window.JUZ_DATA[juz];
+  if (!juzData) return;
+  const [sId, aId] = juzData;
+  const surah = AppState.data.find((s) => s.id === sId);
+  if (!surah) return;
+
+  AppState.currentSurah = surah;
+  // Find index of ayah with ID aId
+  AppState.currentAyahIndex = surah.verses.findIndex((v) => v.id === aId);
+  els.surahSelect.value = sId;
+  localStorage.setItem("last_surah", sId);
+
+  renderAyah();
+  renderAyahGrid();
+  updateProgress();
+};
+
+/**
+ * Jumps to the first ayah of a given Page.
+ * @param {number} page - Page number (1-604)
+ */
+window.goToPage = function (page) {
+  if (page < 1 || page > 604) return;
+  const pageData = window.PAGE_DATA[page];
+  if (!pageData) return;
+  const [sId, aId] = pageData;
+  const surah = AppState.data.find((s) => s.id === sId);
+  if (!surah) return;
+
+  AppState.currentSurah = surah;
+  AppState.currentAyahIndex = surah.verses.findIndex((v) => v.id === aId);
+  els.surahSelect.value = sId;
+  localStorage.setItem("last_surah", sId);
+
+  renderAyah();
+  renderAyahGrid();
+  updateProgress();
+};
+
+/**
+ * Jumps to a specific Ayah index within the current surah.
+ * @param {number} ayahNum - 1-based Ayah number
+ */
+window.goToAyah = function (ayahNum) {
+  if (!AppState.currentSurah) return;
+  const idx = ayahNum - 1;
+  if (idx >= 0 && idx < AppState.currentSurah.verses.length) {
+    AppState.currentAyahIndex = idx;
+    renderAyah();
+  }
+};
+
+/**
+ * Returns the correct audio URL for an ayah based on reciter settings.
+ * @param {number} surahId
+ * @param {number} ayahId
+ * @returns {string} Audio URL
+ */
+window.getAyahAudioUrl = function (surahId, ayahId) {
+  const suraStr = String(surahId).padStart(3, "0");
+  const ayahStr = String(ayahId).padStart(3, "0");
+
+  if (AppState.currentReciter === "local") {
+    return `mp3/${suraStr}${ayahStr}.mp3`;
+  } else {
+    // EveryAyah URL format
+    return `https://everyayah.com/data/${AppState.currentReciter}/${suraStr}${ayahStr}.mp3`;
+  }
+};
+
+/**
  * Advances to the next Ayah. Jumps to the next Surah if at the end of current.
  */
 window.nextAyah = function () {

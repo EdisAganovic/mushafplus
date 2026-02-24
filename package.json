@@ -1,6 +1,6 @@
 {
   "name": "preslusavanje",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A premium, fully responsive browser-based application designed to help users memorize and perfect their Quranic recitation (Tajweed) with Bosnian localized interface.",
   "main": "tailwind.config.js",
   "scripts": {

@@ -61,7 +61,7 @@ window.updateProgress = function () {
   });
 
   const percent = Math.round((checkedCount / total) * 100);
-  els.progressPercent.textContent = `${percent}%`;
+  els.progressPercent.textContent = `${checkedCount} / ${total}`;
   els.progressBarFill.style.width = `${percent}%`;
 };
 

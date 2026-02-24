@@ -20,6 +20,11 @@ window.AppState = {
   audioChunks: [], // Temporary buffer for recording data
   recordings: {}, // Map of ayah keys to blob URLs
 
+  // NEW RUNTIME STATE
+  hifzEnabled: false,
+  hifzRange: { start: null, end: null },
+  currentReciter: localStorage.getItem("quran_reciter") || "local",
+
   // PERSISTENT DATA (Loaded from localStorage)
   checkedAyats: new Set(
     JSON.parse(localStorage.getItem("quran_checked") || "[]"),
@@ -64,11 +69,13 @@ window.els = {
   ),
   searchEmptyStateMobile: document.getElementById("search-empty-state-mobile"),
   syncStatus: document.getElementById("sync-status"),
+  juzInput: document.getElementById("juz-input"),
+  pageInput: document.getElementById("page-input"),
+  ayahInput: document.getElementById("ayah-input"),
 
   // Main Display
   arabicDisplay: document.getElementById("arabic-display"),
   translationDisplay: document.getElementById("translation-display"),
-  currentAyahNum: document.getElementById("current-ayah-num"),
   totalAyahsNum: document.getElementById("total-ayahs-num"),
   ayahNotes: document.getElementById("ayah-notes"),
 
@@ -100,6 +107,7 @@ window.els = {
   ayahAudioProgress: document.getElementById("ayah-audio-progress"),
   ayahAudioTime: document.getElementById("ayah-audio-time"),
   ayahProgressBg: document.getElementById("ayah-progress-bg"),
+  reciterNameLabel: document.getElementById("reciter-name-label"),
 
   // Custom Audio UI Elements (User Practice)
   userAudioContainer: document.getElementById("user-audio-container"),
@@ -129,6 +137,8 @@ window.els = {
   sidebarClose: document.getElementById("sidebar-close"),
   ayahSpeedBtn: document.getElementById("ayah-speed-btn"),
   ayahLoopBtn: document.getElementById("ayah-loop-btn"),
+  hifzToggle: document.getElementById("hifz-toggle"),
+  hifzRangeText: document.getElementById("hifz-range-text"),
 
   // Data Transfer
   exportBtn: document.getElementById("export-btn"),
@@ -141,6 +151,7 @@ window.els = {
   settingsOverlay: document.getElementById("settings-overlay"),
   settingsClose: document.getElementById("settings-close"),
   themeSelect: document.getElementById("theme-select"),
+  reciterSelect: document.getElementById("reciter-select"),
   autoplayToggle: document.getElementById("autoplay-toggle"),
   tajweedToggle: document.getElementById("tajweed-toggle"),
   tajweedLegendToggle: document.getElementById("tajweed-legend-toggle"),

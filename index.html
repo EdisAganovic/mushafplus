@@ -7,7 +7,7 @@
     <title>Kur'anska recitacija - Vježba učenja</title>
 
     <!-- Tailwind CSS (Static Production Build) -->
-    <link rel="stylesheet" href="css/tailwind-output.css?v=1.0.1">
+    <link rel="stylesheet" href="css/tailwind-output.css?v=1.0.4">
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
@@ -42,18 +42,17 @@
 
                     <!-- Desktop Search -->
                     <div class="relative group z-50 hidden sm:flex shrink-0 ml-4">
-                        <div class="relative w-full">
+                        <div class="relative w-full max-w-[200px] xl:max-w-[300px]">
                             <input type="text" id="search-input" data-i18n-placeholder="searchPlaceholder"
                                 placeholder="Pretraži tekst ili ajet (2:255)..."
-                                class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-[16rem] text-[0.875rem] placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
+                                class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-full text-[0.875rem] placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
                             <ion-icon name="search-outline"
                                 class="absolute left-[0.75rem] top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors"></ion-icon>
                         </div>
                         <div id="search-results-container"
-                            class="absolute top-[3rem] right-0 w-[22rem] max-h-[24rem] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-y-auto hidden flex-col custom-scrollbar">
+                            class="absolute top-[3rem] left-0 right-0 w-[400px] max-h-[24rem] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-y-auto hidden flex-col custom-scrollbar z-50">
                             <div id="search-results-list" class="flex flex-col"></div>
-                            <div id="search-empty-state"
-                                class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden"
+                            <div id="search-empty-state" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden"
                                 data-i18n="noResults">
                                 Nema rezultata
                             </div>
@@ -63,8 +62,7 @@
             </div>
 
             <!-- Mimic Sidebar Structure -->
-            <div
-                class="flex items-center justify-between md:justify-end px-3 sm:px-6 pt-3 md:mt-0 sm:py-[0.75rem] w-full md:w-80 shrink-0 gap-[0.5rem]">
+            <div class="flex items-center justify-between md:justify-end px-3 sm:px-6 pt-3 md:pt-0 md:mt-0 sm:py-[0.75rem] w-full md:w-80 shrink-0 gap-[0.5rem]">
                 <select id="surah-select"
                     class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] px-[0.5rem] rounded-lg outline-none focus:border-emerald-500 transition-colors cursor-pointer text-[0.875rem] min-w-0 w-0 flex-grow sm:w-auto sm:flex-grow-0 overflow-hidden text-ellipsis">
                     <option value="" disabled selected class="bg-slate-900" data-i18n="selectSurah">Izaberi suru...
@@ -82,7 +80,6 @@
                     </button>
                 </div>
             </div>
-
         </div>
 
         <!-- Mobile search row -->
@@ -115,19 +112,35 @@
             <div
                 class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-8 shadow-2xl flex flex-col items-center min-h-[250px] sm:min-h-[400px] justify-center relative shrink-0">
 
-                <!-- Ayah Badge -->
-                <div class="w-full flex justify-center mt-2 mb-4 sm:mb-6 gap-2 flex-wrap">
-                    <div
-                        class="text-[10px] sm:text-xs font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                        Ajet <span id="current-ayah-num">0</span> / <span id="total-ayahs-num">0</span>
+                <!-- Navigation Hint -->
+                <div class="w-full text-center opacity-40 mb-1">
+                    <span class="text-[9px] uppercase tracking-[0.2em] text-slate-500 font-bold">
+                        Brzi skok: Klikni na broj
+                    </span>
+                </div>
+
+                <!-- Navigation Badges -->
+                <div class="w-full flex justify-center mt-1.5 mb-3 sm:mb-6 gap-1.5 flex-wrap">
+                    <!-- Ayah Badge -->
+                    <div class="text-[11px] sm:text-sm font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20 flex items-center shadow-md">
+                        <label for="ayah-input" class="cursor-pointer mr-1 opacity-90">Ajet</label>
+                        <input type="number" id="ayah-input" min="1" max="286" placeholder="0"
+                            class="bg-transparent border-none text-emerald-400 font-bold w-9 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                        <span class="opacity-90 ml-1">/ <span id="total-ayahs-num">0</span></span>
                     </div>
-                    <div
-                        class="text-[10px] sm:text-xs font-mono text-sky-400 bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20 flex items-center gap-1">
-                        <span class="opacity-70">Džuz</span> <span id="current-juz-num">—</span>
+
+                    <!-- Juz Badge -->
+                    <div class="text-[11px] sm:text-sm font-mono text-amber-500 bg-amber-500/10 px-3 py-1.5 rounded-full border border-amber-500/20 flex items-center gap-1 shadow-md">
+                        <label for="juz-input" class="opacity-90 cursor-pointer">Džuz</label>
+                        <input type="number" id="juz-input" min="1" max="30" placeholder="0"
+                            class="bg-transparent border-none text-amber-400 font-bold w-5 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                     </div>
-                    <div
-                        class="text-[10px] sm:text-xs font-mono text-violet-400 bg-violet-500/10 px-3 py-1 rounded-full border border-violet-500/20 flex items-center gap-1">
-                        <span class="opacity-70">Str.</span> <span id="current-page-num">—</span>
+
+                    <!-- Page Badge -->
+                    <div class="text-[11px] sm:text-sm font-mono text-blue-400 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20 flex items-center gap-1 shadow-md">
+                        <label for="page-input" class="opacity-90 cursor-pointer">Str.</label>
+                        <input type="number" id="page-input" min="1" max="604" placeholder="0"
+                            class="bg-transparent border-none text-blue-300 font-bold w-10 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                     </div>
                 </div>
 
@@ -196,7 +209,7 @@
                         <div class="flex-1 flex flex-col gap-1 pr-1 sm:pr-2">
                             <div
                                 class="flex items-center justify-between text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-widest font-bold">
-                                <span data-i18n="recitation">Recitacija</span>
+                                <span id="reciter-name-label">Recitacija</span>
                                 <span id="ayah-audio-time">0:00 / 0:00</span>
                             </div>
                             <div id="ayah-progress-bg"
@@ -283,11 +296,27 @@
                 </button>
             </div>
 
+            <!-- Hifz Mode Toggle -->
+            <div class="mb-4 bg-rose-500/5 border border-rose-500/20 rounded-xl p-3">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex flex-col flex-1">
+                        <span class="text-xs font-bold text-rose-400 uppercase tracking-wider">Hifz Mod</span>
+                        <span id="hifz-range-text" class="text-[10px] text-slate-500 line-clamp-1">Klikni na ajet za opseg</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                        <input type="checkbox" id="hifz-toggle" class="sr-only peer">
+                        <div
+                            class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-500">
+                        </div>
+                    </label>
+                </div>
+            </div>
+
             <!-- Progress Section -->
             <div class="mb-8">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-sm font-semibold text-slate-400" data-i18n="surahProgress">Progres</span>
-                    <span id="progress-percent" class="text-sm font-bold text-emerald-400">0%</span>
+                    <span id="progress-percent" class="text-sm font-bold text-emerald-400">0 / 0</span>
                 </div>
                 <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
                     <div id="progress-bar-fill"
@@ -301,10 +330,31 @@
                 <span data-i18n="ayahGrid">Ajeti</span>
             </h3>
 
+            <!-- Grid Legend -->
+            <div class="flex flex-wrap gap-3 mb-3 text-[10px] font-medium text-slate-400 px-1">
+                <div class="flex items-center gap-1">
+                    <div class="w-2.5 h-2.5 bg-emerald-500 rounded-sm"></div>
+                    Trenutni ajet
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-2 h-2 bg-rose-400 rounded-full"></div>
+                    Hifz mod
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
+                    Početak džuza
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    Nova stranica
+                </div>
+            </div>
+
             <!-- Scrollable Ayah Grid -->
-            <div id="ayah-grid"
-                class="flex-[3] overflow-y-auto grid content-start grid-cols-7 sm:grid-cols-8 md:grid-cols-6 gap-2 p-2 pr-3 custom-scrollbar mb-2 min-h-[120px]">
-                <!-- Ayah cells will be injected here -->
+            <div class="flex-[3] overflow-y-auto custom-scrollbar mb-2 min-h-[120px] bg-slate-950/50 p-3 rounded-xl border border-slate-800/60">
+                <div id="ayah-grid" class="grid grid-cols-5 content-start gap-2">
+                    <!-- Ayah cells will be injected here -->
+                </div>
             </div>
 
             <!-- Bookmarks Section -->
@@ -421,6 +471,19 @@
                     </div>
                     <div id="settings-preview-bs" class="font-outfit text-slate-400 text-center" style="font-size:1rem">
                         Reci: "On je Allah - Jedan! Allah je Utočište svakom."</div>
+                </div>
+
+                <div class="pt-2">
+                    <label class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">Učač (Reciter)</label>
+                    <select id="reciter-select"
+                        class="w-full bg-slate-950/50 text-slate-300 rounded-xl p-2.5 text-sm border border-slate-800 outline-none focus:border-emerald-500 transition-colors cursor-pointer appearance-none">
+                        <option value="local" class="bg-slate-900">Lokalni fajlovi</option>
+                        <option value="Alafasy_128kbps" class="bg-slate-900">Mishary Rashid Alafasy</option>
+                        <option value="Abdurrahmaan_As-Sudais_192kbps" class="bg-slate-900">Abdurrahmaan As-Sudais</option>
+                        <option value="Husary_128kbps" class="bg-slate-900">Mahmoud Khalil Al-Husary</option>
+                        <option value="MaherAlMuaiqly128kbps" class="bg-slate-900">Maher Al-Muaiqly</option>
+                        <option value="Saood_ash-Shuraym_128kbps" class="bg-slate-900">Sa'ud ash-Shuraym</option>
+                    </select>
                 </div>
 
                 <div class="pt-2">

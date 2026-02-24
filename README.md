@@ -8,6 +8,9 @@ Built entirely with modern Web Technologies, this app operates entirely locally 
 
 ## ✨ Key Features
 
+- **Minimalist Juz & Page Navigation**: Jump to any Juz (1-30) or Page (1-604) directly from the header via input boxes.
+- **Hifz Mode (Memorization)**: A dedicated mode for looping specific Ayah ranges. Select a start and end Ayah, enable Auto-play, and the app will continuously loop within your selection.
+- **Remote Reciters (EveryAyah)**: Choose from multiple world-class reciters (Mishary Alafasy, Al-Sudais, etc.) in the Settings to stream high-quality audio directly from EveryAyah.com.
 - **Centralized Bosnian Translation**: Fully localized interface using a custom `i18n.js` translation engine.
 - **Tajweed Color-Coding & Tooltips**: Advanced text engine that highlights Tajweed rules (Ikhfa, Izhar, Qalqala, etc.) with real-time tooltips explaining each rule upon click.
 - **Global Search Engine**: Instantly search across the entire Quran by text content or reference (e.g., "2:255"). Operates with a debounced results dropdown.

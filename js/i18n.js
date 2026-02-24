@@ -33,7 +33,7 @@ window.T = {
 
   // Sidebar
   menu: "Meni",
-  surahProgress: "Progres",
+  surahProgress: "Proučeno ajeta",
   ayahGrid: "Ajeti",
   bookmarks: "Zapamćeno",
   noBookmarks: "Još nema oznaka",
