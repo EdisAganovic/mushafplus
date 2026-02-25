@@ -649,6 +649,43 @@ function setupEventListeners() {
     },
     { passive: true },
   );
+
+  // --- MODAL SYSTEM ---
+  const openModal = (id) => {
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.remove("hidden");
+  };
+
+  const closeModal = (id) => {
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.add("hidden");
+  };
+
+  // About & Version buttons
+  document.getElementById("about-btn").onclick = () => openModal("about-modal");
+  document.getElementById("version-btn").onclick = () =>
+    openModal("version-modal");
+
+  // Close buttons (X)
+  document.querySelectorAll("[data-modal-close]").forEach((btn) => {
+    btn.onclick = () => closeModal(btn.dataset.modalClose);
+  });
+
+  // Close on overlay click
+  document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+    overlay.onclick = (e) => {
+      if (e.target === overlay) overlay.classList.add("hidden");
+    };
+  });
+
+  // Close on Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      document.querySelectorAll(".modal-overlay:not(.hidden)").forEach((m) => {
+        m.classList.add("hidden");
+      });
+    }
+  });
 }
 
 // BOOT APPLICATION

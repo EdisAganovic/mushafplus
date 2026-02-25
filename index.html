@@ -6,15 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mushaf Plus</title>
 
-    <!-- Tailwind CSS (Static Production Build) -->
-    <link rel="stylesheet" href="css/tailwind-output.css?v=0.0.5">
+    <!-- Global App Configuration -->
+    <script>
+        // IMPORTANT: Change this version to force cache refresh for all users
+        const APP_VERSION = "0.0.7"; 
+    </script>
+
+    <!-- UI Styles (Dynamic versioning) -->
+    <script>
+        document.write(`<link rel="stylesheet" href="css/tailwind-output.css?v=${APP_VERSION}">`);
+        document.write(`<link rel="stylesheet" href="css/styles.css?v=${APP_VERSION}">`);
+    </script>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
         rel="stylesheet">
-
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="css/styles.css?v=0.0.5">
 
     <!-- Ionicons -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
@@ -424,6 +430,20 @@
             </button>
         </div>
 
+        <!-- About & Version Buttons -->
+        <div class="flex gap-2 mb-6">
+            <button id="about-btn"
+                class="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold py-2 rounded-lg transition-colors border border-slate-700">
+                <ion-icon name="information-circle-outline"></ion-icon>
+                <span>O aplikaciji</span>
+            </button>
+            <button id="version-btn"
+                class="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold py-2 rounded-lg transition-colors border border-slate-700">
+                <ion-icon name="git-branch-outline"></ion-icon>
+                <span>Verzija</span>
+            </button>
+        </div>
+
         <!-- Settings Section -->
         <div class="mb-6">
             <div class="space-y-4">
@@ -474,15 +494,19 @@
                 </div>
 
                 <div class="pt-2">
-                    <label class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">Učač (Reciter)</label>
+                    <label class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">Učač</label>
                     <select id="reciter-select"
                         class="w-full bg-slate-950/50 text-slate-300 rounded-xl p-2.5 text-sm border border-slate-800 outline-none focus:border-emerald-500 transition-colors cursor-pointer appearance-none">
-                        <option value="local" class="bg-slate-900">Lokalni fajlovi</option>
-                        <option value="Alafasy_128kbps" class="bg-slate-900">Mishary Rashid Alafasy</option>
-                        <option value="Abdurrahmaan_As-Sudais_192kbps" class="bg-slate-900">Abdurrahmaan As-Sudais</option>
-                        <option value="Husary_128kbps" class="bg-slate-900">Mahmoud Khalil Al-Husary</option>
-                        <option value="MaherAlMuaiqly128kbps" class="bg-slate-900">Maher Al-Muaiqly</option>
-                        <option value="Saood_ash-Shuraym_128kbps" class="bg-slate-900">Sa'ud ash-Shuraym</option>
+                        <option value="Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net" class="bg-slate-900">Ahmed el-Adžemi</option>
+                        <option value="Hudhaify_128kbps" class="bg-slate-900">Ali el-Huzejfi</option>
+                        <option value="Abu_Bakr_Ash-Shaatree_128kbps" class="bg-slate-900">Ebu Bekr Eš-Šatri</option>
+                        <option value="Yasser_Ad-Dussary_128kbps" class="bg-slate-900">Jasir ed-Devseri</option>
+                        <option value="MaherAlMuaiqly128kbps" class="bg-slate-900">Mahir el-Muajkli</option>
+                        <option value="Husary_128kbps" class="bg-slate-900">Mahmud Halil el-Husari</option>
+                        <option value="Husary_Muallim_128kbps" class="bg-slate-900">Mahmud Halil el-Husari (Učitelj)</option>
+                        <option value="Alafasy_128kbps" class="bg-slate-900">Mišari Rašid el-Afasi</option>
+                        <option value="Muhammad_Ayyoub_128kbps" class="bg-slate-900">Muhammed Ejjub</option>
+                        <option value="Salah_Al_Budair_128kbps" class="bg-slate-900">Salah el-Budejr</option>
                     </select>
                 </div>
 
@@ -491,7 +515,7 @@
                         data-i18n="appTheme">Tema aplikacije</label>
                     <select id="theme-select"
                         class="w-full bg-slate-950/50 text-slate-300 rounded-xl p-2.5 text-sm border border-slate-800 outline-none focus:border-emerald-500 transition-colors cursor-pointer appearance-none">
-                        <option value="" class="bg-slate-900" data-i18n="themeEmerald">Smaragdna (Podrazumijevano)
+                        <option value="" class="bg-slate-900" data-i18n="themeEmerald">Smaragdna (Standardno)
                         </option>
                         <option value="blue" class="bg-slate-900" data-i18n="themeBlue">Kraljevski plava</option>
                         <option value="amber" class="bg-slate-900" data-i18n="themeAmber">Zlato</option>
@@ -583,8 +607,183 @@
                 <input type="file" id="import-file" class="hidden" accept=".json">
             </div>
         </div>
+
+
         </div>
     </aside>
+
+    <!-- ===== About Modal ===== -->
+    <div id="about-modal" class="modal-overlay hidden">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <ion-icon name="information-circle-outline"></ion-icon>
+                    O aplikaciji
+                </h2>
+                <button class="modal-close" data-modal-close="about-modal">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="about-logo">📖</div>
+                <h3 class="about-app-name">Mushaf Plus</h3>
+                <p class="about-tagline">Interaktivni Mushaf za učenje i preslušavanje Kur'ana</p>
+
+                <div class="about-credits">
+                    <div class="about-credit-item">
+                        <span class="about-label">Autor</span>
+                        <span class="about-value">Edis Aganović za stranicu <strong>N-UM.com</strong></span>
+                    </div>
+                    <div class="about-credit-item">
+                        <span class="about-label">Saradnik</span>
+                        <span class="about-value">Zehrina Buljubašić, prof.</span>
+                    </div>
+                    <div class="about-credit-item">
+                        <span class="about-label">Prevod tumačenja Kur'ana</span>
+                        <span class="about-value">Muhammed Mehanović, prof.</span>
+                    </div>
+                    <div class="about-credit-item">
+                        <span class="about-label">Datum</span>
+                        <span class="about-value">25.2.2026.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Version Modal ===== -->
+    <div id="version-modal" class="modal-overlay hidden">
+        <div class="modal-container modal-container-lg">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <ion-icon name="git-branch-outline"></ion-icon>
+                    Verzija i novosti
+                </h2>
+                <button class="modal-close" data-modal-close="version-modal">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="modal-body modal-body-scroll">
+                <div class="version-badge">v0.0.7</div>
+
+                <!-- v0.0.7 -->
+                <div class="changelog-entry">
+                    <h4 class="changelog-version">Verzija 0.0.7 <span class="changelog-date">— 25. februar 2026.</span></h4>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-improved">Poboljšano</span>
+                        <ul class="changelog-list">
+                            <li><strong>Tedžvid pravila</strong> — Smanjen i prilagođen izgled oblačića sa objašnjenjem tedžvid pravila tako da bude manji i uredniji.</li>
+                            <li><strong>Sistem verzionisanja</strong> — Optimizovan način postavljanja verzije za lakše i automatsko ažuriranje.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- v0.0.6 -->
+                <div class="changelog-entry">
+                    <h4 class="changelog-version">Verzija 0.0.6 <span class="changelog-date">— 25. februar 2026.</span></h4>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-new">Novo</span>
+                        <ul class="changelog-list">
+                            <li>Aplikacija sada <strong>pamti posljednji ajet</strong> koji si čitao/la. Kad ponovo otvoriš stranicu, nastaviš tačno odakle si stao/la.</li>
+                            <li><strong>O aplikaciji</strong> — novi dugme u postavkama s informacijama o autoru, saradnicima i prevodu tumačenja.</li>
+                            <li><strong>Verzija i novosti</strong> — pregled svih promjena i novih funkcija kroz verzije, na jednom mjestu.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-improved">Poboljšano</span>
+                        <ul class="changelog-list">
+                            <li><strong>Nazivi sura</strong> — ispravljeni bosanski prevodi za 37 sura prema ispravnoj islamskoj terminologiji.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-fixed">Ispravljeno</span>
+                        <ul class="changelog-list">
+                            <li>Riješen problem s prikazom arapskih slova — slovo <strong>YAA</strong> s tešdidom se ispravno prikazuje.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- v0.0.5 -->
+                <div class="changelog-entry">
+                    <h4 class="changelog-version">Verzija 0.0.5 <span class="changelog-date">— 24. februar 2026.</span></h4>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-new">Novo</span>
+                        <ul class="changelog-list">
+                            <li><strong>Brže učitavanje zvuka</strong> — zvuk za sljedeći ajet se učitava unaprijed u pozadini, tako da nema čekanja.</li>
+                            <li><strong>Brža pretraga</strong> — pretraga sada radi u pozadini i ne usporava aplikaciju.</li>
+                            <li><strong>Direktan skok na ajet</strong> — samo klikni na broj ajeta i upiši željeni broj.</li>
+                            <li><strong>Pametni fokus</strong> — kad klikneš na polje za džuz, stranicu ili ajet, polje se automatski očisti za lakše kucanje.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-improved">Poboljšano</span>
+                        <ul class="changelog-list">
+                            <li>Navigacijske bedževe (Ajet, Džuz, Str.) smo redizajnirali za ljepši i profesionalniji izgled.</li>
+                            <li>Aplikacija je sada znatno brža pri navigaciji i označavanju ajeta.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-fixed">Ispravljeno</span>
+                        <ul class="changelog-list">
+                            <li>Ispravljen prikaz tedžvidskih pravila — arapska slova se više ne razdvajaju.</li>
+                            <li>Riješen problem s kešom u Firefoxu — nove promjene se sada ispravno učitavaju.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- v0.0.4 -->
+                <div class="changelog-entry">
+                    <h4 class="changelog-version">Verzija 0.0.4 <span class="changelog-date">— 24. februar 2026.</span></h4>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-new">Novo</span>
+                        <ul class="changelog-list">
+                            <li><strong>Navigacija po džuzu i stranici</strong> — upiši broj džuza (1-30) ili stranice (1-604) i skoči direktno.</li>
+                            <li><strong>Hifz mod</strong> — izaberi opseg ajeta i ponavljaj ih u krug, idealno za učenje napamet.</li>
+                            <li><strong>Poznati učači</strong> — slušaj recitacije od Mishary Alafasyja, As-Sudaisa, Al-Husaryja i drugih.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-improved">Poboljšano</span>
+                        <ul class="changelog-list">
+                            <li>Praćenje progresa sada prikazuje tačan broj proučenih ajeta.</li>
+                            <li>Potpuno redizajnirana mreža ajeta u bočnom meniju.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- v0.0.3 -->
+                <div class="changelog-entry">
+                    <h4 class="changelog-version">Verzija 0.0.3 <span class="changelog-date">— 24. februar 2026.</span></h4>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-new">Novo</span>
+                        <ul class="changelog-list">
+                            <li><strong>Bedževi za džuz i stranicu</strong> — odmah vidiš u kojem si džuzu i na kojoj stranici Medina Mushafa.</li>
+                            <li><strong>Legenda tedžvidskih pravila</strong> — ispod ajeta se prikazuju boje i nazivi pravila koja su prisutna u tom ajetu.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- v0.0.2 -->
+                <div class="changelog-entry">
+                    <h4 class="changelog-version">Verzija 0.0.2 <span class="changelog-date">— 24. februar 2026.</span></h4>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-new">Novo</span>
+                        <ul class="changelog-list">
+                            <li><strong>Označavanje u pretrazi</strong> — pronađeni tekst je sada istaknut zelenom bojom u rezultatima.</li>
+                            <li><strong>Vodič za swipe</strong> — pri prvom korištenju, pojavi se krtaka poruka koja objašnjava swipe lijevo/desno za navigaciju.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-improved">Poboljšano</span>
+                        <ul class="changelog-list">
+                            <li>Pametniji redoslijed rezultata pretrage — tačna podudaranja se prikazuju prva.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
     <!-- Hidden audio element for playback -->
     <audio id="audio-playback" class="hidden"></audio>
@@ -602,22 +801,41 @@
         </div>
     </div>
 
-    <!-- Core Data -->
-    <script src="data/quran_data.js?v=0.0.5"></script>
-    <script src="js/tajweed.js?v=0.0.5"></script>
-    <script src="js/i18n.js?v=0.0.5"></script>
+    <!-- App Scripts (Dynamic versioning) -->
+    <script>
+        const scriptsToLoad = [
+            "data/quran_data.js",
+            "js/tajweed.js",
+            "js/i18n.js",
+            "js/config.js",
+            "js/utils.js",
+            "js/effects.js",
+            "js/audio.js",
+            "js/render.js",
+            "js/actions.js",
+            "js/quranMeta.js",
+            "js/app.js"
+        ];
+        
+        scriptsToLoad.forEach(src => {
+            document.write(`<script src="${src}?v=${APP_VERSION}"><\/script>`);
+        });
 
-    <!-- App Modular Logic -->
-    <script src="js/config.js?v=0.0.5"></script>
-    <script src="js/utils.js?v=0.0.5"></script>
-    <script src="js/effects.js?v=0.0.5"></script>
-    <script src="js/audio.js?v=0.0.5"></script>
-    <script src="js/render.js?v=0.0.5"></script>
-    <script src="js/actions.js?v=0.0.5"></script>
-    <script src="js/quranMeta.js?v=0.0.5"></script>
-
-    <!-- Entry Point -->
-    <script src="js/app.js?v=0.0.5"></script>
+        // Ensure the version UI displays stay updated automatically
+        document.addEventListener('DOMContentLoaded', () => {
+            const badge = document.querySelector('.version-badge');
+            if (badge) badge.textContent = `v${APP_VERSION}`;
+            
+            // Also update the active title in the changelog snippet
+            const title = document.querySelector('.changelog-version');
+            if (title && title.innerHTML.includes('Verzija')) {
+                const dateSpan = title.querySelector('.changelog-date');
+                if (dateSpan) {
+                    title.innerHTML = `Verzija ${APP_VERSION} ` + dateSpan.outerHTML;
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

@@ -2,7 +2,7 @@ const QURAN_DATA = [
   {
     id: 1,
     name: "الفاتحة",
-    trans: "Otvaranje (El-Fatiha)",
+    trans: "Pristup (El-Fatiha)",
     verses: [
       {
         id: 1,
@@ -11378,7 +11378,7 @@ const QURAN_DATA = [
   {
     id: 19,
     name: "مريم",
-    trans: "Mejrema (Merjem)",
+    trans: "Merjema (Merjem)",
     verses: [
       {
         id: 1,
@@ -11875,7 +11875,7 @@ const QURAN_DATA = [
   {
     id: 20,
     name: "طه",
-    trans: "Ta-Ha",
+    trans: "Taha",
     verses: [
       {
         id: 1,
@@ -14445,7 +14445,7 @@ const QURAN_DATA = [
   {
     id: 25,
     name: "الفرقان",
-    trans: "Razlikovanje (El-Furkan)",
+    trans: "Furkan (El-Furkan)",
     verses: [
       {
         id: 1,
@@ -17250,7 +17250,7 @@ const QURAN_DATA = [
   {
     id: 30,
     name: "الروم",
-    trans: "Rimljani (Er-Rum)",
+    trans: "Bizantinci (Er-Rum)",
     verses: [
       {
         id: 1,
@@ -17734,7 +17734,7 @@ const QURAN_DATA = [
   {
     id: 32,
     name: "السجدة",
-    trans: "Sedžda (Es-Sedžde)",
+    trans: "Padanje ničice (Es-Sedžde)",
     verses: [
       {
         id: 1,
@@ -18772,7 +18772,7 @@ const QURAN_DATA = [
   {
     id: 36,
     name: "يس",
-    trans: "Ja-Sin",
+    trans: "Jasin (Ja-Sin)",
     verses: [
       {
         id: 1,
@@ -20558,7 +20558,7 @@ const QURAN_DATA = [
   {
     id: 39,
     name: "الزمر",
-    trans: "Skupine (Ez-Zumer)",
+    trans: "Skupovi (Ez-Zumer)",
     verses: [
       {
         id: 1,
@@ -20940,7 +20940,7 @@ const QURAN_DATA = [
   {
     id: 40,
     name: "غافر",
-    trans: "Onaj koji oprašta (Gafir)",
+    trans: "Vjernik (Gafir)",
     verses: [
       {
         id: 1,
@@ -22675,7 +22675,7 @@ const QURAN_DATA = [
   {
     id: 45,
     name: "الجاثية",
-    trans: "Klečanje (El-Džasije)",
+    trans: "Oni koji kleče (El-Džasije)",
     verses: [
       {
         id: 1,
@@ -23727,7 +23727,7 @@ const QURAN_DATA = [
   {
     id: 51,
     name: "الذاريات",
-    trans: "Vjetrovi (Ez-Zarijat)",
+    trans: "Oni koji pušu (Ez-Zarijat)",
     verses: [
       {
         id: 1,
@@ -24034,7 +24034,7 @@ const QURAN_DATA = [
   {
     id: 52,
     name: "الطور",
-    trans: "Brdo (Et-Tur)",
+    trans: "Gora (Et-Tur)",
     verses: [
       {
         id: 1,
@@ -24885,7 +24885,7 @@ const QURAN_DATA = [
   {
     id: 55,
     name: "الرحمن",
-    trans: "Svemilosni (Er-Rahman)",
+    trans: "Milostivi (Er-Rahman)",
     verses: [
       {
         id: 1,
@@ -25769,7 +25769,7 @@ const QURAN_DATA = [
   {
     id: 57,
     name: "الحديد",
-    trans: "Željezo (El-Hadid)",
+    trans: "Gvožđe (El-Hadid)",
     verses: [
       {
         id: 1,
@@ -26535,7 +26535,7 @@ const QURAN_DATA = [
   {
     id: 65,
     name: "الطلاق",
-    trans: "Razvod (Et-Talak)",
+    trans: "Razvod braka (Et-Talak)",
     verses: [
       {
         id: 1,
@@ -26826,7 +26826,7 @@ const QURAN_DATA = [
   {
     id: 68,
     name: "القلم",
-    trans: "Pero (El-Kalem)",
+    trans: "Kalem (El-Kalem)",
     verses: [
       {
         id: 1,
@@ -27093,7 +27093,7 @@ const QURAN_DATA = [
   {
     id: 69,
     name: "الحاقة",
-    trans: "Istina (El-Hakka)",
+    trans: "Čas neizbježni (El-Hakka)",
     verses: [
       {
         id: 1,
@@ -27734,7 +27734,7 @@ const QURAN_DATA = [
   {
     id: 72,
     name: "الجن",
-    trans: "Džini (El-Džinn)",
+    trans: "Džinni (El-Džinn)",
     verses: [
       {
         id: 1,
@@ -28482,7 +28482,7 @@ const QURAN_DATA = [
   {
     id: 76,
     name: "الانسان",
-    trans: "Čovjek (El-Insan)",
+    trans: "Vrijeme (El-Insan)",
     verses: [
       {
         id: 1,
@@ -29108,7 +29108,7 @@ const QURAN_DATA = [
   {
     id: 79,
     name: "النازعات",
-    trans: "Čupači (En-Nazi'at)",
+    trans: "Oni koji čupaju (En-Nazi'at)",
     verses: [
       {
         id: 1,
@@ -29562,7 +29562,7 @@ const QURAN_DATA = [
   {
     id: 81,
     name: "التكوير",
-    trans: "Smotavanje (Et-Tekvir)",
+    trans: "Prestanak sjaja (Et-Tekvir)",
     verses: [
       {
         id: 1,
@@ -29714,7 +29714,7 @@ const QURAN_DATA = [
   {
     id: 82,
     name: "الإنفطار",
-    trans: "Rascjep (El-Infitar)",
+    trans: "Rascjepljenje (El-Infitar)",
     verses: [
       {
         id: 1,
@@ -29816,7 +29816,7 @@ const QURAN_DATA = [
   {
     id: 83,
     name: "المطففين",
-    trans: "Zakidači (El-Mutaffifin)",
+    trans: "Oni koji pri mjerenju zakidaju (El-Mutaffifin)",
     verses: [
       {
         id: 1,
@@ -30003,7 +30003,7 @@ const QURAN_DATA = [
   {
     id: 84,
     name: "الإنشقاق",
-    trans: "Raspuknuće (El-Inšikak)",
+    trans: "Cijepanje (El-Inšikak)",
     verses: [
       {
         id: 1,
@@ -30135,7 +30135,7 @@ const QURAN_DATA = [
   {
     id: 85,
     name: "البروج",
-    trans: "Zvjezdišta (El-Burudž)",
+    trans: "Sazviježđa (El-Burudž)",
     verses: [
       {
         id: 1,
@@ -30252,7 +30252,7 @@ const QURAN_DATA = [
   {
     id: 86,
     name: "الطارق",
-    trans: "Noćna zvijezda (Et-Tarik)",
+    trans: "Danica (Et-Tarik)",
     verses: [
       {
         id: 1,
@@ -30446,7 +30446,7 @@ const QURAN_DATA = [
   {
     id: 88,
     name: "الغاشية",
-    trans: "Priča (El-Gašije)",
+    trans: "Teška nevolja (El-Gašije)",
     verses: [
       {
         id: 1,
@@ -31197,7 +31197,7 @@ const QURAN_DATA = [
   {
     id: 96,
     name: "العلق",
-    trans: "Zakvačak (El-'Alek)",
+    trans: "Ugrušak (El-'Alek)",
     verses: [
       {
         id: 1,
@@ -31299,7 +31299,7 @@ const QURAN_DATA = [
   {
     id: 97,
     name: "القدر",
-    trans: "Noć odredbe (El-Kadr)",
+    trans: "Noć Kadr (El-Kadr)",
     verses: [
       {
         id: 1,
@@ -31331,7 +31331,7 @@ const QURAN_DATA = [
   {
     id: 98,
     name: "البينة",
-    trans: "Dokaz (El-Bejjine)",
+    trans: "Dokaz jasni (El-Bejjine)",
     verses: [
       {
         id: 1,
@@ -31378,7 +31378,7 @@ const QURAN_DATA = [
   {
     id: 99,
     name: "الزلزلة",
-    trans: "Potres (Ez-Zelzele)",
+    trans: "Zemljotres (Ez-Zelzele)",
     verses: [
       {
         id: 1,
@@ -31425,7 +31425,7 @@ const QURAN_DATA = [
   {
     id: 100,
     name: "العاديات",
-    trans: "Jurišnici (El-'Adijat)",
+    trans: "Oni koji jure (El-'Adijat)",
     verses: [
       {
         id: 1,
@@ -31487,7 +31487,7 @@ const QURAN_DATA = [
   {
     id: 101,
     name: "القارعة",
-    trans: "Smak (El-Kari'a)",
+    trans: "Smak svijeta (El-Kari'a)",
     verses: [
       {
         id: 1,
@@ -31702,7 +31702,7 @@ const QURAN_DATA = [
   {
     id: 106,
     name: "قريش",
-    trans: "Kurejš",
+    trans: "Kurejšije (Kurejš)",
     verses: [
       {
         id: 1,
@@ -31729,7 +31729,7 @@ const QURAN_DATA = [
   {
     id: 107,
     name: "الماعون",
-    trans: "Davanje (El-Ma'un)",
+    trans: "Davanje u naruč (El-Ma'un)",
     verses: [
       {
         id: 1,
@@ -31771,7 +31771,7 @@ const QURAN_DATA = [
   {
     id: 108,
     name: "الكوثر",
-    trans: "Izobilje (El-Kevser)",
+    trans: "Mnogo dobro (El-Kevser)",
     verses: [
       {
         id: 1,
@@ -31852,7 +31852,7 @@ const QURAN_DATA = [
   {
     id: 111,
     name: "المسد",
-    trans: "Vlakno (El-Mesed)",
+    trans: "Plamen (El-Mesed)",
     verses: [
       {
         id: 1,

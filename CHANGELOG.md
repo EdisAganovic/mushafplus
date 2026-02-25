@@ -2,11 +2,29 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.0.7] - 2026-02-25
+
+### Improved
+
+- **Tajweed Tooltips**: Reduced the font size and padding of the tajweed tooltips (which appear on hover over colored tajweed rules) to make them look more elegant and less intrusive on smaller screens.
+- **Dynamic Versioning**: Changed the HTML file to use a static JavaScript variable to version all included CSS and JS files, replacing hardcoded cache-busting `?v=` tags.
+
 ## [0.0.6] - 2026-02-25
 
 ### Added
 
 - **Last Read Ayah Memory**: The application now remembers the exact Ayah you were reading. Upon reopening the app or refreshing the page, it will automatically navigate back to your last viewed Ayah instead of starting from the beginning of the Surah.
+- **About Modal**: New "O aplikaciji" button in the Settings drawer opens a modal showing author credits (Edis Aganović / N-UM.com), collaborator (Zehrina Buljubašić, prof.), and Qur'an translation credit (Muhammed Mehanović, prof.).
+- **Version & Changelog Modal**: New "Verzija" button in Settings opens a scrollable modal displaying the full version history in user-friendly Bosnian, with color-coded tags for new features, improvements, and fixes.
+- **Modal System**: Reusable modal overlay system with blurred backdrop, slide-up animation, close-on-X, close-on-overlay-click, and Escape key support.
+
+### Changed
+
+- **Corrected Surah Translation Names**: Updated 37 Bosnian translation names for Surahs to match authoritative Bosnian Islamic terminology (e.g., "Otvaranje" → "Pristup", "Rimljani" → "Bizantinci", "Razlikovanje" → "Furkan", "Sedžda" → "Padanje ničice", "Vlakno" → "Plamen").
+
+### Fixed
+
+- **Arabic Text Clipping (YAA + Tashdeed)**: Fixed a rendering issue where Arabic letters with descenders (like YAA ي) combined with stacked diacritics (shadda ّ) were visually clipped. Added `overflow: visible` to `.quran-text` and `.quran-word` elements to prevent the browser from cutting off character parts.
 
 ## [0.0.5] - 2026-02-24
 

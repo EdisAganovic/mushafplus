@@ -95,12 +95,8 @@ window.getAyahAudioUrl = function (surahId, ayahId) {
   const suraStr = String(surahId).padStart(3, "0");
   const ayahStr = String(ayahId).padStart(3, "0");
 
-  if (AppState.currentReciter === "local") {
-    return `mp3/${suraStr}${ayahStr}.mp3`;
-  } else {
-    // EveryAyah URL format
-    return `https://everyayah.com/data/${AppState.currentReciter}/${suraStr}${ayahStr}.mp3`;
-  }
+  // EveryAyah URL format
+  return `https://everyayah.com/data/${AppState.currentReciter}/${suraStr}${ayahStr}.mp3`;
 };
 
 /**

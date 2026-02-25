@@ -23,7 +23,7 @@ window.AppState = {
   // NEW RUNTIME STATE
   hifzEnabled: false,
   hifzRange: { start: null, end: null },
-  currentReciter: localStorage.getItem("quran_reciter") || "local",
+  currentReciter: localStorage.getItem("quran_reciter") || "Alafasy_128kbps",
 
   // PERSISTENT DATA (Loaded from localStorage)
   checkedAyats: new Set(
