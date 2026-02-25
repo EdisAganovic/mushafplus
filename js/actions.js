@@ -8,12 +8,15 @@
  * Loads a Surah into focus. Navigates back to the first Ayah.
  * @param {number} id - Surah ID (1-114)
  */
-window.loadSurah = function (id) {
+window.loadSurah = function (id, retainAyahIndex = false) {
   const surah = AppState.data.find((s) => s.id === id);
   if (!surah) return;
 
   AppState.currentSurah = surah;
-  AppState.currentAyahIndex = 0;
+  if (!retainAyahIndex) {
+    AppState.currentAyahIndex = 0;
+    localStorage.setItem("last_ayah_index", 0);
+  }
   localStorage.setItem("last_surah", id);
 
   renderAyah();
@@ -38,6 +41,7 @@ window.goToJuz = function (juz) {
   AppState.currentAyahIndex = surah.verses.findIndex((v) => v.id === aId);
   els.surahSelect.value = sId;
   localStorage.setItem("last_surah", sId);
+  localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
 
   renderAyah();
   renderAyahGrid();
@@ -60,6 +64,7 @@ window.goToPage = function (page) {
   AppState.currentAyahIndex = surah.verses.findIndex((v) => v.id === aId);
   els.surahSelect.value = sId;
   localStorage.setItem("last_surah", sId);
+  localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
 
   renderAyah();
   renderAyahGrid();
@@ -75,6 +80,7 @@ window.goToAyah = function (ayahNum) {
   const idx = ayahNum - 1;
   if (idx >= 0 && idx < AppState.currentSurah.verses.length) {
     AppState.currentAyahIndex = idx;
+    localStorage.setItem("last_ayah_index", idx);
     renderAyah();
   }
 };
@@ -105,6 +111,7 @@ window.nextAyah = function () {
   if (!AppState.swipeDirection) AppState.swipeDirection = "left";
   if (AppState.currentAyahIndex < AppState.currentSurah.verses.length - 1) {
     AppState.currentAyahIndex++;
+    localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
     renderAyah();
   } else {
     const nextSurahId = AppState.currentSurah.id + 1;
@@ -123,13 +130,15 @@ window.prevAyah = function () {
   if (!AppState.swipeDirection) AppState.swipeDirection = "right";
   if (AppState.currentAyahIndex > 0) {
     AppState.currentAyahIndex--;
+    localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
     renderAyah();
   } else {
     const prevSurahId = AppState.currentSurah.id - 1;
     if (prevSurahId >= 1) {
       els.surahSelect.value = prevSurahId;
-      loadSurah(prevSurahId);
+      loadSurah(prevSurahId, true);
       AppState.currentAyahIndex = AppState.currentSurah.verses.length - 1;
+      localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
       renderAyah();
     }
   }

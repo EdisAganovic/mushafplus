@@ -2,6 +2,12 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.0.6] - 2026-02-25
+
+### Added
+
+- **Last Read Ayah Memory**: The application now remembers the exact Ayah you were reading. Upon reopening the app or refreshing the page, it will automatically navigate back to your last viewed Ayah instead of starting from the beginning of the Surah.
+
 ## [0.0.5] - 2026-02-24
 
 ### Added

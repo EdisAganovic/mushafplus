@@ -26,8 +26,12 @@ async function init() {
 
     // 3. Restore Session (default to surah 1)
     const lastSurah = localStorage.getItem("last_surah") || "1";
+    const lastAyahIndex = parseInt(
+      localStorage.getItem("last_ayah_index") || "0",
+    );
     els.surahSelect.value = lastSurah;
-    loadSurah(parseInt(lastSurah));
+    AppState.currentAyahIndex = lastAyahIndex;
+    loadSurah(parseInt(lastSurah), true);
 
     // 4. Load Bookmarks & Theme
     renderBookmarks();
@@ -165,6 +169,7 @@ function setupEventListeners() {
               );
               AppState.currentAyahIndex = res.ayahIndex;
               localStorage.setItem("last_surah", res.surahId);
+              localStorage.setItem("last_ayah_index", res.ayahIndex);
               renderAyah();
               if (typeof updateGridCellState === "function") {
                 updateGridCellState(AppState.currentAyahIndex);
@@ -405,6 +410,7 @@ function setupEventListeners() {
         } else {
           AppState.currentAyahIndex++;
         }
+        localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
       } else {
         nextAyah();
       }
