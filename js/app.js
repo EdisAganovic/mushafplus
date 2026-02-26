@@ -58,8 +58,17 @@ async function init() {
       document.documentElement.classList.add("light");
     }
 
+    if (els.notesToggle) {
+      els.notesToggle.checked = AppState.settings.showNotes;
+      document.body.classList.toggle(
+        "hide-notes",
+        !AppState.settings.showNotes,
+      );
+    }
+
     applySettings();
     applyTranslations();
+    updateReciterLabel();
     if (els.syncStatus) els.syncStatus.innerText = T.ready;
 
     // Swipe UX: Show tutorial toast on first visit (mobile only)
@@ -100,6 +109,17 @@ function populateSurahSelect() {
  * Registers all DOM event listeners and keyboard shortcuts.
  */
 function setupEventListeners() {
+  // --- SETTINGS (RECITER) ---
+  els.reciterSelect.value = AppState.currentReciter;
+  updateReciterLabel();
+
+  els.reciterSelect.onchange = (e) => {
+    AppState.currentReciter = e.target.value;
+    localStorage.setItem("quran_reciter", e.target.value);
+    updateReciterLabel();
+    renderAyah();
+  };
+
   // --- NAVIGATION & SEARCH ---
   els.surahSelect.onchange = (e) => loadSurah(parseInt(e.target.value));
   els.nextBtn.onclick = nextAyah;
@@ -526,22 +546,14 @@ function setupEventListeners() {
     }
   };
 
-  const updateReciterLabel = () => {
-    if (els.reciterNameLabel && els.reciterSelect.options.length > 0) {
-      els.reciterNameLabel.innerText =
-        els.reciterSelect.options[els.reciterSelect.selectedIndex].text;
-    }
-  };
-
-  els.reciterSelect.value = AppState.currentReciter;
-  updateReciterLabel();
-
-  els.reciterSelect.onchange = (e) => {
-    AppState.currentReciter = e.target.value;
-    localStorage.setItem("quran_reciter", e.target.value);
-    updateReciterLabel();
-    renderAyah();
-  };
+  if (els.notesToggle) {
+    els.notesToggle.addEventListener("change", (e) => {
+      AppState.settings.showNotes = e.target.checked;
+      localStorage.setItem("quran_show_notes", e.target.checked);
+      document.body.classList.toggle("hide-notes", !e.target.checked);
+      renderAyah();
+    });
+  }
 
   els.hifzToggle.onchange = (e) => {
     AppState.hifzEnabled = e.target.checked;
@@ -686,6 +698,17 @@ function setupEventListeners() {
       });
     }
   });
+}
+
+/**
+ * Updates the display label for the currently selected reciter.
+ */
+function updateReciterLabel() {
+  if (els.reciterNameLabel && els.reciterSelect.options.length > 0) {
+    const reciterName =
+      els.reciterSelect.options[els.reciterSelect.selectedIndex].text;
+    els.reciterNameLabel.innerText = `${T.recitation}: ${reciterName}`;
+  }
 }
 
 // BOOT APPLICATION

@@ -9,7 +9,7 @@
     <!-- Global App Configuration -->
     <script>
         // IMPORTANT: Change this version to force cache refresh for all users
-        const APP_VERSION = "0.0.8"; 
+        const APP_VERSION = "0.0.9"; 
     </script>
 
     <!-- UI Styles (Dynamic versioning) -->
@@ -215,7 +215,7 @@
                         <div class="flex-1 flex flex-col gap-1 pr-1 sm:pr-2">
                             <div
                                 class="flex items-center justify-between text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-widest font-bold">
-                                <span id="reciter-name-label" data-i18n="recitation">Recitacija</span>
+                                <span id="reciter-name-label">Recitacija</span>
                                 <span id="ayah-audio-time">0:00 / 0:00</span>
                             </div>
                             <div id="ayah-progress-bg"
@@ -584,6 +584,20 @@
                         </div>
                     </label>
                 </div>
+
+                <div
+                    class="pt-2 flex items-center justify-between bg-slate-950/30 p-3 rounded-xl border border-slate-800 mt-2">
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold text-slate-300" data-i18n="showNotes">Lične bilješke</span>
+                        <span class="text-[10px] text-slate-500" data-i18n="showNotesDesc">Prikaži polje za podsjetnike</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="notes-toggle" class="sr-only peer" checked>
+                        <div
+                            class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
+                        </div>
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -644,7 +658,7 @@
                     </div>
                     <div class="about-credit-item">
                         <span class="about-label">Datum</span>
-                        <span class="about-value">25.2.2026.</span>
+                        <span class="about-value">26.2.2026.</span>
                     </div>
                 </div>
             </div>
@@ -664,7 +678,24 @@
                 </button>
             </div>
             <div class="modal-body modal-body-scroll">
-                <div class="version-badge">v0.0.8</div>
+                <div class="version-badge">v0.0.9</div>
+
+                <!-- v0.0.9 -->
+                <div class="changelog-entry">
+                    <h4 class="changelog-version">Verzija 0.0.9 <span class="changelog-date">— 26. februar 2026.</span></h4>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-new">Novo</span>
+                        <ul class="changelog-list">
+                            <li><strong>Postavke bilješki</strong> — Dodana mogućnost sakrivanja polja za lične bilješke za čišći interfejs.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-fixed">Popravljeno</span>
+                        <ul class="changelog-list">
+                            <li><strong>Labela učača</strong> — Sinhronizovan prikaz imena odabranog učača odmah pri pokretanju aplikacije.</li>
+                        </ul>
+                    </div>
+                </div>
 
                 <!-- v0.0.8 -->
                 <div class="changelog-entry">

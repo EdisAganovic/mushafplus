@@ -353,7 +353,12 @@ window.renderAyah = function () {
   }
 
   // 5. Notes, Checkmarks, & Bookmarks
-  els.ayahNotes.value = AppState.notes[key] || "";
+  if (els.ayahNotesContainer) {
+    if (AppState.settings.showNotes) {
+      els.ayahNotes.value = AppState.notes[key] || "";
+    }
+  }
+
   if (AppState.checkedAyats.has(key)) {
     els.validBtn.classList.replace("bg-slate-800", "bg-emerald-600");
     els.validBtn.classList.add("border-emerald-400");

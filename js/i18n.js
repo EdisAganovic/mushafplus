@@ -18,7 +18,7 @@ window.T = {
   recordAgain: "Snimi ponovo",
   stop: "Stop",
   valid: "Tačno",
-  bookmark: "Snimi",
+  bookmark: "Zapamti",
 
   // Audio Players
   recitation: "Recitacija",
@@ -69,6 +69,8 @@ window.T = {
   tajweedDesc: "Pravila učenja u bojama",
   tajweedLegend: "Nazivi tedžvidskih pravila",
   tajweedLegendDesc: "Prikaži legendu ispod ajeta",
+  showNotes: "Lične bilješke",
+  showNotesDesc: "Prikaži polje za podsjetnike",
 
   // Data Transfer
   dataTransfer: "Backup",

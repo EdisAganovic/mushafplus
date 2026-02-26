@@ -49,6 +49,7 @@ window.AppState = {
       tajweed: localStorage.getItem("quran_tajweed") !== "false",
       tajweedLegend: localStorage.getItem("quran_tajweed_legend") !== "false",
       lightMode: localStorage.getItem("quran_lightmode") === "true",
+      showNotes: localStorage.getItem("quran_show_notes") !== "false",
     };
   })(),
 };
@@ -78,6 +79,7 @@ window.els = {
   translationDisplay: document.getElementById("translation-display"),
   totalAyahsNum: document.getElementById("total-ayahs-num"),
   ayahNotes: document.getElementById("ayah-notes"),
+  ayahNotesContainer: document.getElementById("ayah-notes-container"),
 
   // Sidebar controls
   ayahGrid: document.getElementById("ayah-grid"),
@@ -156,6 +158,7 @@ window.els = {
   tajweedToggle: document.getElementById("tajweed-toggle"),
   tajweedLegendToggle: document.getElementById("tajweed-legend-toggle"),
   lightmodeToggle: document.getElementById("lightmode-toggle"),
+  notesToggle: document.getElementById("notes-toggle"),
 
   // Swipe UX Elements
   swipeToast: document.getElementById("swipe-toast"),

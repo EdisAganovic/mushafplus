@@ -2,6 +2,16 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.0.9] - 2026-02-26
+
+### Added
+
+- **Show/Hide Notes Setting**: Korisnici sada mogu isključiti polje za "Lične bilješke" u postavkama ukoliko ga ne koriste, čime se dobija čistiji izgled ekrana.
+
+### Fixed
+
+- **Reciter Label Sync**: Riješen problem gdje se ime odabranog učača nije ispravno prikazivalo u audio plejeru pri pokretanju aplikacije. Sada se ime učača automatski učitava i osvježava pri svakoj promjeni.
+
 ## [0.0.8] - 2026-02-26
 
 ### Fixed
