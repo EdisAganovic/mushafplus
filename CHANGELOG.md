@@ -2,6 +2,13 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.0.8] - 2026-02-26
+
+### Fixed
+
+- **Firefox Rendering**: Riješen problem odsijecanja arapskih znakova (Yaa itd.) u Firefoxu.
+- **Tajvid boje**: Implementiran **CSS Custom Highlight API** za precizno dodavanje Tajvid boja bez sjeckanja riječi na `span` elemente u DOM-u, čime je očuvano originalno ligaturno spajanje slova (shaping).
+
 ## [0.0.7] - 2026-02-25
 
 ### Improved

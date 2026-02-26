@@ -281,6 +281,20 @@
   transition: color 0.3s ease;
 }
 
+/* ===== Highlight API Colors (for Firefox) ===== */
+::highlight(rule-LAFZATULLAH) { color: #81c784; }
+::highlight(rule-izhar) { color: #6ff0f5; }
+::highlight(rule-ikhfaa) { color: #fa4444; }
+::highlight(rule-idghamWithGhunna) { color: #f06292; }
+::highlight(rule-iqlab) { color: #3b82f6; }
+::highlight(rule-qalqala) { color: #d6f046; }
+::highlight(rule-idghamWithoutGhunna) { color: #2dd4bf; }
+::highlight(rule-alefTafreeq) { color: #e879f9; }
+::highlight(rule-hamzatulWasli) { color: #9e9e9e; }
+::highlight(rule-ghunna) { color: #eab308; }
+::highlight(rule-prolonging) { color: #bfa5ec; }
+
+
 /* ===== Tajweed Tooltips ===== */
 .tajweed-tooltip {
   position: fixed;

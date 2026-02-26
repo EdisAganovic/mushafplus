@@ -119,12 +119,63 @@ window.renderAyah = function () {
     tokens = [{ text: ayah.ar, rule: "none" }];
   }
 
-  let wordIndex = 0;
-  let currentWordSpan = document.createElement("span");
-  currentWordSpan.className =
-    "quran-word px-0.5 rounded-md transition-all cursor-pointer hover:bg-emerald-500/20";
+  // Clear previous Highlight API instances for Tajweed
+  if (window.CSS && CSS.highlights) {
+    CSS.highlights.forEach((val, key) => {
+      if (key.startsWith("rule-")) {
+        CSS.highlights.delete(key);
+      }
+    });
+  }
 
-  function finishWord() {
+  const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
+  const useHighlightAPI = isFirefox && window.CSS && CSS.highlights;
+
+  let words = [];
+  let currentWord = { text: "", segments: [] };
+
+  tokens.forEach((token) => {
+    const parts = token.text.split(" ");
+    parts.forEach((part, i) => {
+      if (part.length > 0) {
+        currentWord.segments.push({
+          text: part,
+          rule: token.rule,
+          tip:
+            typeof TAJWEED_TOOLTIPS !== "undefined"
+              ? TAJWEED_TOOLTIPS[token.rule]
+              : null,
+        });
+        currentWord.text += part;
+      }
+
+      // If there are more parts, it means a space was encountered
+      if (i < parts.length - 1) {
+        if (currentWord.text.length > 0) {
+          words.push(currentWord);
+        }
+        words.push({ isSpace: true });
+        currentWord = { text: "", segments: [] };
+      }
+    });
+  });
+
+  if (currentWord.text.length > 0) {
+    words.push(currentWord);
+  }
+
+  let wordIndex = 0;
+
+  words.forEach((wd) => {
+    if (wd.isSpace) {
+      els.arabicDisplay.appendChild(document.createTextNode(" "));
+      return;
+    }
+
+    const currentWordSpan = document.createElement("span");
+    currentWordSpan.className =
+      "quran-word px-0.5 rounded-md transition-all cursor-pointer hover:bg-emerald-500/20";
+
     if (activeHighlights.includes(wordIndex)) {
       currentWordSpan.classList.add("bg-emerald-600/60", "text-white");
     }
@@ -133,27 +184,54 @@ window.renderAyah = function () {
       e.stopPropagation();
       toggleWordHighlight(key, captureIdx);
     };
+
+    // Append to document FIRST, as Range APIs require nodes to be in the DOM
     els.arabicDisplay.appendChild(currentWordSpan);
-    wordIndex++;
 
-    // Reset for next word
-    currentWordSpan = document.createElement("span");
-    currentWordSpan.className =
-      "quran-word px-0.5 rounded-md transition-all cursor-pointer hover:bg-emerald-500/20";
-  }
+    if (useHighlightAPI) {
+      // Firefox Highlight API method: no inner spans, single text node to prevent line-box clipping
+      const textNode = document.createTextNode(wd.text);
+      currentWordSpan.appendChild(textNode);
 
-  tokens.forEach((token) => {
-    const parts = token.text.split(" ");
-    parts.forEach((part, i) => {
-      if (part.length > 0) {
+      let currentOffset = 0;
+      wd.segments.forEach((seg) => {
+        const segLen = seg.text.length;
+        if (seg.rule && seg.rule !== "none") {
+          // Calculate range for highlight API regardless of settings
+          // but only add to highlights if tajweed is enabled
+          if (AppState.settings.tajweed) {
+            const range = new Range();
+            range.setStart(textNode, currentOffset);
+            range.setEnd(textNode, currentOffset + segLen);
+
+            const hName = `rule-${seg.rule}`;
+            if (!CSS.highlights.has(hName)) {
+              CSS.highlights.set(hName, new Highlight());
+            }
+            CSS.highlights.get(hName).add(range);
+
+            if (seg.tip) {
+              currentWordSpan.addEventListener("mouseenter", function () {
+                showTajweedTooltip(currentWordSpan, seg.tip);
+              });
+              currentWordSpan.addEventListener("mouseleave", function () {
+                hideTajweedTooltip();
+              });
+            }
+          }
+        }
+        currentOffset += segLen;
+      });
+    } else {
+      // Standard method: span per colored segment
+      wd.segments.forEach((seg) => {
         const tSpan = document.createElement("span");
-        tSpan.textContent = part;
-        if (token.rule && token.rule !== "none") {
-          tSpan.classList.add(`rule-${token.rule}`);
-          const tip = TAJWEED_TOOLTIPS[token.rule];
-          if (tip) {
+        tSpan.textContent = seg.text;
+        if (seg.rule && seg.rule !== "none") {
+          tSpan.classList.add(`rule-${seg.rule}`);
+          if (seg.tip) {
             tSpan.addEventListener("mouseenter", function () {
-              showTajweedTooltip(tSpan, tip);
+              showTajweedTooltip(tSpan, seg.tip);
             });
             tSpan.addEventListener("mouseleave", function () {
               hideTajweedTooltip();
@@ -161,20 +239,11 @@ window.renderAyah = function () {
           }
         }
         currentWordSpan.appendChild(tSpan);
-      }
+      });
+    }
 
-      // If there are more parts, it means a space was encountered
-      if (i < parts.length - 1) {
-        finishWord();
-        els.arabicDisplay.appendChild(document.createTextNode(" "));
-      }
-    });
+    wordIndex++;
   });
-
-  // Append the last word if it contains anything
-  if (currentWordSpan.childNodes.length > 0) {
-    finishWord();
-  }
 
   // 2. Translation & Metadata
   els.translationDisplay.textContent = ayah.bs;
