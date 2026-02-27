@@ -4,6 +4,10 @@ All notable changes to the Mushaf Plus project will be documented in this file.
 
 ## [0.0.10] - 2026-02-27
 
+### Added
+
+- **Lebdeći mobilni meni**: Uvedena je nova navigacijska traka na dnu ekrana koja elegantno lebdi iznad sadržaja, omogućavajući brz i jednostavan pristup svim bitnim funkcijama aplikacije na pametnim telefonima.
+
 ### Fixed
 
 - **Problem sa skrolanjem**: Riješen problem gdje je prevlačenje prsta za prijelaz na drugi ajet slučajno prekidalo vertikalno skrolanje po cijeloj stranici.

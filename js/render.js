@@ -222,10 +222,11 @@ window.renderAyah = function () {
 
             if (seg.tip) {
               currentWordSpan.addEventListener("mouseenter", function () {
-                showTajweedTooltip(currentWordSpan, seg.tip);
+                if (window.innerWidth >= 768)
+                  showTajweedTooltip(currentWordSpan, seg.tip);
               });
               currentWordSpan.addEventListener("mouseleave", function () {
-                hideTajweedTooltip();
+                if (window.innerWidth >= 768) hideTajweedTooltip();
               });
             }
           }
@@ -241,10 +242,10 @@ window.renderAyah = function () {
           tSpan.classList.add(`rule-${seg.rule}`);
           if (seg.tip) {
             tSpan.addEventListener("mouseenter", function () {
-              showTajweedTooltip(tSpan, seg.tip);
+              if (window.innerWidth >= 768) showTajweedTooltip(tSpan, seg.tip);
             });
             tSpan.addEventListener("mouseleave", function () {
-              hideTajweedTooltip();
+              if (window.innerWidth >= 768) hideTajweedTooltip();
             });
           }
         }
