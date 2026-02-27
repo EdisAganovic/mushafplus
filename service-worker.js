@@ -1,9 +1,9 @@
-const CACHE_NAME = "mushaf-plus-v0.0.10";
+const CACHE_NAME = "mushaf-plus-v0.0.11";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
   "./css/styles.css",
-  "./css/tailwind-output.css?v=0.0.10",
+  "./css/tailwind-output.css?v=0.0.11",
   "./js/app.js",
   "./js/utils.js",
   "./js/config.js",

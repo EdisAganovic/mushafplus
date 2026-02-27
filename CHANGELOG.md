@@ -2,6 +2,12 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.0.11] - 2026-02-27
+
+### Fixed
+
+- **Tedžvid na mobitelu**: Isključeno prikazivanje tedžvid objašnjenja (iskačućih oblačića) prilikom tapkanja/označavanja arapskih riječi na mobilnim uređajima, kako ne bi ometali fokus na tekst. Na mobitelima se objašnjenja sada mogu vidjeti isključivo pritiskom na legendu ispod ajeta.
+
 ## [0.0.10] - 2026-02-27
 
 ### Added
