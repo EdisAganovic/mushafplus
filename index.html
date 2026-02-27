@@ -5,15 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mushaf Plus</title>
+    <!-- PWA Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#064e3b">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
 
     <!-- Global App Configuration -->
     <script>
         // IMPORTANT: Change this version to force cache refresh for all users
-        const APP_VERSION = "0.0.9"; 
+        const APP_VERSION = "0.0.10"; 
     </script>
 
-    <!-- UI Styles (Dynamic versioning) -->
+    <!-- UI Styles and Favicon (Dynamic versioning) -->
     <script>
+        document.write(`<link rel="icon" type="image/png" href="favicon.png?v=${APP_VERSION}">`);
         document.write(`<link rel="stylesheet" href="css/tailwind-output.css?v=${APP_VERSION}">`);
         document.write(`<link rel="stylesheet" href="css/styles.css?v=${APP_VERSION}">`);
     </script>
@@ -68,7 +73,7 @@
             </div>
 
             <!-- Mimic Sidebar Structure -->
-            <div class="flex items-center justify-between md:justify-end px-3 sm:px-6 pt-3 md:mt-0 sm:py-[0.75rem] w-full md:w-80 shrink-0 gap-[0.5rem]">
+            <div class="hidden md:flex items-center justify-between md:justify-end px-3 sm:px-6 pt-3 md:mt-0 sm:py-[0.75rem] w-full md:w-80 shrink-0 gap-[0.5rem]">
                 <select id="surah-select"
                     class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] px-[0.5rem] rounded-lg outline-none focus:border-emerald-500 transition-colors cursor-pointer text-[0.875rem] min-w-0 w-0 flex-grow sm:w-auto sm:flex-grow-0 overflow-hidden text-ellipsis">
                     <option value="" disabled selected class="bg-slate-900" data-i18n="selectSurah">Izaberi suru...
@@ -89,7 +94,7 @@
         </div>
 
         <!-- Mobile search row -->
-        <div class="relative group z-40 w-full md:hidden flex px-[0.75rem] mt-1 pb-3">
+        <div class="relative group z-40 w-full hidden px-[0.75rem] mt-1 pb-3">
             <div class="relative w-full">
                 <input type="text" id="search-input-mobile" data-i18n-placeholder="searchPlaceholder"
                     placeholder="Pretraži tekst ili ajet (2:255)..."
@@ -119,14 +124,12 @@
                 class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-8 shadow-2xl flex flex-col items-center min-h-[250px] sm:min-h-[400px] justify-center relative shrink-0">
 
                 <!-- Navigation Hint -->
-                <div class="w-full text-center opacity-40 mb-1">
-                    <span data-i18n="quickJump" class="text-[9px] uppercase tracking-[0.2em] text-slate-500 font-bold">
-                        Brzi skok: Klikni na broj
-                    </span>
+                <div class="w-full text-center mb-1">
+                    <div id="current-surah-name" class="font-bold text-emerald-400 text-sm mb-1 uppercase tracking-widest leading-none"></div>
                 </div>
 
                 <!-- Navigation Badges -->
-                <div class="w-full flex justify-center mt-1.5 mb-3 sm:mb-6 gap-1.5 flex-wrap">
+                <div class="w-full flex justify-center mt-1.5 pt-3 sm:mb-6 gap-1.5 flex-wrap">
                     <!-- Ayah Badge -->
                     <div class="text-[11px] sm:text-sm font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20 flex items-center shadow-md">
                         <label for="ayah-input" data-i18n="ayahLabel" class="cursor-pointer mr-1 opacity-90">Ajet</label>
@@ -149,20 +152,20 @@
                             class="bg-transparent border-none text-blue-300 font-bold w-10 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                     </div>
                 </div>
-
                 <div id="arabic-display"
-                    class="font-quran quran-text text-[1.5rem] sm:text-4xl md:text-5xl text-right w-full text-slate-100 selection:bg-emerald-800 transition-all duration-300">
+                    class="font-quran quran-text text-[1.5rem] mt-4 sm:text-4xl md:text-5xl text-right w-full text-slate-100 selection:bg-emerald-800 transition-all duration-300">
                 </div>
 
                 <!-- Tajweed Legend -->
                 <div id="tajweed-legend-container"
-                    class="mt-4 sm:mt-6 mb-3 sm:mb-4 w-full max-w-2xl hidden flex-wrap gap-1.5 justify-center">
+                    class="mt-4 sm:mt-6 sm:mb-3 w-full mb-4 max-w-2xl hidden flex-wrap gap-1.5 justify-center">
                     <div id="tajweed-legend" class="flex flex-wrap gap-1.5 justify-center w-full"></div>
                 </div>
-
                 <div id="translation-display"
                     class="text-sm sm:text-lg md:text-xl text-slate-400 text-left max-w-2xl w-full">
                 </div>
+                
+                
 
                 <!-- Actions & Navigation -->
                 <div class="flex items-center gap-2 sm:gap-3 mt-6 sm:mt-8 w-full max-w-lg">
@@ -198,8 +201,6 @@
                         <ion-icon name="arrow-forward-outline" class="text-lg sm:text-xl"></ion-icon>
                     </button>
                 </div>
-
-
 
                 <!-- Navigation Controls -->
                 <div id="ayah-audio-container"
@@ -239,6 +240,8 @@
                     <audio id="ayah-audio" class="hidden"></audio>
                 </div>
 
+
+
                 <!-- User Recording Player -->
                 <div id="user-audio-container" class="mt-2 hidden w-full max-w-lg flex flex-col items-center gap-2">
                     <div
@@ -277,12 +280,10 @@
                         placeholder="Dodaj podsjetnik (npr. 'Obrati pažnju na tedžvid kod riječi X')..."
                         class="w-full bg-slate-950/50 border border-slate-800 rounded-xl p-3 text-sm text-slate-300 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all resize-none h-16 sm:h-20 placeholder:text-slate-700"></textarea>
                 </div>
+            </div> <!-- Close Ayah Card -->
 
-
-
-                <!-- Scroll Spacer -->
-                <div class="h-16 w-full shrink-0"></div>
-
+            <!-- Spacer to prevent mobile bottom nav from covering content -->
+            <div class="h-28 sm:h-8 w-full shrink-0"></div>
 
         </main>
 
@@ -626,6 +627,122 @@
         </div>
     </aside>
 
+    <!-- ===== Bookmarks Overlay (Mobile) ===== -->
+    <div id="bookmarks-overlay"
+        class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300 md:hidden">
+    </div>
+
+    <!-- ===== Hifz Overlay (Mobile) ===== -->
+    <div id="hifz-overlay"
+        class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300 md:hidden">
+    </div>
+
+    <!-- ===== Hifz Drawer (Mobile) ===== -->
+    <aside id="hifz-drawer"
+        class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 flex flex-col shrink-0 overflow-y-auto z-50 transform translate-x-full transition-transform duration-300 shadow-2xl md:hidden">
+        
+        <div class="flex justify-between items-center mb-6 shrink-0 border-b border-slate-800 pb-4">
+            <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                <ion-icon name="repeat-outline"></ion-icon>
+                <span>Hifz Mod</span>
+            </h2>
+            <button id="hifz-close-mobile" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+
+        <div class="flex flex-col flex-1 min-h-0">
+            <!-- Hifz Mode Toggle -->
+            <div class="mb-4 bg-rose-500/5 border border-rose-500/20 rounded-xl p-3 shrink-0">
+                <div class="flex items-center justify-between gap-2">
+                    <div class="flex flex-col flex-1">
+                        <span class="text-sm font-bold text-rose-400 uppercase tracking-wider">Aktiviraj</span>
+                        <span id="hifz-range-text-mobile" class="text-[11px] text-slate-500 line-clamp-1">Klikni ajet za opseg</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                        <input type="checkbox" id="hifz-toggle-mobile" class="sr-only peer">
+                        <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500"></div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Grid Legend -->
+            <div class="flex flex-wrap gap-3 mb-3 text-[10px] font-medium text-slate-400 px-1 shrink-0">
+                <div class="flex items-center gap-1">
+                    <div class="w-2.5 h-2.5 bg-emerald-500 rounded-sm"></div>
+                    Trenutni ajet
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-2 h-2 bg-rose-400 rounded-full"></div>
+                    Hifz mod
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-2 h-2 bg-amber-500 rounded-full"></div>
+                    Džuz
+                </div>
+                <div class="flex items-center gap-1">
+                    <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    Stranica
+                </div>
+            </div>
+
+            <!-- Scrollable Ayah Grid (Mobile) -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar bg-slate-950/50 p-3 rounded-xl border border-slate-800/60 min-h-[120px]">
+                <div id="ayah-grid-mobile" class="grid grid-cols-5 content-start gap-2">
+                    <!-- Ayah cells will be injected here -->
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ===== Bookmarks Drawer (Mobile) ===== -->
+    <aside id="bookmarks-drawer"
+        class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 flex flex-col shrink-0 overflow-y-auto z-50 transform translate-x-full transition-transform duration-300 shadow-2xl md:hidden">
+        <div class="flex justify-between items-center mb-6 shrink-0 border-b border-slate-800 pb-4">
+            <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                <ion-icon name="bookmarks-outline"></ion-icon>
+                <span data-i18n="bookmarks">Zapamćeno</span>
+            </h2>
+            <button id="bookmarks-close" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+
+        <div id="bookmarks-list-mobile"
+            class="flex-1 overflow-y-auto flex flex-col gap-2 pr-2 custom-scrollbar text-sm min-h-[150px]">
+            <div class="text-slate-500 italic text-center w-full mt-2 text-xs" data-i18n="noBookmarks">Još nema
+                oznaka</div>
+        </div>
+    </aside>
+
+    <!-- ===== Search Modal (Mobile) ===== -->
+    <div id="search-modal" class="modal-overlay hidden md:hidden">
+        <div class="modal-container p-0 h-[80vh] flex flex-col justify-start">
+            <div class="modal-header shrink-0 border-b border-slate-800 p-4 relative z-10 bg-slate-900 rounded-t-2xl">
+                <div class="flex items-center gap-3 w-full">
+                    <button class="text-slate-400 hover:text-emerald-400 transition-colors p-1" data-modal-close="search-modal">
+                        <ion-icon name="arrow-back-outline" class="text-2xl"></ion-icon>
+                    </button>
+                    <div class="relative w-full">
+                        <input type="text" id="search-input-modal" data-i18n-placeholder="searchPlaceholder"
+                            placeholder="Pretraži tekst ili ajet (2:255)..."
+                            class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-full text-[0.875rem] placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
+                        <ion-icon name="search-outline"
+                            class="absolute left-[0.75rem] top-1/2 -translate-y-1/2 text-slate-500"></ion-icon>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body modal-body-scroll p-0 relative flex-1 bg-slate-900 rounded-b-2xl">
+                <div id="search-results-list-modal" class="flex flex-col"></div>
+                <div id="search-empty-state-modal" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden"
+                    data-i18n="noResults">
+                    Nema rezultata
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== About Modal ===== -->
     <div id="about-modal" class="modal-overlay hidden">
         <div class="modal-container">
@@ -678,7 +795,20 @@
                 </button>
             </div>
             <div class="modal-body modal-body-scroll">
-                <div class="version-badge">v0.0.9</div>
+                <div class="version-badge">v0.0.10</div>
+
+                <!-- v0.0.10 -->
+                <div class="changelog-entry">
+                    <h4 class="changelog-version">Verzija 0.0.10 <span class="changelog-date">— 27. februar 2026.</span></h4>
+                    <div class="changelog-section">
+                        <span class="changelog-tag tag-fixed" style="background-color: #fca5a5; color: #450a0a;">Popravljeno</span>
+                        <ul class="changelog-list">
+                            <li><strong>Problem sa skrolanjem</strong> — Riješen problem gdje je prevlačenje prsta za prijelaz na drugi ajet slučajno prekidalo vertikalno skrolanje po cijeloj stranici.</li>
+                            <li><strong>Mobilna navigacija</strong> — Popravljeno zatvaranje sakrivenih izbornika ("Oznake", "Postavke") kada se ponovo klikne ista ikona na donjoj navigacijskoj traci.</li>
+                            <li><strong>Prekrivanje sadržaja</strong> — Dodan prostor na dnu ekrana kako bi se spriječilo da mobilni meni prekriva audio kontrole.</li>
+                        </ul>
+                    </div>
+                </div>
 
                 <!-- v0.0.9 -->
                 <div class="changelog-entry">
@@ -686,13 +816,15 @@
                     <div class="changelog-section">
                         <span class="changelog-tag tag-new">Novo</span>
                         <ul class="changelog-list">
+                            <li><strong>Instalacija (PWA)</strong> — Dodata mogućnost instalacije aplikacije na početni ekran ili računar, zajedno sa automatskim radom bez interneta nakon prvog učitavanja.</li>
+                            <li><strong>Tedžvid objašnjenja</strong> — Sada klikom na naziv tedžvidskog pravila ispod ajeta možete pročitati detaljno objašnjenje za to pravilo.</li>
                             <li><strong>Postavke bilješki</strong> — Dodana mogućnost sakrivanja polja za lične bilješke za čišći interfejs.</li>
                         </ul>
                     </div>
                     <div class="changelog-section">
                         <span class="changelog-tag tag-fixed">Popravljeno</span>
                         <ul class="changelog-list">
-                            <li><strong>Labela učača</strong> — Sinhronizovan prikaz imena odabranog učača odmah pri pokretanju aplikacije.</li>
+                            <li><strong>Naziv učača</strong> — Sinhronizovan prikaz imena odabranog učača odmah pri pokretanju aplikacije.</li>
                         </ul>
                     </div>
                 </div>
@@ -828,6 +960,56 @@
         </div>
     </div>
 
+    <!-- ===== Surah & Hifz Modal ===== -->
+    <div id="surah-hifz-modal" class="modal-overlay hidden">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <ion-icon name="book-outline"></ion-icon>
+                    Sura
+                </h2>
+                <button class="modal-close" data-modal-close="surah-hifz-modal">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="modal-body modal-body-scroll space-y-4">
+                
+                <!-- Hifz Mode has been moved to Mobile Drawer -->                <!-- Surah List -->
+                <div>
+                    <h3 class="text-slate-200 font-bold mb-2 text-sm uppercase tracking-wider">Izaberi suru</h3>
+                    <div id="modal-surah-list" class="flex flex-col gap-1 max-h-[50vh] overflow-y-auto custom-scrollbar pr-1">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 flex justify-around items-center p-2 pb-[env(safe-area-inset-bottom,0.5rem)] z-[60] transition-transform duration-300">
+        <button id="nav-surah-btn" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-emerald-400 transition-colors w-16">
+            <ion-icon name="book-outline" class="text-2xl mb-1"></ion-icon>
+            <span class="text-[10px] font-medium" data-i18n="surah">Sura</span>
+        </button>
+        <button id="nav-hifz-btn" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-rose-400 transition-colors w-16">
+            <ion-icon name="repeat-outline" class="text-2xl mb-1"></ion-icon>
+            <span class="text-[10px] font-medium" data-i18n="hifz">Hifz</span>
+        </button>
+        <button id="nav-search-btn" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-emerald-400 transition-colors w-16">
+            <ion-icon name="search-outline" class="text-2xl mb-1"></ion-icon>
+            <span class="text-[10px] font-medium" data-i18n="search">Traži</span>
+        </button>
+        <button id="nav-bookmarks-btn" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-emerald-400 transition-colors w-16">
+            <ion-icon name="bookmark-outline" class="text-2xl mb-1"></ion-icon>
+            <span class="text-[10px] font-medium" data-i18n="bookmarks">Oznake</span>
+        </button>
+        <button id="nav-settings-btn" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-emerald-400 transition-colors w-16">
+            <ion-icon name="options-outline" class="text-2xl mb-1"></ion-icon>
+            <span class="text-[10px] font-medium" data-i18n="preferences">Postavke</span>
+        </button>
+    </nav>
+
     <!-- Hidden audio element for playback -->
     <audio id="audio-playback" class="hidden"></audio>
 
@@ -878,6 +1060,100 @@
                 }
             }
         });
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                let refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (!refreshing) {
+                        refreshing = true;
+                        window.location.reload();
+                    }
+                });
+
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then((registration) => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+
+                        // If there's a waiting worker, an update is ready
+                        if (registration.waiting) {
+                            showUpdateToast(registration.waiting);
+                        }
+
+                        // Listen for new worker installation
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                // Has installed and isn't the active controller yet
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    showUpdateToast(newWorker);
+                                }
+                            });
+                        });
+                    })
+                    .catch((error) => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+
+            function showUpdateToast(worker) {
+                // Remove existing if any
+                const existing = document.getElementById('pwa-update-toast');
+                if (existing) existing.remove();
+
+                const toast = document.createElement('div');
+                toast.id = 'pwa-update-toast';
+                // Inline styles for slide-up animation without an external class
+                toast.style.cssText = `
+                    position: fixed; bottom: 5rem; left: 50%; width: 90%; max-width: 320px;
+                    transform: translateX(-50%) translateY(20px); opacity: 0;
+                    background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px);
+                    border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px;
+                    padding: 12px 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+                    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+                    z-index: 9999;
+                    animation: slideUpFade 0.4s ease-out forwards;
+                `;
+                
+                // Add keyframes to document once
+                if (!document.getElementById('pwa-anim-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'pwa-anim-style';
+                    style.innerHTML = `@keyframes slideUpFade { to { transform: translateX(-50%) translateY(0); opacity: 1; } }`;
+                    document.head.appendChild(style);
+                }
+
+                toast.innerHTML = `
+                    <div style="display:flex; flex-direction:column; gap:2px; flex:1;">
+                        <span style="font-weight:700; font-size:14px; color:#f1f5f9;">Nova verzija je spremna</span>
+                        <span style="font-size:11px; color:#94a3b8;">Osvježi aplikaciju za preuzimanje.</span>
+                    </div>
+                    <button id="pwa-update-btn" style="background:#059669; color:#fff; font-size:12px; font-weight:700; padding:6px 12px; border-radius:6px; cursor:pointer;" class="active:scale-95 transition-transform">
+                        Osvježi
+                    </button>
+                    <button id="pwa-close-btn" style="color:#94a3b8; font-size:20px; border:none; background:none; cursor:pointer; padding:4px; display:flex;">
+                        <ion-icon name="close-outline"></ion-icon>
+                    </button>
+                `;
+
+                document.body.appendChild(toast);
+
+                document.getElementById('pwa-update-btn').addEventListener('click', () => {
+                    if (worker && typeof worker.postMessage === 'function') {
+                        worker.postMessage('SKIP_WAITING');
+                    }
+                    // Force a reload as a fallback case if controllerchange doesn't automatically fire
+                    setTimeout(() => {
+                        window.location.reload(true);
+                    }, 300);
+                });
+
+                document.getElementById('pwa-close-btn').addEventListener('click', () => {
+                    toast.remove();
+                });
+            }
+        }
     </script>
 </body>
 

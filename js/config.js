@@ -75,6 +75,7 @@ window.els = {
   ayahInput: document.getElementById("ayah-input"),
 
   // Main Display
+  currentSurahName: document.getElementById("current-surah-name"),
   arabicDisplay: document.getElementById("arabic-display"),
   translationDisplay: document.getElementById("translation-display"),
   totalAyahsNum: document.getElementById("total-ayahs-num"),
@@ -83,6 +84,7 @@ window.els = {
 
   // Sidebar controls
   ayahGrid: document.getElementById("ayah-grid"),
+  ayahGridMobile: document.getElementById("ayah-grid-mobile"),
   progressPercent: document.getElementById("progress-percent"),
   progressBarFill: document.getElementById("progress-bar-fill"),
 
@@ -139,8 +141,11 @@ window.els = {
   sidebarClose: document.getElementById("sidebar-close"),
   ayahSpeedBtn: document.getElementById("ayah-speed-btn"),
   ayahLoopBtn: document.getElementById("ayah-loop-btn"),
+  // App State & Data transfer
   hifzToggle: document.getElementById("hifz-toggle"),
+  hifzToggleMobile: document.getElementById("hifz-toggle-mobile"),
   hifzRangeText: document.getElementById("hifz-range-text"),
+  hifzRangeTextMobile: document.getElementById("hifz-range-text-mobile"),
 
   // Data Transfer
   exportBtn: document.getElementById("export-btn"),
@@ -162,4 +167,30 @@ window.els = {
 
   // Swipe UX Elements
   swipeToast: document.getElementById("swipe-toast"),
+
+  // Mobile Nav & Surah Modal
+  navSurahBtn: document.getElementById("nav-surah-btn"),
+  navHifzBtn: document.getElementById("nav-hifz-btn"),
+  navSearchBtn: document.getElementById("nav-search-btn"),
+  navBookmarksBtn: document.getElementById("nav-bookmarks-btn"),
+  navSettingsBtn: document.getElementById("nav-settings-btn"),
+  surahHifzModal: document.getElementById("surah-hifz-modal"),
+  modalSurahList: document.getElementById("modal-surah-list"),
+
+  // Search Modal (Mobile)
+  searchModal: document.getElementById("search-modal"),
+  searchInputModal: document.getElementById("search-input-modal"),
+  searchResultsListModal: document.getElementById("search-results-list-modal"),
+  searchEmptyStateModal: document.getElementById("search-empty-state-modal"),
+
+  // Bookmarks Drawer (Mobile)
+  bookmarksDrawer: document.getElementById("bookmarks-drawer"),
+  bookmarksOverlay: document.getElementById("bookmarks-overlay"),
+  bookmarksClose: document.getElementById("bookmarks-close"),
+  bookmarksListMobile: document.getElementById("bookmarks-list-mobile"),
+
+  // Hifz Drawer (Mobile)
+  hifzDrawer: document.getElementById("hifz-drawer"),
+  hifzOverlay: document.getElementById("hifz-overlay"),
+  hifzCloseMobile: document.getElementById("hifz-close-mobile"),
 };

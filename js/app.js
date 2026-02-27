@@ -4,6 +4,123 @@
  * This is the entry point that initializes the app and sets up global event listeners.
  */
 
+/* --- GLOBAL UI HELPER FUNCTIONS --- */
+/**
+ * Opens the main navigation sidebar (drawer).
+ */
+function openSidebar() {
+  if (typeof closeSettings === "function") closeSettings();
+  if (typeof closeBookmarks === "function") closeBookmarks();
+  if (typeof closeHifz === "function") closeHifz();
+  if (!els.sidebarOverlay || !els.sidebar) return;
+  els.sidebarOverlay.classList.remove("hidden");
+  setTimeout(() => {
+    els.sidebarOverlay.classList.remove("opacity-0");
+    els.sidebar.classList.remove("translate-x-full");
+  }, 10);
+}
+
+/**
+ * Closes the main navigation sidebar.
+ */
+function closeSidebar() {
+  if (!els.sidebarOverlay || !els.sidebar) return;
+  els.sidebarOverlay.classList.add("opacity-0");
+  els.sidebar.classList.add("translate-x-full");
+  setTimeout(() => els.sidebarOverlay.classList.add("hidden"), 300);
+}
+
+/**
+ * Opens the settings drawer.
+ */
+function openSettings() {
+  if (typeof closeSidebar === "function") closeSidebar();
+  if (typeof closeBookmarks === "function") closeBookmarks();
+  if (typeof closeHifz === "function") closeHifz();
+  if (!els.settingsOverlay || !els.settingsDrawer) return;
+  els.settingsOverlay.classList.remove("hidden");
+  setTimeout(() => {
+    els.settingsOverlay.classList.remove("opacity-0");
+    els.settingsDrawer.classList.remove("translate-x-full");
+  }, 10);
+}
+
+/**
+ * Closes the settings drawer.
+ */
+function closeSettings() {
+  if (!els.settingsOverlay || !els.settingsDrawer) return;
+  els.settingsOverlay.classList.add("opacity-0");
+  els.settingsDrawer.classList.add("translate-x-full");
+  setTimeout(() => els.settingsOverlay.classList.add("hidden"), 300);
+}
+
+/**
+ * Opens the bookmarks drawer.
+ */
+function openBookmarks() {
+  if (typeof closeSidebar === "function") closeSidebar();
+  if (typeof closeSettings === "function") closeSettings();
+  if (typeof closeHifz === "function") closeHifz();
+  if (!els.bookmarksOverlay || !els.bookmarksDrawer) return;
+  els.bookmarksOverlay.classList.remove("hidden");
+  setTimeout(() => {
+    els.bookmarksOverlay.classList.remove("opacity-0");
+    els.bookmarksDrawer.classList.remove("translate-x-full");
+  }, 10);
+}
+
+/**
+ * Closes the bookmarks drawer.
+ */
+function closeBookmarks() {
+  if (!els.bookmarksOverlay || !els.bookmarksDrawer) return;
+  els.bookmarksOverlay.classList.add("opacity-0");
+  els.bookmarksDrawer.classList.add("translate-x-full");
+  setTimeout(() => els.bookmarksOverlay.classList.add("hidden"), 300);
+}
+
+/**
+ * Opens the Hifz drawer.
+ */
+function openHifz() {
+  if (typeof closeSidebar === "function") closeSidebar();
+  if (typeof closeSettings === "function") closeSettings();
+  if (typeof closeBookmarks === "function") closeBookmarks();
+  if (!els.hifzOverlay || !els.hifzDrawer) return;
+  els.hifzOverlay.classList.remove("hidden");
+  setTimeout(() => {
+    els.hifzOverlay.classList.remove("opacity-0");
+    els.hifzDrawer.classList.remove("translate-x-full");
+  }, 10);
+}
+
+/**
+ * Closes the Hifz drawer.
+ */
+function closeHifz() {
+  if (!els.hifzOverlay || !els.hifzDrawer) return;
+  els.hifzOverlay.classList.add("opacity-0");
+  els.hifzDrawer.classList.add("translate-x-full");
+  setTimeout(() => els.hifzOverlay.classList.add("hidden"), 300);
+}
+
+/**
+ * Opens a generic modal by ID.
+ */
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.classList.remove("hidden");
+}
+
+/**
+ * Closes a generic modal by ID.
+ */
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) modal.classList.add("hidden");
+}
+
 /**
  * Main Initialization Sequence.
  * - Checks for data presence.
@@ -29,7 +146,7 @@ async function init() {
     const lastAyahIndex = parseInt(
       localStorage.getItem("last_ayah_index") || "0",
     );
-    els.surahSelect.value = lastSurah;
+    if (els.surahSelect) els.surahSelect.value = lastSurah;
     AppState.currentAyahIndex = lastAyahIndex;
     loadSurah(parseInt(lastSurah), true);
 
@@ -38,24 +155,30 @@ async function init() {
     const savedTheme = localStorage.getItem("quran_theme") || "";
     if (savedTheme) {
       document.documentElement.setAttribute("data-theme", savedTheme);
-      els.themeSelect.value = savedTheme;
+      if (els.themeSelect) els.themeSelect.value = savedTheme;
     }
     const autoplayState = localStorage.getItem("quran_autoplay");
-    if (autoplayState !== null) {
+    if (autoplayState !== null && els.autoplayToggle) {
       els.autoplayToggle.checked = autoplayState === "true";
     }
 
     // Set initial toggle states
-    els.tajweedToggle.checked = AppState.settings.tajweed;
-    if (AppState.settings.tajweed) {
-      document.body.classList.add("tajweed-active");
+    if (els.tajweedToggle) {
+      els.tajweedToggle.checked = AppState.settings.tajweed;
+      if (AppState.settings.tajweed) {
+        document.body.classList.add("tajweed-active");
+      }
     }
 
-    els.tajweedLegendToggle.checked = AppState.settings.tajweedLegend;
+    if (els.tajweedLegendToggle) {
+      els.tajweedLegendToggle.checked = AppState.settings.tajweedLegend;
+    }
 
-    els.lightmodeToggle.checked = AppState.settings.lightMode;
-    if (AppState.settings.lightMode) {
-      document.documentElement.classList.add("light");
+    if (els.lightmodeToggle) {
+      els.lightmodeToggle.checked = AppState.settings.lightMode;
+      if (AppState.settings.lightMode) {
+        document.documentElement.classList.add("light");
+      }
     }
 
     if (els.notesToggle) {
@@ -96,12 +219,26 @@ async function init() {
  * Fills the Surah dropdown menu.
  */
 function populateSurahSelect() {
+  if (!els.surahSelect) return;
   AppState.data.forEach((surah) => {
     const option = document.createElement("option");
     option.value = surah.id;
     option.textContent = `${surah.id}. ${surah.trans} (${surah.name})`;
     option.className = "bg-slate-900";
     els.surahSelect.appendChild(option);
+
+    if (els.modalSurahList) {
+      const modalBtn = document.createElement("button");
+      modalBtn.className =
+        "text-left w-full p-3 rounded-xl bg-slate-950/50 hover:bg-slate-800 border border-slate-800/60 transition-colors flex justify-between items-center";
+      modalBtn.innerHTML = `<span class="text-sm font-semibold text-slate-200">${surah.id}. ${surah.trans}</span><span class="text-[14px] text-slate-400 font-quran">${surah.name}</span>`;
+      modalBtn.onclick = () => {
+        els.surahSelect.value = surah.id;
+        loadSurah(surah.id);
+        closeModal("surah-hifz-modal");
+      };
+      els.modalSurahList.appendChild(modalBtn);
+    }
   });
 }
 
@@ -110,20 +247,24 @@ function populateSurahSelect() {
  */
 function setupEventListeners() {
   // --- SETTINGS (RECITER) ---
-  els.reciterSelect.value = AppState.currentReciter;
-  updateReciterLabel();
-
-  els.reciterSelect.onchange = (e) => {
-    AppState.currentReciter = e.target.value;
-    localStorage.setItem("quran_reciter", e.target.value);
+  if (els.reciterSelect) {
+    els.reciterSelect.value = AppState.currentReciter;
     updateReciterLabel();
-    renderAyah();
-  };
+
+    els.reciterSelect.onchange = (e) => {
+      AppState.currentReciter = e.target.value;
+      localStorage.setItem("quran_reciter", e.target.value);
+      updateReciterLabel();
+      renderAyah();
+    };
+  }
 
   // --- NAVIGATION & SEARCH ---
-  els.surahSelect.onchange = (e) => loadSurah(parseInt(e.target.value));
-  els.nextBtn.onclick = nextAyah;
-  els.prevBtn.onclick = prevAyah;
+  if (els.surahSelect) {
+    els.surahSelect.onchange = (e) => loadSurah(parseInt(e.target.value));
+  }
+  if (els.nextBtn) els.nextBtn.onclick = nextAyah;
+  if (els.prevBtn) els.prevBtn.onclick = prevAyah;
 
   // Search logic — shared between desktop and mobile via Web Worker
   let debounceTimeout;
@@ -181,9 +322,12 @@ function setupEventListeners() {
               <div class="text-[11px] text-slate-400 mt-1 truncate">${bsHighlighted}</div>
             `;
             item.onclick = () => {
-              containerEl.classList.add("hidden");
+              if (containerEl && containerEl.classList) {
+                containerEl.classList.add("hidden");
+              }
+              closeModal("search-modal");
               inputEl.value = "";
-              els.surahSelect.value = res.surahId;
+              if (els.surahSelect) els.surahSelect.value = res.surahId;
               AppState.currentSurah = AppState.data.find(
                 (s) => s.id === res.surahId,
               );
@@ -208,14 +352,16 @@ function setupEventListeners() {
     }, 300);
   }
 
-  els.searchInput.oninput = (e) =>
-    handleSearchInput(
-      e.target.value,
-      els.searchInput,
-      els.searchResultsContainer,
-      els.searchResultsList,
-      els.searchEmptyState,
-    );
+  if (els.searchInput) {
+    els.searchInput.oninput = (e) =>
+      handleSearchInput(
+        e.target.value,
+        els.searchInput,
+        els.searchResultsContainer,
+        els.searchResultsList,
+        els.searchEmptyState,
+      );
+  }
 
   if (els.searchInputMobile) {
     els.searchInputMobile.oninput = (e) =>
@@ -228,10 +374,28 @@ function setupEventListeners() {
       );
   }
 
+  if (els.searchInputModal) {
+    els.searchInputModal.oninput = (e) => {
+      // Hide idle state
+      const idleState = document.getElementById("search-idle-state-modal");
+      if (idleState) idleState.classList.add("hidden");
+
+      handleSearchInput(
+        e.target.value,
+        els.searchInputModal,
+        { classList: { remove: () => {}, add: () => {} } }, // Fake container so logic doesn't crash
+        els.searchResultsListModal,
+        els.searchEmptyStateModal,
+      );
+    };
+  }
+
   // Hide search when clicking outside
   document.addEventListener("click", (e) => {
     if (
+      els.searchInput &&
       !els.searchInput.contains(e.target) &&
+      els.searchResultsContainer &&
       !els.searchResultsContainer.contains(e.target)
     ) {
       els.searchResultsContainer.classList.add("hidden");
@@ -239,6 +403,7 @@ function setupEventListeners() {
     if (
       els.searchInputMobile &&
       !els.searchInputMobile.contains(e.target) &&
+      els.searchResultsContainerMobile &&
       !els.searchResultsContainerMobile.contains(e.target)
     ) {
       els.searchResultsContainerMobile.classList.add("hidden");
@@ -246,58 +411,129 @@ function setupEventListeners() {
   });
 
   // --- MOBILE MENU ---
-  const openSidebar = () => {
-    els.sidebarOverlay.classList.remove("hidden");
-    setTimeout(() => {
-      els.sidebarOverlay.classList.remove("opacity-0");
-      els.sidebar.classList.remove("translate-x-full");
-    }, 10);
-  };
-  const closeSidebar = () => {
-    els.sidebarOverlay.classList.add("opacity-0");
-    els.sidebar.classList.add("translate-x-full");
-    setTimeout(() => els.sidebarOverlay.classList.add("hidden"), 300);
+  if (els.mobileGridToggle) els.mobileGridToggle.onclick = openSidebar;
+  if (els.sidebarClose) els.sidebarClose.onclick = closeSidebar;
+  if (els.sidebarOverlay) els.sidebarOverlay.onclick = closeSidebar;
+
+  // --- UI ACTIONS ---
+  if (els.settingsToggle) els.settingsToggle.onclick = openSettings;
+  if (els.settingsClose) els.settingsClose.onclick = closeSettings;
+  if (els.settingsOverlay) els.settingsOverlay.onclick = closeSettings;
+
+  // --- BOTTOM MOBILE NAV ---
+  const closeAllMenusAndModals = () => {
+    if (els.sidebarOverlay && !els.sidebarOverlay.classList.contains("hidden"))
+      closeSidebar();
+    if (
+      els.settingsOverlay &&
+      !els.settingsOverlay.classList.contains("hidden")
+    )
+      closeSettings();
+    if (
+      els.bookmarksOverlay &&
+      !els.bookmarksOverlay.classList.contains("hidden")
+    )
+      closeBookmarks();
+    if (els.hifzOverlay && !els.hifzOverlay.classList.contains("hidden"))
+      closeHifz();
+
+    const surahModal = document.getElementById("surah-hifz-modal");
+    if (surahModal && !surahModal.classList.contains("hidden"))
+      closeModal("surah-hifz-modal");
+
+    const searchModal = document.getElementById("search-modal");
+    if (searchModal && !searchModal.classList.contains("hidden"))
+      closeModal("search-modal");
   };
 
-  els.mobileGridToggle.onclick = openSidebar;
-  els.sidebarClose.onclick = closeSidebar;
-  els.sidebarOverlay.onclick = closeSidebar;
+  if (els.navSurahBtn) {
+    els.navSurahBtn.onclick = () => {
+      const modal = document.getElementById("surah-hifz-modal");
+      if (modal && !modal.classList.contains("hidden")) {
+        closeModal("surah-hifz-modal");
+      } else {
+        closeAllMenusAndModals();
+        openModal("surah-hifz-modal");
+      }
+    };
+  }
+  if (els.navHifzBtn) {
+    els.navHifzBtn.onclick = () => {
+      if (els.hifzOverlay && !els.hifzOverlay.classList.contains("hidden")) {
+        closeHifz();
+      } else {
+        closeAllMenusAndModals();
+        openHifz();
+      }
+    };
+  }
+  if (els.hifzCloseMobile) els.hifzCloseMobile.onclick = closeHifz;
+  if (els.hifzOverlay) els.hifzOverlay.onclick = closeHifz;
+  if (els.navSearchBtn) {
+    els.navSearchBtn.onclick = () => {
+      const modal = document.getElementById("search-modal");
+      if (modal && !modal.classList.contains("hidden")) {
+        closeModal("search-modal");
+      } else {
+        closeAllMenusAndModals();
+        openModal("search-modal");
+        if (els.searchInputModal) {
+          // slight timeout for modal to visibly display before focusing layout
+          setTimeout(() => els.searchInputModal.focus(), 100);
+        }
+      }
+    };
+  }
+  if (els.navBookmarksBtn) {
+    els.navBookmarksBtn.onclick = () => {
+      if (
+        els.bookmarksOverlay &&
+        !els.bookmarksOverlay.classList.contains("hidden")
+      ) {
+        closeBookmarks();
+      } else {
+        closeAllMenusAndModals();
+        openBookmarks();
+      }
+    };
+  }
 
-  // --- SETTINGS DRAWER ---
-  const openSettings = () => {
-    els.settingsOverlay.classList.remove("hidden");
-    setTimeout(() => {
-      els.settingsOverlay.classList.remove("opacity-0");
-      els.settingsDrawer.classList.remove("translate-x-full");
-    }, 10);
-  };
-  const closeSettings = () => {
-    els.settingsOverlay.classList.add("opacity-0");
-    els.settingsDrawer.classList.add("translate-x-full");
-    setTimeout(() => els.settingsOverlay.classList.add("hidden"), 300);
-  };
-
-  els.settingsToggle.onclick = openSettings;
-  els.settingsClose.onclick = closeSettings;
-  els.settingsOverlay.onclick = closeSettings;
+  if (els.bookmarksClose) els.bookmarksClose.onclick = closeBookmarks;
+  if (els.bookmarksOverlay) els.bookmarksOverlay.onclick = closeBookmarks;
+  if (els.navSettingsBtn) {
+    els.navSettingsBtn.onclick = () => {
+      if (
+        els.settingsOverlay &&
+        !els.settingsOverlay.classList.contains("hidden")
+      ) {
+        closeSettings();
+      } else {
+        closeAllMenusAndModals();
+        openSettings();
+      }
+    };
+  }
 
   // --- PRACTICE & PERSISTENCE ---
-  els.recordBtn.onclick = toggleRecording;
-  els.validBtn.onclick = toggleCheckmark;
-  els.bookmarkBtn.onclick = toggleBookmark;
+  if (els.recordBtn) els.recordBtn.onclick = toggleRecording;
+  if (els.validBtn) els.validBtn.onclick = toggleCheckmark;
+  if (els.bookmarkBtn) els.bookmarkBtn.onclick = toggleBookmark;
 
-  els.ayahNotes.oninput = (e) => {
-    const key = `${AppState.currentSurah.id}-${AppState.currentSurah.verses[AppState.currentAyahIndex].id}`;
-    const val = e.target.value;
-    if (val.trim()) AppState.notes[key] = val;
-    else delete AppState.notes[key];
-    debouncedStorageSave("quran_notes", JSON.stringify(AppState.notes));
-    if (typeof updateGridCellState === "function") {
-      updateGridCellState(AppState.currentAyahIndex);
-    } else {
-      renderAyahGrid();
-    }
-  };
+  if (els.ayahNotes) {
+    els.ayahNotes.oninput = (e) => {
+      if (!AppState.currentSurah) return;
+      const key = `${AppState.currentSurah.id}-${AppState.currentSurah.verses[AppState.currentAyahIndex].id}`;
+      const val = e.target.value;
+      if (val.trim()) AppState.notes[key] = val;
+      else delete AppState.notes[key];
+      debouncedStorageSave("quran_notes", JSON.stringify(AppState.notes));
+      if (typeof updateGridCellState === "function") {
+        updateGridCellState(AppState.currentAyahIndex);
+      } else {
+        renderAyahGrid();
+      }
+    };
+  }
 
   // --- JUZ / PAGE / AYAH NAVIGATION (Smart Auto-Jump & Sync) ---
   let navDebounce;
@@ -310,10 +546,10 @@ function setupEventListeners() {
     // Instant Sibling Update (Juz/Page only)
     if (type === "juz" && num >= 1 && num <= 30) {
       const [s, a] = window.JUZ_DATA[num];
-      els.pageInput.value = window.getPageNumber(s, a);
+      if (els.pageInput) els.pageInput.value = window.getPageNumber(s, a);
     } else if (type === "page" && num >= 1 && num <= 604) {
       const [s, a] = window.PAGE_DATA[num];
-      els.juzInput.value = window.getJuzNumber(s, a);
+      if (els.juzInput) els.juzInput.value = window.getJuzNumber(s, a);
     }
 
     navDebounce = setTimeout(() => {
@@ -333,12 +569,16 @@ function setupEventListeners() {
     }, 800);
   };
 
-  els.juzInput.oninput = (e) => handleNavInput(e.target.value, "juz");
-  els.pageInput.oninput = (e) => handleNavInput(e.target.value, "page");
-  els.ayahInput.oninput = (e) => handleNavInput(e.target.value, "ayah");
+  if (els.juzInput)
+    els.juzInput.oninput = (e) => handleNavInput(e.target.value, "juz");
+  if (els.pageInput)
+    els.pageInput.oninput = (e) => handleNavInput(e.target.value, "page");
+  if (els.ayahInput)
+    els.ayahInput.oninput = (e) => handleNavInput(e.target.value, "ayah");
 
   // Clear input on focus for easier typing, restore if left empty
   const setupAutoClear = (el) => {
+    if (!el) return;
     let originalVal = "";
     el.onfocus = (e) => {
       originalVal = e.target.value;
@@ -368,183 +608,276 @@ function setupEventListeners() {
     }
   };
 
-  els.juzInput.onkeydown = (e) => handleEnterKey(e, "juz", 1, 30);
-  els.pageInput.onkeydown = (e) => handleEnterKey(e, "page", 1, 604);
-  els.ayahInput.onkeydown = (e) =>
-    handleEnterKey(
-      e,
-      "ayah",
-      1,
-      AppState.currentSurah ? AppState.currentSurah.verses.length : 286,
-    );
+  if (els.juzInput)
+    els.juzInput.onkeydown = (e) => handleEnterKey(e, "juz", 1, 30);
+  if (els.pageInput)
+    els.pageInput.onkeydown = (e) => handleEnterKey(e, "page", 1, 604);
+  if (els.ayahInput) {
+    els.ayahInput.onkeydown = (e) =>
+      handleEnterKey(
+        e,
+        "ayah",
+        1,
+        AppState.currentSurah ? AppState.currentSurah.verses.length : 286,
+      );
+  }
 
   // --- AUDIO UI (RECITATION) ---
-  els.ayahPlayBtn.onclick = () =>
-    els.ayahAudio.paused ? els.ayahAudio.play() : els.ayahAudio.pause();
+  if (els.ayahPlayBtn) {
+    els.ayahPlayBtn.onclick = () =>
+      els.ayahAudio.paused ? els.ayahAudio.play() : els.ayahAudio.pause();
+  }
 
-  els.ayahLoopBtn.onclick = () => {
-    els.ayahAudio.loop = !els.ayahAudio.loop;
-    if (els.ayahAudio.loop) {
-      els.ayahLoopBtn.classList.add("text-emerald-400", "bg-slate-800");
-      els.ayahLoopBtn.classList.remove("text-slate-500");
-    } else {
-      els.ayahLoopBtn.classList.remove("text-emerald-400", "bg-slate-800");
-      els.ayahLoopBtn.classList.add("text-slate-500");
-    }
-  };
+  if (els.ayahLoopBtn) {
+    els.ayahLoopBtn.onclick = () => {
+      els.ayahAudio.loop = !els.ayahAudio.loop;
+      if (els.ayahAudio.loop) {
+        els.ayahLoopBtn.classList.add("text-emerald-400", "bg-slate-800");
+        els.ayahLoopBtn.classList.remove("text-slate-500");
+      } else {
+        els.ayahLoopBtn.classList.remove("text-emerald-400", "bg-slate-800");
+        els.ayahLoopBtn.classList.add("text-slate-500");
+      }
+    };
+  }
 
   const speeds = [1, 1.25, 1.5, 0.5, 0.75];
   let currentSpeedIdx = 0;
-  els.ayahSpeedBtn.onclick = () => {
-    currentSpeedIdx = (currentSpeedIdx + 1) % speeds.length;
-    els.ayahAudio.playbackRate = speeds[currentSpeedIdx];
-    els.ayahSpeedBtn.innerText = speeds[currentSpeedIdx] + "x";
-  };
+  if (els.ayahSpeedBtn) {
+    els.ayahSpeedBtn.onclick = () => {
+      currentSpeedIdx = (currentSpeedIdx + 1) % speeds.length;
+      els.ayahAudio.playbackRate = speeds[currentSpeedIdx];
+      els.ayahSpeedBtn.innerText = speeds[currentSpeedIdx] + "x";
+    };
+  }
 
-  els.ayahAudio.onplay = () => {
-    els.ayahPlayIcon.classList.add("hidden");
-    els.ayahPauseIcon.classList.remove("hidden");
-  };
-  els.ayahAudio.onpause = () => {
-    els.ayahPlayIcon.classList.remove("hidden");
-    els.ayahPauseIcon.classList.add("hidden");
-  };
-  els.ayahAudio.ontimeupdate = updateAyahAudioUI;
-  els.ayahAudio.onended = () => {
-    els.ayahPlayIcon.classList.remove("hidden");
-    els.ayahPauseIcon.classList.add("hidden");
-    els.ayahAudioProgress.style.width = "0%";
+  if (els.ayahAudio) {
+    els.ayahAudio.onplay = () => {
+      if (els.ayahPlayIcon) els.ayahPlayIcon.classList.add("hidden");
+      if (els.ayahPauseIcon) els.ayahPauseIcon.classList.remove("hidden");
+    };
+    els.ayahAudio.onpause = () => {
+      if (els.ayahPlayIcon) els.ayahPlayIcon.classList.remove("hidden");
+      if (els.ayahPauseIcon) els.ayahPauseIcon.classList.add("hidden");
+    };
+    els.ayahAudio.ontimeupdate = updateAyahAudioUI;
+    els.ayahAudio.onended = () => {
+      if (els.ayahPlayIcon) els.ayahPlayIcon.classList.remove("hidden");
+      if (els.ayahPauseIcon) els.ayahPauseIcon.classList.add("hidden");
+      if (els.ayahAudioProgress) els.ayahAudioProgress.style.width = "0%";
 
-    // Auto-advance logic
-    if (els.autoplayToggle.checked && !els.ayahAudio.loop) {
+      // Auto-advance logic
       if (
-        AppState.hifzEnabled &&
-        AppState.hifzRange.start !== null &&
-        AppState.hifzRange.end !== null
+        els.autoplayToggle &&
+        els.autoplayToggle.checked &&
+        !els.ayahAudio.loop
       ) {
-        const min = Math.min(AppState.hifzRange.start, AppState.hifzRange.end);
-        const max = Math.max(AppState.hifzRange.start, AppState.hifzRange.end);
+        if (
+          AppState.hifzEnabled &&
+          AppState.hifzRange.start !== null &&
+          AppState.hifzRange.end !== null
+        ) {
+          const min = Math.min(
+            AppState.hifzRange.start,
+            AppState.hifzRange.end,
+          );
+          const max = Math.max(
+            AppState.hifzRange.start,
+            AppState.hifzRange.end,
+          );
 
-        if (AppState.currentAyahIndex >= max) {
-          AppState.currentAyahIndex = min;
+          if (AppState.currentAyahIndex >= max) {
+            AppState.currentAyahIndex = min;
+          } else {
+            AppState.currentAyahIndex++;
+          }
+          localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
         } else {
-          AppState.currentAyahIndex++;
+          nextAyah();
         }
-        localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
-      } else {
-        nextAyah();
+        renderAyah();
+        // Need a slight delay to allow rendering and audio loading
+        setTimeout(() => {
+          els.ayahAudio.play();
+        }, 50);
       }
-      renderAyah();
-      // Need a slight delay to allow rendering and audio loading
-      setTimeout(() => {
-        els.ayahAudio.play();
-      }, 50);
-    }
-  };
-  els.ayahProgressBg.onclick = (e) => {
-    const rect = els.ayahProgressBg.getBoundingClientRect();
-    const pos = (e.clientX - rect.left) / rect.width;
-    els.ayahAudio.currentTime = pos * els.ayahAudio.duration;
-  };
+    };
+  }
+
+  if (els.ayahProgressBg) {
+    els.ayahProgressBg.onclick = (e) => {
+      const rect = els.ayahProgressBg.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      els.ayahAudio.currentTime = pos * els.ayahAudio.duration;
+    };
+  }
 
   // --- AUDIO UI (USER RECORDING) ---
-  els.userPlayBtn.onclick = () =>
-    els.audioPlayback.paused
-      ? els.audioPlayback.play()
-      : els.audioPlayback.pause();
+  if (els.userPlayBtn) {
+    els.userPlayBtn.onclick = () =>
+      els.audioPlayback.paused
+        ? els.audioPlayback.play()
+        : els.audioPlayback.pause();
+  }
 
-  els.audioPlayback.onplay = () => {
-    els.userPlayIcon.classList.add("hidden");
-    els.userPauseIcon.classList.remove("hidden");
-  };
-  els.audioPlayback.onpause = () => {
-    els.userPlayIcon.classList.remove("hidden");
-    els.userPauseIcon.classList.add("hidden");
-  };
-  els.audioPlayback.ontimeupdate = updateUserAudioUI;
-  els.audioPlayback.onended = () => {
-    els.userPlayIcon.classList.remove("hidden");
-    els.userPauseIcon.classList.add("hidden");
-    els.userAudioProgress.style.width = "0%";
-  };
-  els.userProgressBg.onclick = (e) => {
-    const rect = els.userProgressBg.getBoundingClientRect();
-    const pos = (e.clientX - rect.left) / rect.width;
-    els.audioPlayback.currentTime = pos * els.audioPlayback.duration;
-  };
+  if (els.audioPlayback) {
+    els.audioPlayback.onplay = () => {
+      if (els.userPlayIcon) els.userPlayIcon.classList.add("hidden");
+      if (els.userPauseIcon) els.userPauseIcon.classList.remove("hidden");
+    };
+    els.audioPlayback.onpause = () => {
+      if (els.userPlayIcon) els.userPlayIcon.classList.remove("hidden");
+      if (els.userPauseIcon) els.userPauseIcon.classList.add("hidden");
+    };
+    els.audioPlayback.ontimeupdate = updateUserAudioUI;
+    els.audioPlayback.onended = () => {
+      if (els.userPlayIcon) els.userPlayIcon.classList.remove("hidden");
+      if (els.userPauseIcon) els.userPauseIcon.classList.add("hidden");
+      if (els.userAudioProgress) els.userAudioProgress.style.width = "0%";
+    };
+  }
+  if (els.userProgressBg) {
+    els.userProgressBg.onclick = (e) => {
+      const rect = els.userProgressBg.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      els.audioPlayback.currentTime = pos * els.audioPlayback.duration;
+    };
+  }
 
   // --- DATA TRANSFER ---
-  els.exportBtn.onclick = exportProgress;
-  els.importBtn.onclick = () => els.importFile.click();
-  els.importFile.onchange = importProgress;
+  if (els.exportBtn) els.exportBtn.onclick = exportProgress;
+  if (els.importBtn) els.importBtn.onclick = () => els.importFile.click();
+  if (els.importFile) els.importFile.onchange = importProgress;
 
   // --- TYPOGRAPHY SETTINGS ---
   const previewAr = document.getElementById("settings-preview-ar");
   const previewBs = document.getElementById("settings-preview-bs");
 
-  els.arSizeSlider.oninput = (e) => {
-    AppState.settings.arSize = e.target.value;
-    els.arSizeVal.innerText = `${e.target.value}%`;
-    els.arabicDisplay.style.fontSize = `${e.target.value / 100}rem`;
-    if (previewAr) previewAr.style.fontSize = `${e.target.value / 100}rem`;
-    localStorage.setItem("quran_ar_size", e.target.value);
-  };
-  els.bsSizeSlider.oninput = (e) => {
-    AppState.settings.bsSize = e.target.value;
-    els.bsSizeVal.innerText = `${e.target.value}%`;
-    els.translationDisplay.style.fontSize = `${e.target.value / 100}rem`;
-    if (previewBs) previewBs.style.fontSize = `${e.target.value / 100}rem`;
-    localStorage.setItem("quran_bs_size", e.target.value);
-  };
-  els.arLhSlider.oninput = (e) => {
-    AppState.settings.arLineHeight = e.target.value;
-    els.arLhVal.innerText = e.target.value;
-    els.arabicDisplay.style.lineHeight = e.target.value;
-    if (previewAr) previewAr.style.lineHeight = e.target.value;
-    localStorage.setItem("quran_ar_lh", e.target.value);
-  };
+  if (els.arSizeSlider) {
+    els.arSizeSlider.oninput = (e) => {
+      AppState.settings.arSize = e.target.value;
+      if (els.arSizeVal) els.arSizeVal.innerText = `${e.target.value}%`;
+      if (els.arabicDisplay)
+        els.arabicDisplay.style.fontSize = `${e.target.value / 100}rem`;
+      if (previewAr) previewAr.style.fontSize = `${e.target.value / 100}rem`;
+      localStorage.setItem("quran_ar_size", e.target.value);
+    };
+  }
+  if (els.bsSizeSlider) {
+    els.bsSizeSlider.oninput = (e) => {
+      AppState.settings.bsSize = e.target.value;
+      if (els.bsSizeVal) els.bsSizeVal.innerText = `${e.target.value}%`;
+      if (els.translationDisplay)
+        els.translationDisplay.style.fontSize = `${e.target.value / 100}rem`;
+      if (previewBs) previewBs.style.fontSize = `${e.target.value / 100}rem`;
+      localStorage.setItem("quran_bs_size", e.target.value);
+    };
+  }
+  if (els.arLhSlider) {
+    els.arLhSlider.oninput = (e) => {
+      AppState.settings.arLineHeight = e.target.value;
+      if (els.arLhVal) els.arLhVal.innerText = e.target.value;
+      if (els.arabicDisplay)
+        els.arabicDisplay.style.lineHeight = e.target.value;
+      if (previewAr) previewAr.style.lineHeight = e.target.value;
+      localStorage.setItem("quran_ar_lh", e.target.value);
+    };
+  }
 
   // --- SETTINGS (THEME & AUTOPLAY) ---
-  els.themeSelect.onchange = (e) => {
-    const val = e.target.value;
-    if (val) {
-      document.documentElement.setAttribute("data-theme", val);
-    } else {
-      document.documentElement.removeAttribute("data-theme");
+  if (els.themeSelect) {
+    els.themeSelect.onchange = (e) => {
+      const val = e.target.value;
+      if (val) {
+        document.documentElement.setAttribute("data-theme", val);
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+      }
+      localStorage.setItem("quran_theme", val);
+    };
+  }
+
+  if (els.autoplayToggle) {
+    els.autoplayToggle.onchange = (e) => {
+      localStorage.setItem("quran_autoplay", e.target.checked);
+    };
+  }
+
+  if (els.tajweedToggle) {
+    els.tajweedToggle.onchange = (e) => {
+      AppState.settings.tajweed = e.target.checked;
+      localStorage.setItem("quran_tajweed", e.target.checked);
+      if (e.target.checked) {
+        document.body.classList.add("tajweed-active");
+      } else {
+        document.body.classList.remove("tajweed-active");
+      }
+      renderAyah();
+    };
+  }
+
+  if (els.tajweedLegendToggle) {
+    els.tajweedLegendToggle.onchange = (e) => {
+      AppState.settings.tajweedLegend = e.target.checked;
+      localStorage.setItem("quran_tajweed_legend", e.target.checked);
+      renderAyah();
+    };
+  }
+
+  if (els.lightmodeToggle) {
+    els.lightmodeToggle.onchange = (e) => {
+      AppState.settings.lightMode = e.target.checked;
+      localStorage.setItem("quran_lightmode", e.target.checked);
+      if (e.target.checked) {
+        document.documentElement.classList.add("light");
+      } else {
+        document.documentElement.classList.remove("light");
+      }
+    };
+  }
+
+  // Set initial Hifz UI
+  if (AppState.hifzEnabled) {
+    if (els.hifzToggle) els.hifzToggle.checked = AppState.hifzEnabled;
+    if (els.hifzToggleMobile)
+      els.hifzToggleMobile.checked = AppState.hifzEnabled;
+    const min = AppState.hifzRange.start;
+    const max = AppState.hifzRange.end;
+    let text = "Klikni ajet za opseg";
+    if (min !== null && max !== null) {
+      text = `Opseg: ${Math.min(min, max) + 1} - ${Math.max(min, max) + 1}`;
+    } else if (min !== null) {
+      text = `Opseg: ${min + 1} - ...`;
     }
-    localStorage.setItem("quran_theme", val);
-  };
+    if (els.hifzRangeText) els.hifzRangeText.innerText = text;
+    if (els.hifzRangeTextMobile) els.hifzRangeTextMobile.innerText = text;
+  }
 
-  els.autoplayToggle.onchange = (e) => {
-    localStorage.setItem("quran_autoplay", e.target.checked);
-  };
+  // Bind Hifz toggles
+  const handleHifzChange = (e) => {
+    AppState.hifzEnabled = e.target.checked;
+    if (els.hifzToggle) els.hifzToggle.checked = AppState.hifzEnabled;
+    if (els.hifzToggleMobile)
+      els.hifzToggleMobile.checked = AppState.hifzEnabled;
+    localStorage.setItem("quran_hifzEnabled", AppState.hifzEnabled);
 
-  els.tajweedToggle.onchange = (e) => {
-    AppState.settings.tajweed = e.target.checked;
-    localStorage.setItem("quran_tajweed", e.target.checked);
-    if (e.target.checked) {
-      document.body.classList.add("tajweed-active");
-    } else {
-      document.body.classList.remove("tajweed-active");
+    if (!AppState.hifzEnabled) {
+      // Clear range visually instantly
+      AppState.hifzRange = { start: null, end: null };
+      if (els.hifzRangeText)
+        els.hifzRangeText.innerText = "Klikni na ajet za opseg";
+      if (els.hifzRangeTextMobile)
+        els.hifzRangeTextMobile.innerText = "Klikni na ajet za opseg";
+      localStorage.setItem(
+        "quran_hifzRange",
+        JSON.stringify(AppState.hifzRange),
+      );
     }
-    renderAyah();
+    renderAyahGrid();
   };
 
-  els.tajweedLegendToggle.onchange = (e) => {
-    AppState.settings.tajweedLegend = e.target.checked;
-    localStorage.setItem("quran_tajweed_legend", e.target.checked);
-    renderAyah();
-  };
-
-  els.lightmodeToggle.onchange = (e) => {
-    AppState.settings.lightMode = e.target.checked;
-    localStorage.setItem("quran_lightmode", e.target.checked);
-    if (e.target.checked) {
-      document.documentElement.classList.add("light");
-    } else {
-      document.documentElement.classList.remove("light");
-    }
-  };
+  if (els.hifzToggle) els.hifzToggle.onchange = handleHifzChange;
+  if (els.hifzToggleMobile) els.hifzToggleMobile.onchange = handleHifzChange;
 
   if (els.notesToggle) {
     els.notesToggle.addEventListener("change", (e) => {
@@ -555,22 +888,13 @@ function setupEventListeners() {
     });
   }
 
-  els.hifzToggle.onchange = (e) => {
-    AppState.hifzEnabled = e.target.checked;
-    if (!AppState.hifzEnabled) {
-      AppState.hifzRange = { start: null, end: null };
-      els.hifzRangeText.innerText = "Klikni na ajet za opseg";
-    }
-    renderAyahGrid();
-  };
-
   // --- GLOBAL KEYBOARD SHORTCUTS ---
   document.onkeydown = (e) => {
     // Disable shortcuts if typing in input/textarea
     if (
       e.target.tagName === "INPUT" ||
       e.target.tagName === "TEXTAREA" ||
-      e.target.id === "search-input"
+      (els.searchInput && e.target.id === "search-input")
     )
       return;
 
@@ -593,7 +917,10 @@ function setupEventListeners() {
     // Play/Pause Recitation: P or Enter
     if (e.code === "KeyP" || e.key === "p" || e.code === "Enter") {
       e.preventDefault();
-      if (!els.ayahAudioContainer.classList.contains("hidden")) {
+      if (
+        els.ayahAudioContainer &&
+        !els.ayahAudioContainer.classList.contains("hidden")
+      ) {
         els.ayahAudio.paused ? els.ayahAudio.play() : els.ayahAudio.pause();
       }
     }
@@ -601,7 +928,10 @@ function setupEventListeners() {
     // Play/Pause User recording: U
     if (e.code === "KeyU" || e.key === "u") {
       e.preventDefault();
-      if (!els.userAudioContainer.classList.contains("hidden")) {
+      if (
+        els.userAudioContainer &&
+        !els.userAudioContainer.classList.contains("hidden")
+      ) {
         els.audioPlayback.paused
           ? els.audioPlayback.play()
           : els.audioPlayback.pause();
@@ -649,7 +979,7 @@ function setupEventListeners() {
       const diffX = Math.abs(touchEndX - touchStartX);
       const diffY = Math.abs(touchEndY - touchStartY);
 
-      if (diffX > diffY && diffX > SWIPE_THRESHOLD) {
+      if (diffX > diffY && diffX > SWIPE_THRESHOLD && diffY < 50) {
         if (touchEndX < touchStartX) {
           AppState.swipeDirection = "left";
           nextAyah();
@@ -663,20 +993,12 @@ function setupEventListeners() {
   );
 
   // --- MODAL SYSTEM ---
-  const openModal = (id) => {
-    const modal = document.getElementById(id);
-    if (modal) modal.classList.remove("hidden");
-  };
-
-  const closeModal = (id) => {
-    const modal = document.getElementById(id);
-    if (modal) modal.classList.add("hidden");
-  };
-
   // About & Version buttons
-  document.getElementById("about-btn").onclick = () => openModal("about-modal");
-  document.getElementById("version-btn").onclick = () =>
-    openModal("version-modal");
+  const aboutBtn = document.getElementById("about-btn");
+  if (aboutBtn) aboutBtn.onclick = () => openModal("about-modal");
+
+  const versionBtn = document.getElementById("version-btn");
+  if (versionBtn) versionBtn.onclick = () => openModal("version-modal");
 
   // Close buttons (X)
   document.querySelectorAll("[data-modal-close]").forEach((btn) => {
@@ -704,10 +1026,14 @@ function setupEventListeners() {
  * Updates the display label for the currently selected reciter.
  */
 function updateReciterLabel() {
-  if (els.reciterNameLabel && els.reciterSelect.options.length > 0) {
+  if (
+    els.reciterNameLabel &&
+    els.reciterSelect &&
+    els.reciterSelect.options.length > 0
+  ) {
     const reciterName =
       els.reciterSelect.options[els.reciterSelect.selectedIndex].text;
-    els.reciterNameLabel.innerText = `${T.recitation}: ${reciterName}`;
+    els.reciterNameLabel.innerText = reciterName;
   }
 }
 

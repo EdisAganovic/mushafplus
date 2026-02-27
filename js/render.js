@@ -94,12 +94,22 @@ function showTajweedTooltip(target, tip) {
 function hideTajweedTooltip() {
   if (globalTajweedTooltip) {
     globalTajweedTooltip.style.display = "none";
+    globalTajweedTooltip.dataset.activeTarget = "";
   }
 }
+
+// Global click listener to hide tooltip when clicking outside
+document.addEventListener("click", () => {
+  hideTajweedTooltip();
+});
 
 window.renderAyah = function () {
   const ayah = AppState.currentSurah.verses[AppState.currentAyahIndex];
   const key = `${AppState.currentSurah.id}-${ayah.id}`;
+
+  if (els.currentSurahName) {
+    els.currentSurahName.textContent = `${AppState.currentSurah.id}. ${AppState.currentSurah.trans}`;
+  }
 
   // 1. Arabic word-by-word injection with Tajweed support
   els.arabicDisplay.innerHTML = "";
@@ -296,9 +306,25 @@ window.renderAyah = function () {
           const chip = document.createElement("span");
           chip.style.cssText = `color:${color}; background:${color}18; border:1px solid ${color}55;`;
           chip.className =
-            "text-[10px] font-bold px-2 py-1 rounded-xl cursor-default text-center whitespace-nowrap transition-all hover:opacity-80";
-          chip.title = tip ? tip.desc : rule;
+            "text-[10px] font-bold px-2 py-1 rounded-xl cursor-pointer text-center whitespace-nowrap transition-all hover:scale-105 active:scale-95";
           chip.textContent = tip ? tip.name : rule;
+
+          if (tip) {
+            chip.addEventListener("click", (e) => {
+              e.stopPropagation(); // prevent window click from hiding immediately
+              const tooltip = getGlobalTooltip();
+              if (
+                tooltip.style.display === "block" &&
+                tooltip.dataset.activeTarget === rule
+              ) {
+                hideTajweedTooltip();
+              } else {
+                showTajweedTooltip(chip, tip);
+                tooltip.dataset.activeTarget = rule;
+              }
+            });
+          }
+
           legendEl.appendChild(chip);
         });
         legendContainer.classList.remove("hidden");
@@ -423,8 +449,15 @@ window.renderAyah = function () {
  * Updates a single grid cell's state classes (O(1) update) instead of rebuilding the entire grid.
  */
 window.updateGridCellState = function (idx) {
-  if (!els.ayahGrid || !els.ayahGrid.children[idx]) return;
-  const cell = els.ayahGrid.children[idx];
+  const cellsToUpdate = [];
+  if (els.ayahGrid && els.ayahGrid.children[idx]) {
+    cellsToUpdate.push(els.ayahGrid.children[idx]);
+  }
+  if (els.ayahGridMobile && els.ayahGridMobile.children[idx]) {
+    cellsToUpdate.push(els.ayahGridMobile.children[idx]);
+  }
+  if (cellsToUpdate.length === 0) return;
+
   const surahId = AppState.currentSurah.id;
   const verse = AppState.currentSurah.verses[idx];
   const key = `${surahId}-${verse.id}`;
@@ -446,61 +479,63 @@ window.updateGridCellState = function (idx) {
     : null;
   const isHifzRange = hifzMin !== null && idx >= hifzMin && idx <= hifzMax;
 
-  // Remove existing state classes
-  cell.classList.remove(
-    "bg-slate-800",
-    "text-emerald-400",
-    "border-emerald-500",
-    "shadow-md",
-    "shadow-emerald-500/20",
-    "bg-emerald-600",
-    "text-white",
-    "bg-rose-500/10",
-    "border-dashed",
-    "border-rose-500/30",
-    "text-rose-300",
-    "hover:bg-rose-500/20",
-    "text-slate-300",
-    "border-slate-700",
-    "hover:bg-slate-600",
-  );
-
-  // Apply new state classes
-  if (isActive) {
-    cell.classList.add(
+  cellsToUpdate.forEach((cell) => {
+    // Remove existing state classes
+    cell.classList.remove(
       "bg-slate-800",
       "text-emerald-400",
-      "border",
       "border-emerald-500",
       "shadow-md",
       "shadow-emerald-500/20",
-    );
-  } else if (isChecked) {
-    cell.classList.add("bg-emerald-600", "text-white");
-  } else if (isHifzRange) {
-    cell.classList.add(
+      "bg-emerald-600",
+      "text-white",
       "bg-rose-500/10",
-      "border",
       "border-dashed",
       "border-rose-500/30",
       "text-rose-300",
       "hover:bg-rose-500/20",
-    );
-  } else {
-    cell.classList.add(
-      "bg-slate-800",
       "text-slate-300",
-      "border",
       "border-slate-700",
       "hover:bg-slate-600",
     );
-  }
 
-  if (hasNotes) {
-    cell.style.borderBottom = "2px solid #f59e0b";
-  } else {
-    cell.style.borderBottom = "";
-  }
+    // Apply new state classes
+    if (isActive) {
+      cell.classList.add(
+        "bg-slate-800",
+        "text-emerald-400",
+        "border",
+        "border-emerald-500",
+        "shadow-md",
+        "shadow-emerald-500/20",
+      );
+    } else if (isChecked) {
+      cell.classList.add("bg-emerald-600", "text-white");
+    } else if (isHifzRange) {
+      cell.classList.add(
+        "bg-rose-500/10",
+        "border",
+        "border-dashed",
+        "border-rose-500/30",
+        "text-rose-300",
+        "hover:bg-rose-500/20",
+      );
+    } else {
+      cell.classList.add(
+        "bg-slate-800",
+        "text-slate-300",
+        "border",
+        "border-slate-700",
+        "hover:bg-slate-600",
+      );
+    }
+
+    if (hasNotes) {
+      cell.style.borderBottom = "2px solid #f59e0b";
+    } else {
+      cell.style.borderBottom = "";
+    }
+  });
 };
 
 /**
@@ -508,9 +543,11 @@ window.updateGridCellState = function (idx) {
  * Uses pill-shaped cells with inline icons for Juz/Page/Hifz indicators.
  */
 window.renderAyahGrid = function () {
-  els.ayahGrid.innerHTML = "";
+  if (els.ayahGrid) els.ayahGrid.innerHTML = "";
+  if (els.ayahGridMobile) els.ayahGridMobile.innerHTML = "";
 
   const frag = document.createDocumentFragment();
+  const fragMobile = document.createDocumentFragment();
   const surahId = AppState.currentSurah.id;
   const hasMetadata = typeof window.getJuzStartAt === "function";
 
@@ -614,51 +651,82 @@ window.renderAyahGrid = function () {
 
     cell.dataset.index = index;
     frag.appendChild(cell);
-  });
-  els.ayahGrid.appendChild(frag);
 
-  // Event delegation — single click handler on the grid parent
-  els.ayahGrid.onclick = (e) => {
-    const cell = e.target.closest(".ayah-cell");
-    if (!cell || cell.dataset.index == null) return;
-    const idx = parseInt(cell.dataset.index);
+    const cellMobile = cell.cloneNode(true);
+    fragMobile.appendChild(cellMobile);
+  });
+
+  if (els.ayahGrid) els.ayahGrid.appendChild(frag);
+  if (els.ayahGridMobile) els.ayahGridMobile.appendChild(fragMobile);
+
+  // Setup Event Delegation for dynamic clicks
+  const delegateClick = (e) => {
+    const btn = e.target.closest("button.ayah-cell");
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.index);
 
     if (AppState.hifzEnabled) {
-      if (
-        AppState.hifzRange.start === null ||
-        (AppState.hifzRange.start !== null && AppState.hifzRange.end !== null)
-      ) {
+      if (AppState.hifzRange.start === null) {
         AppState.hifzRange.start = idx;
         AppState.hifzRange.end = null;
-        els.hifzRangeText.innerText = `Opseg: ${idx + 1} - ...`;
-      } else {
+        if (els.hifzRangeText)
+          els.hifzRangeText.innerText = `Opseg: ${idx + 1} - ...`;
+        if (els.hifzRangeTextMobile)
+          els.hifzRangeTextMobile.innerText = `Opseg: ${idx + 1} - ...`;
+      } else if (AppState.hifzRange.end === null) {
         AppState.hifzRange.end = idx;
         const min = Math.min(AppState.hifzRange.start, AppState.hifzRange.end);
         const max = Math.max(AppState.hifzRange.start, AppState.hifzRange.end);
-        els.hifzRangeText.innerText = `Opseg: ${min + 1} - ${max + 1}`;
-
-        // Automatically jump to the first ayah of the selected range
-        AppState.currentAyahIndex = min;
-        renderAyah();
+        if (els.hifzRangeText)
+          els.hifzRangeText.innerText = `Opseg: ${min + 1} - ${max + 1}`;
+        if (els.hifzRangeTextMobile)
+          els.hifzRangeTextMobile.innerText = `Opseg: ${min + 1} - ${max + 1}`;
+      } else {
+        AppState.hifzRange.start = idx;
+        AppState.hifzRange.end = null;
+        if (els.hifzRangeText)
+          els.hifzRangeText.innerText = `Opseg: ${idx + 1} - ...`;
+        if (els.hifzRangeTextMobile)
+          els.hifzRangeTextMobile.innerText = `Opseg: ${idx + 1} - ...`;
       }
-      renderAyahGrid(); // Full re-render to show markers
+      localStorage.setItem(
+        "quran_hifzRange",
+        JSON.stringify(AppState.hifzRange),
+      );
+      renderAyahGrid(); // Full grid re-render to apply ranges easily
     } else {
-      AppState.currentAyahIndex = idx;
-      renderAyah();
+      if (typeof closeHifz === "function") closeHifz();
+      if (window.innerWidth < 768 && typeof closeSidebar === "function")
+        closeSidebar();
+      goToAyah(idx + 1);
     }
   };
 
+  if (els.ayahGrid) els.ayahGrid.onclick = delegateClick;
+  if (els.ayahGridMobile) els.ayahGridMobile.onclick = delegateClick;
+
+  // Auto-scroll active ayah into view
+  setTimeout(() => {
+    const activeCell = els.ayahGrid.querySelector(".ayah-cell.bg-slate-800");
+    if (activeCell) {
+      activeCell.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, 100); // Small delay to ensure rendering is complete
   // Reset tracked index for the O(1) cell update in renderAyah
   AppState._prevGridIndex = AppState.currentAyahIndex;
 };
 
 /**
- * Renders the bookmarks list in the sidebar.
+ * Renders the bookmarks list in the sidebar and mobile drawer.
  */
 window.renderBookmarks = function () {
-  els.bookmarksList.innerHTML = "";
+  if (els.bookmarksList) els.bookmarksList.innerHTML = "";
+  if (els.bookmarksListMobile) els.bookmarksListMobile.innerHTML = "";
+
   if (AppState.bookmarks.size === 0) {
-    els.bookmarksList.innerHTML = `<div class="text-slate-500 italic text-center w-full mt-4 text-xs">${T.noBookmarks}</div>`;
+    const emptyHtml = `<div class="text-slate-500 italic text-center w-full mt-4 text-xs">${T.noBookmarks}</div>`;
+    if (els.bookmarksList) els.bookmarksList.innerHTML = emptyHtml;
+    if (els.bookmarksListMobile) els.bookmarksListMobile.innerHTML = emptyHtml;
     return;
   }
 
@@ -671,44 +739,54 @@ window.renderBookmarks = function () {
     const verseIndex = surah.verses.findIndex((v) => v.id === ayahId);
     if (verseIndex === -1) return;
 
-    const container = document.createElement("div");
-    container.className = "flex items-center gap-2 w-full";
+    // Helper to generate a single bookmark row
+    const createRow = () => {
+      const container = document.createElement("div");
+      container.className = "flex items-center gap-2 w-full";
 
-    const btn = document.createElement("button");
-    btn.className =
-      "flex-1 text-left bg-slate-800 hover:bg-slate-700 p-2 rounded-lg text-slate-300 font-bold transition-colors flex justify-between items-center group";
+      const btn = document.createElement("button");
+      btn.className =
+        "flex-1 text-left bg-slate-800 hover:bg-slate-700 p-2 rounded-lg text-slate-300 font-bold transition-colors flex justify-between items-center group";
 
-    btn.innerHTML = `
-      <span>Surah ${surah.trans}, Ayah ${verseIndex + 1}</span>
-      <ion-icon name="arrow-forward-outline" class="opacity-0 group-hover:opacity-100 transition-opacity text-emerald-400"></ion-icon>
-    `;
+      btn.innerHTML = `
+        <span>Sura ${surah.id}. ${surah.trans}, Ajet ${verseIndex + 1}</span>
+        <ion-icon name="arrow-forward-outline" class="opacity-0 group-hover:opacity-100 transition-opacity text-emerald-400"></ion-icon>
+      `;
 
-    btn.onclick = () => {
-      els.surahSelect.value = surahId;
-      loadSurah(surahId);
-      AppState.currentAyahIndex = verseIndex;
-      renderAyah();
-      renderAyahGrid();
+      btn.onclick = () => {
+        closeSidebar();
+        if (typeof closeBookmarks === "function") closeBookmarks();
+
+        els.surahSelect.value = surahId;
+        loadSurah(surahId);
+        AppState.currentAyahIndex = verseIndex;
+        renderAyah();
+        renderAyahGrid();
+      };
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className =
+        "flex-shrink-0 bg-slate-800 hover:bg-rose-900 border border-transparent hover:border-rose-500 text-slate-400 hover:text-rose-400 p-2 rounded-lg transition-colors flex items-center justify-center";
+      deleteBtn.innerHTML = `<ion-icon name="trash-outline" class="text-xl"></ion-icon>`;
+      deleteBtn.title = "Remove Bookmark";
+      deleteBtn.onclick = (e) => {
+        e.stopPropagation();
+        AppState.bookmarks.delete(key);
+        localStorage.setItem(
+          "quran_bookmarks",
+          JSON.stringify([...AppState.bookmarks]),
+        );
+        renderBookmarks();
+        renderAyah();
+      };
+
+      container.appendChild(btn);
+      container.appendChild(deleteBtn);
+      return container;
     };
 
-    const deleteBtn = document.createElement("button");
-    deleteBtn.className =
-      "flex-shrink-0 bg-slate-800 hover:bg-rose-900 border border-transparent hover:border-rose-500 text-slate-400 hover:text-rose-400 p-2 rounded-lg transition-colors flex items-center justify-center";
-    deleteBtn.innerHTML = `<ion-icon name="trash-outline" class="text-xl"></ion-icon>`;
-    deleteBtn.title = "Remove Bookmark";
-    deleteBtn.onclick = (e) => {
-      e.stopPropagation();
-      AppState.bookmarks.delete(key);
-      localStorage.setItem(
-        "quran_bookmarks",
-        JSON.stringify([...AppState.bookmarks]),
-      );
-      renderBookmarks();
-      renderAyah();
-    };
-
-    container.appendChild(btn);
-    container.appendChild(deleteBtn);
-    els.bookmarksList.appendChild(container);
+    if (els.bookmarksList) els.bookmarksList.appendChild(createRow());
+    if (els.bookmarksListMobile)
+      els.bookmarksListMobile.appendChild(createRow());
   });
 };

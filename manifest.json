@@ -1,0 +1,17 @@
+{
+  "name": "Mushaf Plus",
+  "short_name": "Mushaf Plus",
+  "description": "Interaktivni Mushaf za učenje i preslušavanje",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#064e3b",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

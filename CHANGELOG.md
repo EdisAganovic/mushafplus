@@ -2,11 +2,24 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
-## [0.0.9] - 2026-02-26
+## [0.0.10] - 2026-02-27
+
+### Fixed
+
+- **Problem sa skrolanjem**: Riješen problem gdje je prevlačenje prsta za prijelaz na drugi ajet slučajno prekidalo vertikalno skrolanje po cijeloj stranici.
+- **Mobilna navigacija**: Popravljeno zatvaranje sakrivenih izbornika ("Oznake", "Postavke") kada se ponovo klikne ista ikona na donjoj navigacijskoj traci.
+- **Prekrivanje sadržaja**: Dodan prostor na dnu ekrana kako bi se spriječilo da mobilni meni prekriva audio kontrole.
+
+## [0.0.9] - 2026-02-27
 
 ### Added
 
-- **Show/Hide Notes Setting**: Korisnici sada mogu isključiti polje za "Lične bilješke" u postavkama ukoliko ga ne koriste, čime se dobija čistiji izgled ekrana.
+- **Mobilna navigacija**: Dodan potpuno novi "Zapamćeno" (Bookmarks) izbornik (drawer) koji se izvlači sa strane specijalno za mobilne uređaje, te novi interaktivni "Traži" (Search) modal preko cijelog ekrana.
+- **Naziv Sure**: Dodan dinamični prikaz imena trenutne sure iznad navigacijskih polja (Brzi skok) kako bi korisnici u svakom trenutku znali gdje se nalaze na prvi pogled.
+- **Instalacija (PWA)**: Aplikacija sada podržava instalaciju na telefone i računare (Progressive Web App) i može raditi offline bez interneta nakon prvog otvaranja.
+- **Tedžvid objašnjenja**: Klikom na nazive pojedinačnih tedžvidskih pravila (npr. Medd, Gunna) u legendi ispod teksta, sada se prikazuje elegantan oblačić sa objašnjenjem pravila.
+- **Automatsko osvježavanje (PWA)**: Aplikacija automatski prepoznaje nove verzije u pozadini i nudi neporecivo dugme 'Osvježi' na dnu ekrana sa popravljenom logikom za trenutnu nadogradnju.
+- **Postavke bilješki**: Korisnici sada mogu isključiti polje za "Lične bilješke" u postavkama ukoliko ga ne koriste, čime se dobija čistiji izgled ekrana.
 
 ### Fixed
 
