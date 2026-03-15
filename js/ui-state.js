@@ -158,12 +158,7 @@ function closeHifz() {
 function openModal(id) {
   const modal = document.getElementById(id);
   if (modal) modal.classList.remove("hidden");
-  
-  // Hide main action toolbar for surah modal
-  if (id === "surah-hifz-modal") {
-    const toolbar = document.getElementById("main-action-toolbar");
-    if (toolbar) toolbar.style.display = "none";
-  }
+  updateToolbarVisibility();
 }
 
 /**
@@ -172,6 +167,7 @@ function openModal(id) {
 function closeModal(id) {
   const modal = document.getElementById(id);
   if (modal) modal.classList.add("hidden");
+  updateToolbarVisibility();
 }
 
 /**
