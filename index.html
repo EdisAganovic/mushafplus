@@ -16,7 +16,7 @@
     <!-- Global App Configuration -->
     <script>
         // IMPORTANT: Change this version to force cache refresh for all users
-        const APP_VERSION = "0.1.1"; 
+        const APP_VERSION = "0.1.2"; 
     </script>
 
     <!-- UI Styles and Favicon (Dynamic versioning) -->
@@ -303,6 +303,8 @@
                     <button class="btn-theme-dot" data-theme="night" data-label="Noć" title="Tamna (Noć)" style="background-color: #1e293b;"></button>
                     <button class="btn-theme-dot" data-theme="green" data-label="Zelena" title="Zelena (Klasik)" style="background-color: #064e3b;"></button>
                 </div>
+
+
             </div>
 
 
@@ -553,16 +555,7 @@
                     </select>
                 </div>
 
-                <div class="pt-2">
-                    <label class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">Tema stranice (Mushaaf)</label>
-                    <select id="inp-page-theme"
-                        class="w-full bg-slate-950/50 text-slate-300 rounded-xl p-2.5 text-sm border border-slate-800 outline-none focus:border-emerald-500 transition-colors cursor-pointer appearance-none">
-                        <option value="original" class="bg-slate-900" selected>Standardna</option>
-                        <option value="sepia" class="bg-slate-900">Sepia</option>
-                        <option value="night" class="bg-slate-900">Tamna (Noć)</option>
-                        <option value="green" class="bg-slate-900">Zelena</option>
-                    </select>
-                </div>
+
 
                 <div
                     class="pt-2 flex items-center justify-between bg-slate-950/30 p-3 rounded-xl border border-slate-800 mt-2">
@@ -832,42 +825,23 @@
                     <p class="about-subtitle">Interaktivni Mushaf za učenje i preslušavanje</p>
                 </div>
 
-                <div class="about-card">
-                    <span class="about-card-title">Ključne mogućnosti</span>
-                    <div class="about-feature-list">
-                         <div class="about-feature-item">
-                            <span class="about-feature-icon">✓</span>
-                            <span><strong>Audio po riječi</strong> — Klikni na bilo koju riječ za trenutni izgovor.</span>
-                         </div>
-                         <div class="about-feature-item">
-                            <span class="about-feature-icon">✓</span>
-                            <span><strong>Memorisanje</strong> — Dugo držanje (2s) za markiranje naučenih ajeta.</span>
-                         </div>
-                         <div class="about-feature-item">
-                            <span class="about-feature-icon">✓</span>
-                            <span><strong>Hifz Mod</strong> — Napredno ponavljanje određenog opsega ajeta.</span>
-                         </div>
-                         <div class="about-feature-item">
-                            <span class="about-feature-icon">✓</span>
-                            <span><strong>Tedžvid</strong> — Detaljno bojenje pravila sa interaktivnim objašnjenjima.</span>
-                         </div>
-                    </div>
-                </div>
-
                 <div class="about-grid">
                     <div class="about-info-box">
                         <span class="about-info-label">Autor</span>
                         <span class="about-info-value">Edis Aganović</span>
                     </div>
                     <div class="about-info-box">
+                        <span class="about-info-label">Saradnik</span>
+                        <span class="about-info-value">Zehrina Buljubašić, prof.</span>
+                    </div>
+                    <div class="about-info-box">
+                        <span class="about-info-label">Prevod tumačenja</span>
+                        <span class="about-info-value">M. Mehanović, prof.</span>
+                    </div>
+                    <div class="about-info-box">
                         <span class="about-info-label">Verzija</span>
                         <span class="about-info-value">0.1.1</span>
                     </div>
-                </div>
-
-                <div class="about-info-box">
-                    <span class="about-info-label">Prevod tumačenja</span>
-                    <span class="about-info-value">M. Mehanović, prof.</span>
                 </div>
             </div>
         </div>

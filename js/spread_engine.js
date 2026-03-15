@@ -23,14 +23,17 @@ const SVG_PATH = "assets/optimized";
 function preprocessSvg(svgText, pageNum) {
   const prefix = `p${pageNum}-`;
 
-  // Single-pass replacements for better performance
+  // 1. Basic cleanup and ID prefixing
   let processed = svgText
     .replace(/id="([^"]+)"/g, `id="${prefix}$1"`)
     .replace(/url\(#([^)]+)\)/g, `url(#${prefix}$1)`)
-    .replace(/xlink:href="#([^"]+)"/g, `xlink:href="#${prefix}$1"`)
-    .replace(/fill="#231f20"/gi, 'class="quran-svg-text"');
+    .replace(/xlink:href="#([^"]+)"/g, `xlink:href="#${prefix}$1"`);
 
-  // Optimized path processing
+  // 2. Map colors to classes
+  // Text color -> quran-svg-text
+  processed = processed.replace(/fill="#231f20"/gi, 'class="quran-svg-text"');
+  
+  // Frame/Border color -> quran-svg-border or quran-svg-ayah-frame (fill="#bfe8c1")
   processed = processed.replace(
     /<path([^>]+)fill="#bfe8c1"([^>]*)\/>/gi,
     (match) => {
@@ -39,6 +42,15 @@ function preprocessSvg(svgText, pageNum) {
     }
   );
 
+  // 3. SPECIAL LOGIC: Identify Ayah Numbers inside groups
+  // We look for groups <g> that contain a path with class="quran-svg-ayah-frame"
+  // and then find any other paths inside that same group (which are the numbers) and give them a specific class.
+  processed = processed.replace(/<g([^>]*)>([\s\S]*?)quran-svg-ayah-frame([\s\S]*?)<\/g>/gi, (groupMatch) => {
+      // Find any generic text class in this specific group and upgrade it to ayah-number
+      return groupMatch.replace(/class="quran-svg-text"/gi, 'class="quran-svg-ayah-number"');
+  });
+
+  // 4. Responsive SVG sizing
   processed = processed.replace(/<svg([^>]*)>/, (match, p1) => {
     const updated = p1.replace(/\s(width|height)="[^"]*"/g, '');
     return `<svg${updated} width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="shape-rendering:geometricPrecision;">`;

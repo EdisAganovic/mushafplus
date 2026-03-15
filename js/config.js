@@ -196,7 +196,6 @@ window.els = {
   settingsOverlay: document.getElementById("ovl-settings"),
   settingsClose: document.getElementById("btn-close-settings"),
   themeSelect: document.getElementById("inp-theme"),
-  pageThemeSelect: document.getElementById("inp-page-theme"),
   themeDots: document.querySelectorAll(".btn-theme-dot"),
   reciterSelect: document.getElementById("inp-reciter"),
   autoplayToggle: document.getElementById("chk-autoplay"),

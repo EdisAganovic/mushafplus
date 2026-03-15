@@ -77,9 +77,7 @@ async function init() {
       els.autoplayToggle.checked = autoplayState === "true";
     }
 
-    if (els.pageThemeSelect) {
-      els.pageThemeSelect.value = AppState.settings.pageTheme;
-    }
+
 
     updateThemeDotsUI();
     if (AppState.settings.pageTheme) {
@@ -213,10 +211,7 @@ function setupEventListeners() {
     };
   }
 
-  // --- SETTINGS (PAGE THEME) ---
-  if (els.pageThemeSelect) {
-    els.pageThemeSelect.onchange = (e) => setPageTheme(e.target.value);
-  }
+
 
   if (els.themeDots) {
     els.themeDots.forEach(btn => {
@@ -227,7 +222,6 @@ function setupEventListeners() {
   function setPageTheme(theme) {
     AppState.settings.pageTheme = theme;
     localStorage.setItem("quran_page_theme", theme);
-    if (els.pageThemeSelect) els.pageThemeSelect.value = theme;
     updateThemeDotsUI();
     document.body.classList.forEach(cls => {
       if (cls.startsWith('quran-theme-')) document.body.classList.remove(cls);
