@@ -1,0 +1,7 @@
+mp3/
+node_modules/
+.agents
+assets/optimized
+assets/audio
+.venv/
+.venv_svg_opt
