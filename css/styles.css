@@ -49,23 +49,23 @@
 }
 
 /* --- Light mode: force white text on emerald buttons --- */
-.light button#record-btn,
-.light button#next-btn,
-.light button#ayah-play-btn,
-.light button#user-play-btn {
+.light button#btn-record,
+.light button#btn-next,
+.light button#btn-ayah-play,
+.light button#btn-user-play {
   color: #ffffff !important;
 }
 
 /* --- Light mode: force readable text on slate buttons --- */
-.light button#valid-btn,
-.light button#bookmark-btn,
-.light button#prev-btn,
-.light button#ayah-speed-btn,
-.light button#ayah-loop-btn,
-.light button#sidebar-close,
-.light button#settings-close,
-.light button#settings-toggle,
-.light button#mobile-grid-toggle {
+.light button#btn-valid,
+.light button#btn-bookmark,
+.light button#btn-prev,
+.light button#btn-ayah-speed,
+.light button#btn-ayah-loop,
+.light button#btn-close-sidebar,
+.light button#btn-close-settings,
+.light button#btn-settings-toggle,
+.light button#btn-menu-toggle {
   color: #1e293b !important;
 }
 
@@ -101,11 +101,20 @@
 }
 
 /* ===== Global Typography Consistency ===== */
-body, button, input, select, textarea {
+body,
+button,
+input,
+select,
+textarea {
   font-family: 'Outfit', sans-serif !important;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Outfit', sans-serif;
   letter-spacing: -0.01em;
 }
@@ -135,6 +144,32 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 1.25rem;
+}
+
+.active-ayah-cell {
+  border: 1px solid #10b981 !important;
+  z-index: 10;
+  color: #34d399 !important;
+}
+
+.success-pop {
+  animation: success-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes success-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+    filter: brightness(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
 }
 
 .changelog-version-pill {
@@ -175,28 +210,28 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: 0.75rem;
 }
 
-.badge-new { 
-  background: rgba(16, 185, 129, 0.1); 
-  color: #10b981; 
-  border: 1px solid rgba(16, 185, 129, 0.2); 
+.badge-new {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-.badge-fixed { 
-  background: rgba(244, 63, 94, 0.1); 
-  color: #f43f5e; 
-  border: 1px solid rgba(244, 63, 94, 0.2); 
+.badge-fixed {
+  background: rgba(244, 63, 94, 0.1);
+  color: #f43f5e;
+  border: 1px solid rgba(244, 63, 94, 0.2);
 }
 
-.badge-improved { 
-  background: rgba(59, 130, 246, 0.1); 
-  color: #3b82f6; 
-  border: 1px solid rgba(59, 130, 246, 0.2); 
+.badge-improved {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
-.badge-removed { 
-  background: rgba(245, 158, 11, 0.1); 
-  color: #f59e0b; 
-  border: 1px solid rgba(245, 158, 11, 0.2); 
+.badge-removed {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 .changelog-list {
@@ -326,11 +361,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* --- Light mode: notes section label --- */
-.light #ayah-notes-container {
+.light #cnt-notes {
   opacity: 1 !important;
 }
 
-.light #ayah-notes-container .text-slate-500 {
+.light #cnt-notes .text-slate-500 {
   color: #64748b !important;
 }
 
@@ -342,18 +377,18 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* --- Light mode: sidebar darker so cells stand out --- */
-.light aside#sidebar {
+.light aside#dwr-sidebar {
   background-color: #f8fafc;
   border-right: 1px solid #e2e8f0;
 }
 
 /* --- Light mode: main card brighter background --- */
-.light #arabic-display,
+.light #dsp-arabic,
 .light .quran-page-text {
   color: #1e293b !important;
 }
 
-.light #translation-display {
+.light #dsp-translation {
   color: #334155 !important;
 }
 
@@ -1059,7 +1094,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Hide notes container globally if class is present on body */
-body.hide-notes #ayah-notes-container {
+body.hide-notes #cnt-notes {
   display: none !important;
 }
 

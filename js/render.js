@@ -42,45 +42,41 @@ document.addEventListener("click", () => {
  * - Mobile: Placed at bottom of document (viewport fixed).
  */
 window.relocateToolbar = function () {
-  const toolbar = document.getElementById("main-action-toolbar");
-  const desktopPlaceholder = document.getElementById("desktop-toolbar-placeholder");
-  
-  if (!toolbar || !desktopPlaceholder) return;
-  
+  if (!els.mainActionToolbar || !els.desktopToolbarPlaceholder) return;
+
   const isDesktop = window.innerWidth >= 768;
-  
+
   if (isDesktop) {
     // Desktop: Move inside the card placeholder
-    if (!desktopPlaceholder.contains(toolbar)) {
-      desktopPlaceholder.appendChild(toolbar);
-      toolbar.style.position = ""; // Revert to CSS classes
-      toolbar.style.bottom = "";
-      toolbar.style.top = "";
-      toolbar.style.left = "";
-      toolbar.style.right = "";
-      toolbar.style.width = "";
-      toolbar.style.zIndex = "";
+    if (!els.desktopToolbarPlaceholder.contains(els.mainActionToolbar)) {
+      els.desktopToolbarPlaceholder.appendChild(els.mainActionToolbar);
+      els.mainActionToolbar.style.position = "";
+      els.mainActionToolbar.style.bottom = "";
+      els.mainActionToolbar.style.top = "";
+      els.mainActionToolbar.style.left = "";
+      els.mainActionToolbar.style.right = "";
+      els.mainActionToolbar.style.width = "";
+      els.mainActionToolbar.style.zIndex = "";
     }
   } else {
     // Mobile: Move to the bottom of the body (before mobile nav)
-    const mobileNav = document.getElementById("mobile-bottom-nav");
-    
-    // Force explicit bottom/top to avoid browser guesswork
-    toolbar.style.position = "fixed";
-    toolbar.style.bottom = "5.5rem"; // Sit above the ~64px bottom nav
-    toolbar.style.top = "auto";
-    toolbar.style.left = "0.5rem";
-    toolbar.style.right = "0.5rem";
-    toolbar.style.width = "calc(100% - 1rem)";
-    toolbar.style.zIndex = "9999"; // Top-most
-    
-    if (mobileNav && toolbar.nextElementSibling !== mobileNav) {
-      document.body.insertBefore(toolbar, mobileNav);
-    } else if (!mobileNav && toolbar.parentElement !== document.body) {
-      document.body.appendChild(toolbar);
+    if (!els.mobileBottomNav) return;
+
+    els.mainActionToolbar.style.position = "fixed";
+    els.mainActionToolbar.style.bottom = "5.5rem";
+    els.mainActionToolbar.style.top = "auto";
+    els.mainActionToolbar.style.left = "0.5rem";
+    els.mainActionToolbar.style.right = "0.5rem";
+    els.mainActionToolbar.style.width = "calc(100% - 1rem)";
+    els.mainActionToolbar.style.zIndex = "9999";
+
+    if (els.mobileBottomNav && els.mainActionToolbar.nextElementSibling !== els.mobileBottomNav) {
+      document.body.insertBefore(els.mainActionToolbar, els.mobileBottomNav);
+    } else if (!els.mobileBottomNav && els.mainActionToolbar.parentElement !== document.body) {
+      document.body.appendChild(els.mainActionToolbar);
     }
   }
-  
+
   // Ensure visibility state is respected after relocation (mobile hidden states)
   if (typeof updateToolbarVisibility === "function") updateToolbarVisibility();
 };
@@ -463,10 +459,8 @@ window.renderAyah = function () {
   }
 
   // Tajweed Legend — show rules present in this ayah (controlled by settings)
-  const legendContainer = document.getElementById("tajweed-legend-container");
-  const legendEl = document.getElementById("tajweed-legend");
-  if (legendContainer && legendEl) {
-    legendEl.innerHTML = "";
+  if (els.tajweedLegendContainer && els.tajweedLegend) {
+    els.tajweedLegend.innerHTML = "";
     const tajweedEnabled = AppState.settings?.tajweed !== false;
     const legendEnabled = AppState.settings?.tajweedLegend !== false;
     if (tajweedEnabled && legendEnabled && window.Tajweed) {
@@ -517,14 +511,14 @@ window.renderAyah = function () {
             });
           }
 
-          legendEl.appendChild(chip);
+          els.tajweedLegend.appendChild(chip);
         });
-        legendContainer.classList.remove("hidden");
+        els.tajweedLegendContainer.classList.remove("hidden");
       } else {
-        legendContainer.classList.add("hidden");
+        els.tajweedLegendContainer.classList.add("hidden");
       }
     } else {
-      legendContainer.classList.add("hidden");
+      els.tajweedLegendContainer.classList.add("hidden");
     }
   }
 
@@ -615,12 +609,26 @@ window.renderAyah = function () {
   }
   updateGridCellState(AppState.currentAyahIndex);
 
-  const cells = els.ayahGrid.children;
-  const cur = cells[AppState.currentAyahIndex];
-  if (cur) {
-    cur.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  // Scroll to current ayah in grid - only when navigating (not when toggling valid/bookmark)
+  if (AppState._shouldScrollGrid !== false) {
+    // For virtual grid, find element by data-index
+    const cur = els.ayahGrid.querySelector(`[data-index="${AppState.currentAyahIndex}"]`);
+    if (cur) {
+      setTimeout(() => {
+        cur.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 50);
+    } else {
+      // Fallback: If not in DOM (outside virtual buffer), manual scroll parent
+      const targetRow = Math.floor(AppState.currentAyahIndex / VIRTUAL_GRID.ITEMS_PER_ROW);
+      const targetScroll = (targetRow * VIRTUAL_GRID.ROW_HEIGHT) - 100;
+      if (els.ayahGrid.parentElement) {
+         els.ayahGrid.parentElement.scrollTop = Math.max(0, targetScroll);
+         // The scroll listener will trigger updateVirtualGrid which adds it to DOM
+      }
+    }
   }
   AppState._prevGridIndex = AppState.currentAyahIndex;
+  AppState._shouldScrollGrid = true; // Reset to default
 
   // 7. Swipe UX: Slide-fade transition (mobile only)
   if (AppState.swipeDirection) {
@@ -656,12 +664,14 @@ window.renderAyah = function () {
  */
 window.updateGridCellState = function (idx) {
   const cellsToUpdate = [];
-  if (els.ayahGrid && els.ayahGrid.children[idx]) {
-    cellsToUpdate.push(els.ayahGrid.children[idx]);
-  }
-  if (els.ayahGridMobile && els.ayahGridMobile.children[idx]) {
-    cellsToUpdate.push(els.ayahGridMobile.children[idx]);
-  }
+  
+  // Use data-index to find the correct cell in the virtual grid
+  const cellDesktop = els.ayahGrid?.querySelector(`[data-index="${idx}"]`);
+  if (cellDesktop) cellsToUpdate.push(cellDesktop);
+  
+  const cellMobile = els.ayahGridMobile?.querySelector(`[data-index="${idx}"]`);
+  if (cellMobile) cellsToUpdate.push(cellMobile);
+
   if (cellsToUpdate.length === 0) return;
 
   const surahId = AppState.currentSurah.id;
@@ -669,7 +679,8 @@ window.updateGridCellState = function (idx) {
   if (!verse) return; // Boundary check to prevent "verse is undefined" error when switching surahs
   const key = `${surahId}-${verse.id}`;
 
-  const isActive = idx === AppState.currentAyahIndex;
+  const activeIdx = parseInt(AppState.currentAyahIndex);
+  const isActive = parseInt(idx) === activeIdx;
   const isChecked = AppState.checkedAyats.has(key);
   const hasNotes = !!AppState.notes[key];
 
@@ -700,41 +711,28 @@ window.updateGridCellState = function (idx) {
       "border-dashed",
       "border-rose-500/30",
       "text-rose-300",
-      "hover:bg-rose-500/20",
+      "hover:bg-slate-600",
       "text-slate-300",
       "border-slate-700",
-      "hover:bg-slate-600",
+      "border-2",
+      "active-ayah-cell"
     );
 
     // Apply new state classes
-    if (isActive) {
-      cell.classList.add(
-        "bg-slate-800",
-        "text-emerald-400",
-        "border",
-        "border-emerald-500",
-        "shadow-md",
-        "shadow-emerald-500/20",
-      );
-    } else if (isChecked) {
-      cell.classList.add("bg-emerald-600", "text-white");
+    if (isChecked) {
+       cell.classList.add("bg-emerald-600", "text-white");
     } else if (isHifzRange) {
-      cell.classList.add(
-        "bg-rose-500/10",
-        "border",
-        "border-dashed",
-        "border-rose-500/30",
-        "text-rose-300",
-        "hover:bg-rose-500/20",
-      );
+       cell.classList.add("bg-rose-500/10", "border", "border-dashed", "border-rose-500/30", "text-rose-300", "hover:bg-rose-500/20");
     } else {
-      cell.classList.add(
-        "bg-slate-800",
-        "text-slate-300",
-        "border",
-        "border-slate-700",
-        "hover:bg-slate-600",
-      );
+       cell.classList.add("bg-slate-800", "text-slate-300", "border", "border-slate-700", "hover:bg-slate-600");
+    }
+
+    // Active state adds border and shadow on top of background
+    if (isActive) {
+      cell.classList.add("active-ayah-cell");
+      if (!isChecked) {
+        cell.classList.add("bg-slate-800");
+      }
     }
 
     if (hasNotes) {
@@ -749,7 +747,7 @@ window.updateGridCellState = function (idx) {
  * Rebuilds the scrollable Ayah grid in the sidebar using a virtual scrolling approach
  * that only renders cells currently in or near the viewport.
  */
-window.renderAyahGrid = function () {
+window.renderAyahGrid = function (skipScroll = false) {
   const surahId = AppState.currentSurah.id;
   const verses = AppState.currentSurah.verses;
 
@@ -787,26 +785,39 @@ window.renderAyahGrid = function () {
       if (!btn) return;
       const idx = parseInt(btn.dataset.index);
 
+      // Visual feedback on click
+      btn.classList.add("success-pop");
+      setTimeout(() => btn.classList.remove("success-pop"), 400);
+
       if (AppState.hifzEnabled) {
         if (AppState.hifzRange.start === null) {
           AppState.hifzRange.start = idx;
           AppState.hifzRange.end = null;
           if (els.hifzRangeText) els.hifzRangeText.innerText = `Opseg: ${idx + 1} - ...`;
           if (els.hifzRangeTextMobile) els.hifzRangeTextMobile.innerText = `Opseg: ${idx + 1} - ...`;
+          
+          // Navigation: Jump to selection
+          if (typeof goToAyah === "function") goToAyah(idx + 1);
         } else if (AppState.hifzRange.end === null) {
           AppState.hifzRange.end = idx;
           const min = Math.min(AppState.hifzRange.start, AppState.hifzRange.end);
           const max = Math.max(AppState.hifzRange.start, AppState.hifzRange.end);
           if (els.hifzRangeText) els.hifzRangeText.innerText = `Opseg: ${min + 1} - ${max + 1}`;
           if (els.hifzRangeTextMobile) els.hifzRangeTextMobile.innerText = `Opseg: ${min + 1} - ${max + 1}`;
+          
+          // Navigation: Jump to the start of the range
+          if (typeof goToAyah === "function") goToAyah(min + 1);
         } else {
           AppState.hifzRange.start = idx;
           AppState.hifzRange.end = null;
           if (els.hifzRangeText) els.hifzRangeText.innerText = `Opseg: ${idx + 1} - ...`;
           if (els.hifzRangeTextMobile) els.hifzRangeTextMobile.innerText = `Opseg: ${idx + 1} - ...`;
+          
+          // Navigation: Jump to the starting point
+          if (typeof goToAyah === "function") goToAyah(idx + 1);
         }
         localStorage.setItem("quran_hifzRange", JSON.stringify(AppState.hifzRange));
-        renderAyahGrid(); // Trigger re-virtualization
+        renderAyahGrid(true); // skips autoscroll to keep user at their current selection point
       } else {
         if (typeof closeHifz === "function") closeHifz();
         if (window.innerWidth < 768 && typeof closeSidebar === "function") closeSidebar();
@@ -819,17 +830,42 @@ window.renderAyahGrid = function () {
     window._gridClickInitialized = true;
   }
 
-  // Auto-scroll active ayah into view
-  setTimeout(() => {
-    // We need to force render or find it. Virtual scrolling might have it unmounted.
-    // Easiest: scroll the parent container to the calculated offset.
-    const targetRow = Math.floor(AppState.currentAyahIndex / VIRTUAL_GRID.ITEMS_PER_ROW);
-    const targetScroll = targetRow * VIRTUAL_GRID.ROW_HEIGHT - VIRTUAL_GRID.SCROLL_OFFSET;
+  // Auto-scroll active ayah into view (both desktop and mobile grids)
+  if (skipScroll) return;
 
+  // Use a two-step approach: first position the scroll, then find and scroll the cell
+  setTimeout(() => {
+    const targetRow = Math.floor(AppState.currentAyahIndex / VIRTUAL_GRID.ITEMS_PER_ROW);
+    // Calculate scroll position - show one row before to give context
+    const containerHeight = els.ayahGrid?.parentElement?.clientHeight || 400;
+    const targetScroll = ((targetRow -1 ) * VIRTUAL_GRID.ROW_HEIGHT);
+    
     containers.forEach(cfg => {
-       if (cfg.parent) cfg.parent.scrollTop = targetScroll;
+      if (cfg.parent) {
+        cfg.parent.scrollTop = Math.max(0, targetScroll);
+        // Force update the virtual grid to render cells at the new scroll position
+        updateVirtualGrid(cfg.el, cfg.parent);
+      }
     });
-  }, VIRTUAL_GRID.AUTO_SCROLL_DELAY);
+    
+    // After scroll positions are set and virtual grid renders, scroll the cell into view
+    setTimeout(() => {
+      // Find the specific button in desktop grid
+      const cur = els.ayahGrid?.querySelector(`[data-index="${AppState.currentAyahIndex}"]`);
+      if (cur) {
+        cur.scrollIntoView({ behavior: "smooth", block: "center" });
+        console.log(`[Grid] Scrolled to ayah ${AppState.currentAyahIndex + 1}`);
+      } else {
+        console.warn(`[Grid] Cell for ayah ${AppState.currentAyahIndex + 1} not found in desktop grid.`);
+      }
+
+      // Also scroll mobile grid
+      const mobileCur = els.ayahGridMobile?.querySelector(`[data-index="${AppState.currentAyahIndex}"]`);
+      if (mobileCur) {
+        mobileCur.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 200);
+  }, VIRTUAL_GRID.AUTO_SCROLL_DELAY + 50);
 
   AppState._prevGridIndex = AppState.currentAyahIndex;
 };
@@ -861,14 +897,19 @@ function updateVirtualGrid(container, parent) {
   const hasMetadata = typeof window.getJuzStartAt === "function";
   
   const hifzActive = AppState.hifzEnabled;
-  const hifzHasRange = hifzActive && AppState.hifzRange.start !== null && AppState.hifzRange.end !== null;
-  const hifzMin = hifzHasRange ? Math.min(AppState.hifzRange.start, AppState.hifzRange.end) : null;
-  const hifzMax = hifzHasRange ? Math.max(AppState.hifzRange.start, AppState.hifzRange.end) : null;
+  const start = AppState.hifzRange.start;
+  const end = AppState.hifzRange.end;
+  const hasBoth = hifzActive && start !== null && end !== null;
+  const hasOnlyStart = hifzActive && start !== null && end === null;
+
+  const hifzMin = hasBoth ? Math.min(start, end) : (hasOnlyStart ? start : null);
+  const hifzMax = hasBoth ? Math.max(start, end) : (hasOnlyStart ? start : null);
 
   for (let i = startIndex; i < endIndex; i++) {
     const verse = verses[i];
     const key = `${surahId}-${verse.id}`;
-    const isActive = i === AppState.currentAyahIndex;
+    const activeIdx = parseInt(AppState.currentAyahIndex);
+    const isActive = i === activeIdx;
     const isChecked = AppState.checkedAyats.has(key);
     const isHifzRange = hifzMin !== null && i >= hifzMin && i <= hifzMax;
     const hasNotes = !!AppState.notes[key];
@@ -899,14 +940,19 @@ function updateVirtualGrid(container, parent) {
     }
 
     // Styles
-    if (isActive) {
-      cell.classList.add("bg-slate-800", "text-emerald-400", "border", "border-emerald-500", "shadow-md", "shadow-emerald-500/20");
-    } else if (isChecked) {
+    if (isChecked) {
       cell.classList.add("bg-emerald-600", "text-white");
     } else if (isHifzRange) {
       cell.classList.add("bg-rose-500/10", "border", "border-dashed", "border-rose-500/30", "text-rose-300");
     } else {
       cell.classList.add("bg-slate-800", "text-slate-300", "border", "border-slate-700", "hover:bg-slate-600");
+    }
+
+    if (isActive) {
+      cell.classList.add("active-ayah-cell");
+      if (!isChecked) {
+        cell.classList.add("bg-slate-800");
+      }
     }
 
     if (hasNotes) cell.style.borderBottom = "2px solid #f59e0b";

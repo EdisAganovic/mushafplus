@@ -324,10 +324,9 @@ window.renderSpread = async function () {
 
   // Update parent container background
   const themeClass = `quran-theme-${AppState.settings.pageTheme || 'original'}`;
-  const spreadCard = document.getElementById("spread-card");
-  if (spreadCard) {
-    const isHidden = spreadCard.classList.contains("hidden");
-    spreadCard.className = `w-full flex-col items-center animate-fade-in ${themeClass} ${isHidden ? "hidden" : "flex"}`;
+  if (els.spreadCard) {
+    const isHidden = els.spreadCard.classList.contains("hidden");
+    els.spreadCard.className = `w-full flex-col items-center animate-fade-in ${themeClass} ${isHidden ? "hidden" : "flex"}`;
   }
 
   // OPTIMIZATION: Render pages with priority (right page first for RTL)

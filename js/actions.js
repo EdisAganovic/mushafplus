@@ -129,7 +129,15 @@ window.playWordAudio = function(surahId, ayahId, wordIdx) {
   }
 
   _activeWordAudio = new Audio(url);
-  _activeWordAudio.play().catch(e => console.warn(`Word audio failed: ${url}`, e));
+  
+  // Suppress errors for missing local word audio files (expected behavior)
+  _activeWordAudio.onerror = () => {
+    // Silently ignore - word audio files are optional/local only
+  };
+  
+  _activeWordAudio.play().catch(() => {
+    // Silently ignore - word audio files are optional/local only
+  });
 };
 
 /**
@@ -144,6 +152,23 @@ window.nextAyah = function () {
     // Always jump +2 pages to next spread
     const nextP = currentPage + 2;
     goToPage(Math.min(604, nextP));
+    return;
+  }
+
+  // --- HIFZ RANGE NAVIGATION ---
+  if (AppState.hifzEnabled && AppState.hifzRange.start !== null && AppState.hifzRange.end !== null) {
+    const min = Math.min(AppState.hifzRange.start, AppState.hifzRange.end);
+    const max = Math.max(AppState.hifzRange.start, AppState.hifzRange.end);
+    
+    if (AppState.currentAyahIndex < max) {
+      AppState.currentAyahIndex++;
+    } else {
+      AppState.currentAyahIndex = min; // Loop back to start of Hifz range
+    }
+    
+    localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
+    renderAyah();
+    if (typeof renderAyahGrid === "function") renderAyahGrid();
     return;
   }
 
@@ -248,6 +273,16 @@ window.toggleCheckmark = function () {
     "quran_checked",
     JSON.stringify([...AppState.checkedAyats]),
   );
+  
+  // Enable grid scroll when toggling valid status (User requested navigation)
+  AppState._shouldScrollGrid = true;
+  
+  // Visual Feedback
+  if (els.validBtn) {
+    els.validBtn.classList.add("success-pop");
+    setTimeout(() => els.validBtn.classList.remove("success-pop"), 400);
+  }
+
   renderAyah();
   if (typeof updateGridCellState === "function") {
     updateGridCellState(AppState.currentAyahIndex);
@@ -275,6 +310,16 @@ window.toggleBookmark = function () {
     "quran_bookmarks",
     JSON.stringify([...AppState.bookmarks]),
   );
+  
+  // Enable grid scroll when toggling bookmark
+  AppState._shouldScrollGrid = true;
+  
+  // Visual Feedback
+  if (els.bookmarkBtn) {
+    els.bookmarkBtn.classList.add("success-pop");
+    setTimeout(() => els.bookmarkBtn.classList.remove("success-pop"), 400);
+  }
+
   renderAyah();
   renderBookmarks();
 };

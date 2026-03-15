@@ -50,7 +50,7 @@
             <!-- Left: Title -->
             <div class="flex items-center gap-3 shrink-0">
                 <span class="text-2xl hidden md:inline">📖</span>
-                <h1 id="app-title"
+                <h1 id="dsp-app-title"
                     class="text-lg font-bold bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent whitespace-nowrap">
                     Mushaf Plus
                 </h1>
@@ -60,16 +60,16 @@
             <div class="flex-1 flex items-center justify-end gap-2 sm:gap-4 w-full md:w-auto">
                 <!-- Desktop Search -->
                 <div class="relative group z-50 hidden sm:flex shrink-0 flex-1 max-w-[240px] xl:max-w-[320px]">
-                    <input type="text" id="search-input" data-i18n-placeholder="searchPlaceholder"
+                    <input type="text" id="inp-search" data-i18n-placeholder="searchPlaceholder"
                         placeholder="Pretraži tekst ili ajet (2:255)..."
                         class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-full text-[0.875rem] placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
                     <ion-icon name="search-outline"
                         class="absolute left-[0.75rem] top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors"></ion-icon>
-                    
-                    <div id="search-results-container"
+
+                    <div id="cnt-search-results"
                         class="absolute top-[3rem] left-0 right-0 w-[400px] max-h-[24rem] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-y-auto hidden flex-col custom-scrollbar z-50">
-                        <div id="search-results-list" class="flex flex-col"></div>
-                        <div id="search-empty-state" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden"
+                        <div id="lst-search-results" class="flex flex-col"></div>
+                        <div id="dsp-search-empty" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden"
                             data-i18n="noResults">
                             Nema rezultata
                         </div>
@@ -78,12 +78,12 @@
 
                 <!-- Page Input -->
                 <div class="relative flex items-center shrink-0">
-                    <input type="number" id="header-page-input" min="1" max="604" placeholder="Str."
+                    <input type="number" id="inp-page-header" min="1" max="604" placeholder="Str."
                         class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] w-14 px-2 rounded-lg outline-none focus:border-emerald-500 transition-colors text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                 </div>
 
                 <!-- Surah Select -->
-                <select id="surah-select"
+                <select id="inp-surah"
                     class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] px-[0.5rem] rounded-lg outline-none focus:border-emerald-500 transition-colors cursor-pointer text-[0.875rem] min-w-0 flex-1 max-w-[220px]">
                     <option value="" disabled selected class="bg-slate-900" data-i18n="selectSurah">Izaberi suru...
                     </option>
@@ -91,16 +91,16 @@
 
                 <!-- Action Buttons -->
                 <div class="flex items-center gap-2 shrink-0">
-                    <button id="spread-toggle"
+                    <button id="btn-spread-toggle"
                         class="text-slate-300 hover:text-emerald-500 bg-slate-950 border border-slate-700 hover:bg-slate-800 transition-colors w-[2.5rem] h-[2.5rem] text-[1.25rem] rounded-lg flex items-center justify-center shrink-0"
                         title="Dvolisnica (Spread mode)">
                         <ion-icon name="book-outline"></ion-icon>
                     </button>
-                    <button id="settings-toggle"
+                    <button id="btn-settings-toggle"
                         class="text-slate-300 hover:text-emerald-500 bg-slate-950 border border-slate-700 hover:bg-slate-800 transition-colors w-[2.5rem] h-[2.5rem] text-[1.25rem] rounded-lg flex items-center justify-center shrink-0">
                         <ion-icon name="options-outline"></ion-icon>
                     </button>
-                    <button id="mobile-grid-toggle"
+                    <button id="btn-menu-toggle"
                         class="md:hidden text-slate-100 hover:text-emerald-500 transition-colors w-[2.5rem] h-[2.5rem] text-[1.25rem] rounded-lg hover:bg-slate-800 bg-slate-950 border border-slate-700 flex items-center justify-center shrink-0">
                         <ion-icon name="menu-outline"></ion-icon>
                     </button>
@@ -111,16 +111,16 @@
         <!-- Mobile search row -->
         <div class="relative group z-40 w-full hidden px-[0.75rem] mt-1 pb-3">
             <div class="relative w-full">
-                <input type="text" id="search-input-mobile" data-i18n-placeholder="searchPlaceholder"
+                <input type="text" id="inp-search-mobile" data-i18n-placeholder="searchPlaceholder"
                     placeholder="Pretraži tekst ili ajet (2:255)..."
                     class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-full text-[0.875rem] placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
                 <ion-icon name="search-outline"
                     class="absolute left-[0.75rem] top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors"></ion-icon>
             </div>
-            <div id="search-results-container-mobile"
+            <div id="cnt-search-results-mobile"
                 class="absolute top-[3rem] left-[0.75rem] right-[0.75rem] max-h-[24rem] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-y-auto hidden flex-col custom-scrollbar z-50">
-                <div id="search-results-list-mobile" class="flex flex-col"></div>
-                <div id="search-empty-state-mobile" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden"
+                <div id="lst-search-results-mobile" class="flex flex-col"></div>
+                <div id="dsp-search-empty-mobile" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden"
                     data-i18n="noResults">
                     Nema rezultata
                 </div>
@@ -129,51 +129,51 @@
     </header>
 
     <!-- Main Container -->
-    <div id="app-container" class="flex-1 flex flex-col md:flex-row overflow-hidden max-w-[1400px] mx-auto w-full">
+    <div id="cnt-app" class="flex-1 flex flex-col md:flex-row overflow-hidden max-w-[1400px] mx-auto w-full">
 
         <!-- Main Content Area -->
-        <main id="main-content" class="flex-1 flex flex-col overflow-y-auto items-center min-h-0">
+        <main id="cnt-main-content" class="flex-1 flex flex-col overflow-y-auto items-center min-h-0">
 
             <!-- Ayah Card -->
-            <div id="ayah-card"
+            <div id="crd-ayah"
                 class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl p-3 sm:p-8 shadow-2xl flex flex-col items-center min-h-[200px] sm:min-h-[400px] justify-start relative shrink-0">
 
            
 
                 <!-- Navigation Hint -->
                 <div class="w-full text-center mb-1">
-                    <div id="current-surah-name" class="font-bold text-emerald-400 text-sm mb-1 uppercase tracking-widest leading-none"></div>
+                    <div id="dsp-surah-name" class="font-bold text-emerald-400 text-sm mb-1 uppercase tracking-widest leading-none"></div>
                 </div>
 
                 <!-- Navigation Badges -->
                 <div class="w-full flex justify-center items-center mt-1 sm:mb-6 gap-1.5 sm:gap-4 overflow-x-auto no-scrollbar px-3 sm:px-0">
                     <!-- Ayah Badge -->
                     <div class="text-[10px] sm:text-sm font-mono text-emerald-500 bg-emerald-500/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-emerald-500/20 flex items-center shadow-md shrink-0">
-                        <label for="ayah-input" data-i18n="ayahLabel" class="cursor-pointer mr-0.5 sm:mr-1 opacity-90">Ajet</label>
-                        <input type="number" id="ayah-input" min="1" max="286" placeholder="0"
+                        <label for="inp-ayah" data-i18n="ayahLabel" class="cursor-pointer mr-0.5 sm:mr-1 opacity-90">Ajet</label>
+                        <input type="number" id="inp-ayah" min="1" max="286" placeholder="0"
                             class="bg-transparent border-none text-emerald-400 font-bold w-7 sm:w-9 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
-                        <span class="opacity-90 ml-0.5">/ <span id="total-ayahs-num">0</span></span>
+                        <span class="opacity-90 ml-0.5">/ <span id="dsp-total-ayahs">0</span></span>
                     </div>
 
                     <!-- Juz Badge -->
                     <div class="text-[10px] sm:text-sm font-mono text-amber-500 bg-amber-500/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-amber-500/20 flex items-center gap-1 shadow-md shrink-0">
-                        <label for="juz-input" data-i18n="juzLabel" class="opacity-90 cursor-pointer">Džuz</label>
-                        <input type="number" id="juz-input" min="1" max="30" placeholder="0"
+                        <label for="inp-juz" data-i18n="juzLabel" class="opacity-90 cursor-pointer">Džuz</label>
+                        <input type="number" id="inp-juz" min="1" max="30" placeholder="0"
                             class="bg-transparent border-none text-amber-400 font-bold w-5 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                     </div>
 
                     <!-- Page Badge -->
                     <div class="text-[10px] sm:text-sm font-mono text-blue-400 bg-blue-500/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-blue-500/20 flex items-center shadow-md shrink-0">
-                        <label for="page-input" data-i18n="pageLabel" class="opacity-90 cursor-pointer mr-0.5">Str.</label>
-                        <input type="number" id="page-input" min="1" max="604" placeholder="0"
+                        <label for="inp-page" data-i18n="pageLabel" class="opacity-90 cursor-pointer mr-0.5">Str.</label>
+                        <input type="number" id="inp-page" min="1" max="604" placeholder="0"
                             class="bg-transparent border-none text-blue-300 font-bold w-6 sm:w-10 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
-                        <div id="page-progress-container" class="hidden flex items-center ml-1 pl-1">
-                            <label for="page-progress" class="opacity-90 cursor-pointer mr-0.5">Ajet&nbsp;</label>
-                            <span id="page-progress" class="text-blue-300 font-bold whitespace-nowrap"></span>
+                        <div id="cnt-page-progress" class="hidden flex items-center ml-1 pl-1">
+                            <label for="dsp-page-progress" class="opacity-90 cursor-pointer mr-0.5">Ajet&nbsp;</label>
+                            <span id="dsp-page-progress" class="text-blue-300 font-bold whitespace-nowrap"></span>
                         </div>
                     </div>
                 </div>
-                <div id="bismillah-display"
+                <div id="dsp-bismillah"
                     class="w-full mb-3 sm:mb-6 hidden select-none text-center transition-all duration-300">
                     <div class="font-quran quran-text text-2xl sm:text-3xl text-emerald-500/80 leading-relaxed" dir="rtl">
                         بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
@@ -185,16 +185,16 @@
                         <div class="h-[1px] w-16 bg-emerald-500/10"></div>
                     </div>
                 </div>
-                <div id="arabic-display"
+                <div id="dsp-arabic"
                     class="font-quran quran-text text-[2rem] mt-4 sm:text-4xl md:text-5xl text-right w-full text-slate-100 selection:bg-emerald-800 transition-all duration-300">
                 </div>
 
                 <!-- Tajweed Legend -->
-                <div id="tajweed-legend-container"
+                <div id="cnt-tajweed-legend"
                     class="mt-4 sm:mt-6 sm:mb-3 w-full mb-4 max-w-2xl hidden flex-wrap gap-1.5 justify-center">
-                    <div id="tajweed-legend" class="flex flex-wrap gap-1.5 justify-center w-full"></div>
+                    <div id="dsp-tajweed-legend" class="flex flex-wrap gap-1.5 justify-center w-full"></div>
                 </div>
-                <div id="translation-display"
+                <div id="dsp-translation"
                     class="text-sm sm:text-lg md:text-xl text-slate-400 text-left max-w-2xl w-full">
                 </div>
                 
@@ -202,55 +202,55 @@
 
 
                 <!-- Navigation Controls -->
-                <div id="ayah-audio-container"
+                <div id="cnt-ayah-audio"
                     class="mt-4 sm:mt-8 hidden w-full max-w-lg flex flex-col items-center gap-2">
                     <div
                         class="flex items-center gap-2 sm:gap-4 w-full bg-slate-800/40 p-2 sm:p-3 rounded-2xl border border-slate-700/50 backdrop-blur-sm shadow-inner">
-                        <button id="ayah-play-btn"
+                        <button id="btn-ayah-play"
                             class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-500 transition-all active:scale-90 shadow-lg shadow-emerald-900/40 group overflow-hidden shrink-0">
-                            <ion-icon name="play" id="ayah-play-icon" class="text-xl ml-1"></ion-icon>
-                            <ion-icon name="pause" id="ayah-pause-icon" class="text-xl hidden"></ion-icon>
+                            <ion-icon name="play" id="icon-ayah-play" class="text-xl ml-1"></ion-icon>
+                            <ion-icon name="pause" id="icon-ayah-pause" class="text-xl hidden"></ion-icon>
                         </button>
 
                         <div class="flex-1 flex flex-col gap-1 pr-1 sm:pr-2">
                             <div
                                 class="flex items-center justify-between text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-widest font-bold">
-                                <span id="reciter-name-label">Recitacija</span>
-                                <span id="ayah-audio-time">0:00 / 0:00</span>
+                                <span id="dsp-reciter-name">Recitacija</span>
+                                <span id="dsp-ayah-audio-time">0:00 / 0:00</span>
                             </div>
-                            <div id="ayah-progress-bg"
+                            <div id="prg-ayah-bg"
                                 class="h-1.5 sm:h-2 w-full bg-slate-700/50 rounded-full cursor-pointer relative overflow-hidden">
-                                <div id="ayah-audio-progress" class="h-full bg-emerald-500 w-0 absolute top-0 left-0">
+                                <div id="prg-ayah" class="h-full bg-emerald-500 w-0 absolute top-0 left-0">
                                 </div>
                             </div>
                         </div>
 
                         <div class="flex items-center gap-1 sm:gap-2 ml-1 shrink-0">
-                            <button id="ayah-speed-btn" data-i18n-title="playbackSpeed"
+                            <button id="btn-ayah-speed" data-i18n-title="playbackSpeed"
                                 class="text-[9px] sm:text-[10px] font-bold text-slate-300 hover:text-emerald-400 bg-slate-900/80 rounded px-1.5 py-0.5 sm:px-2 sm:py-1 border border-slate-700 transition-colors w-8 sm:w-10 text-center"
                                 title="Brzina">1x</button>
-                            <button id="ayah-loop-btn" data-i18n-title="loopAyah"
+                            <button id="btn-ayah-loop" data-i18n-title="loopAyah"
                                 class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-lg sm:text-xl text-slate-500 hover:text-emerald-400 transition-colors rounded-full hover:bg-slate-800"
                                 title="Ponavljaj ajet">
                                 <ion-icon name="repeat"></ion-icon>
                             </button>
                         </div>
                     </div>
-                    <audio id="ayah-audio" class="hidden"></audio>
+                    <audio id="aud-ayah" class="hidden"></audio>
                 </div>
 
 
 
                 <!-- User Recording Player -->
-                 <div id="user-audio-container" class="mt-1 hidden w-full max-w-lg flex flex-col items-center gap-2">
+                 <div id="cnt-user-audio" class="mt-1 hidden w-full max-w-lg flex flex-col items-center gap-2">
                     <div
                         class="flex items-center gap-2 sm:gap-4 w-full p-2 sm:p-3 rounded-2xl border backdrop-blur-sm shadow-inner"
                         style="background-color: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.2);">
-                        <button id="user-play-btn"
+                        <button id="btn-user-play"
                             class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full transition-all active:scale-90 shadow-lg group overflow-hidden shrink-0"
                             style="background-color: #ff3f5f4f; color: white;">
-                            <ion-icon name="play" id="user-play-icon" class="text-xl ml-1"></ion-icon>
-                            <ion-icon name="pause" id="user-pause-icon" class="text-xl hidden"></ion-icon>
+                            <ion-icon name="play" id="icon-user-play" class="text-xl ml-1"></ion-icon>
+                            <ion-icon name="pause" id="icon-user-pause" class="text-xl hidden"></ion-icon>
                         </button>
 
                         <div class="flex-1 flex flex-col gap-1 pr-1 sm:pr-2">
@@ -258,12 +258,12 @@
                                 class="flex items-center justify-between text-[9px] sm:text-[10px] uppercase tracking-widest font-bold"
                                 style="color: #f43f5e;">
                                 <span data-i18n="yourRecording">Tvoj snimak</span>
-                                <span id="user-audio-time">0:00 / 0:00</span>
+                                <span id="dsp-user-audio-time">0:00 / 0:00</span>
                             </div>
-                            <div id="user-progress-bg"
+                            <div id="prg-user-bg"
                                 class="h-1.5 sm:h-2 w-full rounded-full cursor-pointer relative overflow-hidden"
                                 style="background-color: rgba(244, 63, 94, 0.2);">
-                                <div id="user-audio-progress" class="h-full w-0 absolute top-0 left-0"
+                                <div id="prg-user" class="h-full w-0 absolute top-0 left-0"
                                     style="background-color: #f43f5e;">
                                 </div>
                             </div>
@@ -272,18 +272,18 @@
                 </div>
 
                 <!-- Actions & Navigation Toolbar Placeholder (Desktop only) -->
-                <div id="desktop-toolbar-placeholder" class="hidden md:block w-full max-w-lg mx-auto"></div>
+                <div id="cnt-toolbar-placeholder" class="hidden md:block w-full max-w-lg mx-auto"></div>
 
 
                 <!-- Notes Section -->
-                <div id="ayah-notes-container"
+                <div id="cnt-notes"
                     class="mt-4 sm:mt-6 w-full max-w-lg flex flex-col gap-2 opacity-60 hover:opacity-100 transition-opacity">
                     <div
                         class="flex items-center gap-2 text-[10px] text-slate-500 uppercase tracking-widest font-bold ml-1">
                         <ion-icon name="create-outline"></ion-icon>
                         <span data-i18n="notesTitle">Lične bilješke</span>
                     </div>
-                    <textarea id="ayah-notes" data-i18n-placeholder="notesPlaceholder"
+                    <textarea id="inp-notes" data-i18n-placeholder="notesPlaceholder"
                         placeholder="Dodaj podsjetnik (npr. 'Obrati pažnju na tedžvid kod riječi X')..."
                         class="w-full bg-slate-950/50 border border-slate-800 rounded-xl p-3 text-sm text-slate-300 outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all resize-none h-16 sm:h-20 placeholder:text-slate-700"></textarea>
                 </div>
@@ -291,17 +291,17 @@
 
 
             <!-- Spread Card (Initially Hidden) -->
-            <div id="spread-card" class="hidden w-full flex flex-col items-center animate-fade-in">
-                <div id="spread-view" class="w-full flex flex-col lg:flex-row-reverse gap-4 lg:gap-8 items-start justify-center">
+            <div id="crd-spread" class="hidden w-full flex flex-col items-center animate-fade-in">
+                <div id="cnt-spread-view" class="w-full flex flex-col lg:flex-row-reverse gap-4 lg:gap-8 items-start justify-center">
                     <!-- Dynamic Quran Pages -->
                 </div>
 
                 <!-- Quick Page Theme Toggle -->
-                <div id="page-theme-toggle-container" class="mt-8 mb-4">
-                    <button class="theme-dot-btn" data-theme="original" data-label="Standard" title="Standardna" style="background-color: #fcfaf0;"></button>
-                    <button class="theme-dot-btn" data-theme="sepia" data-label="Sepia" title="Sepia (Topla)" style="background-color: #f4ecd8;"></button>
-                    <button class="theme-dot-btn" data-theme="night" data-label="Noć" title="Tamna (Noć)" style="background-color: #1e293b;"></button>
-                    <button class="theme-dot-btn" data-theme="green" data-label="Zelena" title="Zelena (Klasik)" style="background-color: #064e3b;"></button>
+                <div id="cnt-page-theme-toggle" class="mt-8 mb-4">
+                    <button class="btn-theme-dot" data-theme="original" data-label="Standard" title="Standardna" style="background-color: #fcfaf0;"></button>
+                    <button class="btn-theme-dot" data-theme="sepia" data-label="Sepia" title="Sepia (Topla)" style="background-color: #f4ecd8;"></button>
+                    <button class="btn-theme-dot" data-theme="night" data-label="Noć" title="Tamna (Noć)" style="background-color: #1e293b;"></button>
+                    <button class="btn-theme-dot" data-theme="green" data-label="Zelena" title="Zelena (Klasik)" style="background-color: #064e3b;"></button>
                 </div>
             </div>
 
@@ -312,18 +312,18 @@
         </main>
 
         <!-- Sidebar Overlay (Mobile) -->
-        <div id="sidebar-overlay"
+        <div id="ovl-sidebar"
             class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[10001] hidden opacity-0 transition-opacity duration-300 md:hidden">
         </div>
 
         <!-- Sidebar -->
-        <aside id="sidebar"
+        <aside id="dwr-sidebar"
             class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 pb-24 md:pb-6 flex flex-col shrink-0 overflow-y-auto transform translate-x-full transition-transform duration-300 md:relative md:translate-x-0 md:w-80 shadow-2xl md:shadow-none"
             style="z-index: 100002;">
 
             <div class="flex justify-between items-center mb-6 md:hidden">
                 <h2 class="text-lg font-bold text-slate-200" data-i18n="menu">Meni</h2>
-                <button id="sidebar-close" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
+                <button id="btn-close-sidebar" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
@@ -333,10 +333,10 @@
                 <div class="flex items-center justify-between gap-2">
                     <div class="flex flex-col flex-1">
                         <span class="text-xs font-bold text-rose-400 uppercase tracking-wider">Hifz Mod</span>
-                        <span id="hifz-range-text" class="text-[10px] text-slate-500 line-clamp-1">Klikni na ajet za opseg</span>
+                        <span id="dsp-hifz-range" class="text-[10px] text-slate-500 line-clamp-1">Klikni na ajet za opseg</span>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                        <input type="checkbox" id="hifz-toggle" class="sr-only peer">
+                        <input type="checkbox" id="chk-hifz" class="sr-only peer">
                         <div
                             class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-500">
                         </div>
@@ -348,16 +348,16 @@
             <div class="mb-8">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-sm font-semibold text-slate-400" data-i18n="surahProgress">Progres</span>
-                    <span id="progress-percent" class="text-sm font-bold text-emerald-400">0 / 0</span>
+                    <span id="dsp-progress-percent" class="text-sm font-bold text-emerald-400">0 / 0</span>
                 </div>
                 <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                    <div id="progress-bar-fill"
+                    <div id="prg-bar-fill"
                         class="bg-gradient-to-r from-emerald-600 to-emerald-400 h-full w-0 transition-all duration-700 ease-out">
                     </div>
                 </div>
             </div>
 
-            <h3 id="ayah-grid-title" class="text-slate-200 font-bold mb-2 flex items-center gap-2 text-sm">
+            <h3 id="lst-ayah-grid-title" class="text-slate-200 font-bold mb-2 flex items-center gap-2 text-sm">
                 <ion-icon name="grid-outline"></ion-icon>
                 <span data-i18n="ayahGrid">Ajeti</span>
             </h3>
@@ -384,7 +384,7 @@
 
             <!-- Scrollable Ayah Grid -->
             <div class="flex-[3] overflow-y-auto custom-scrollbar mb-2 min-h-[120px] bg-slate-950/50 p-3 rounded-xl border border-slate-800/60">
-                <div id="ayah-grid" class="grid grid-cols-5 content-start gap-2">
+                <div id="cnt-ayah-grid" class="grid grid-cols-5 content-start gap-2">
                     <!-- Ayah cells will be injected here -->
                 </div>
             </div>
@@ -394,7 +394,7 @@
                 <ion-icon name="bookmarks-outline"></ion-icon>
                 <span data-i18n="bookmarks">Označeno</span>
             </h3>
-            <div id="bookmarks-list"
+            <div id="lst-bookmarks"
                 class="flex-[2] overflow-y-auto flex flex-col gap-2 pr-2 custom-scrollbar text-sm min-h-[150px]">
                 <!-- Bookmarks will be injected here -->
                 <div class="text-slate-500 italic text-center w-full mt-2 text-xs" data-i18n="noBookmarks">Još nema
@@ -439,13 +439,13 @@
     </div>
 
     <!-- Settings Overlay -->
-    <div id="settings-overlay"
+    <div id="ovl-settings"
         class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"
         style="z-index: 100001;">
     </div>
 
     <!-- Settings Drawer -->
-    <aside id="settings-drawer"
+    <aside id="dwr-settings"
         class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 pb-24 md:pb-6 flex flex-col shrink-0 overflow-y-auto transform translate-x-full transition-transform duration-300 shadow-2xl"
         style="z-index: 100002;">
         <div class="flex justify-between items-center mb-6">
@@ -453,19 +453,19 @@
                 <ion-icon name="options-outline"></ion-icon>
                 <span data-i18n="preferences">Postavke</span>
             </h2>
-            <button id="settings-close" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
+            <button id="btn-close-settings" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
 
         <!-- About & Version Buttons -->
         <div class="flex gap-2 mb-6">
-            <button id="about-btn"
+            <button id="btn-about"
                 class="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold py-2 rounded-lg transition-colors border border-slate-700">
                 <ion-icon name="information-circle-outline"></ion-icon>
                 <span>O aplikaciji</span>
             </button>
-            <button id="version-btn"
+            <button id="btn-version"
                 class="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold py-2 rounded-lg transition-colors border border-slate-700">
                 <ion-icon name="git-branch-outline"></ion-icon>
                 <span>Verzija</span>
@@ -479,9 +479,9 @@
                     <div class="flex justify-between mb-1 translate-y-1">
                         <label class="text-[10px] text-slate-400 uppercase tracking-wider"
                             data-i18n="arabicFontSize">Veličina arapskog fonta</label>
-                        <span id="ar-size-val" class="text-xs font-bold text-emerald-400">200%</span>
+                        <span id="dsp-ar-size" class="text-xs font-bold text-emerald-400">200%</span>
                     </div>
-                    <input type="range" id="ar-size-slider" min="80" max="600" step="10" value="200"
+                    <input type="range" id="rng-ar-size" min="80" max="600" step="10" value="200"
                         class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
                 </div>
 
@@ -489,9 +489,9 @@
                     <div class="flex justify-between mb-1 translate-y-1">
                         <label class="text-[10px] text-slate-400 uppercase tracking-wider"
                             data-i18n="translationFontSize">Veličina prijevoda</label>
-                        <span id="bs-size-val" class="text-xs font-bold text-emerald-400">100%</span>
+                        <span id="dsp-bs-size" class="text-xs font-bold text-emerald-400">100%</span>
                     </div>
-                    <input type="range" id="bs-size-slider" min="80" max="250" step="10" value="100"
+                    <input type="range" id="rng-bs-size" min="80" max="250" step="10" value="100"
                         class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
                 </div>
 
@@ -499,9 +499,9 @@
                     <div class="flex justify-between mb-1 translate-y-1">
                         <label class="text-[10px] text-slate-400 uppercase tracking-wider"
                             data-i18n="arabicLineHeight">Razmak redova (arapski)</label>
-                        <span id="ar-lh-val" class="text-xs font-bold text-emerald-400">1.6</span>
+                        <span id="dsp-ar-lh" class="text-xs font-bold text-emerald-400">1.6</span>
                     </div>
-                    <input type="range" id="ar-lh-slider" min="1.0" max="4.0" step="0.1" value="1.6"
+                    <input type="range" id="rng-ar-lh" min="1.0" max="4.0" step="0.1" value="1.6"
                         class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
                 </div>
 
@@ -509,7 +509,7 @@
                 <div class="mt-2 p-3 bg-slate-950/50 rounded-xl border border-slate-800">
                     <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Prikaz — Arapski
                     </div>
-                    <div id="settings-preview-ar" class="font-quran text-slate-100 text-right" dir="rtl"
+                    <div id="prv-arabic" class="font-quran text-slate-100 text-right" dir="rtl"
                         style="font-size:2rem; line-height:1.6">قُلْ هُوَ ٱللَّهُ أَحَدٌ ١ ٱللَّهُ ٱلصَّمَدُ ٢</div>
                 </div>
 
@@ -517,13 +517,13 @@
                 <div class="mt-2 p-3 bg-slate-950/50 rounded-xl border border-slate-800">
                     <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Prikaz — Prijevod
                     </div>
-                    <div id="settings-preview-bs" class="font-outfit text-slate-400 text-center" style="font-size:1rem">
+                    <div id="prv-translation" class="font-outfit text-slate-400 text-center" style="font-size:1rem">
                         Reci: "On je Allah - Jedan! Allah je Utočište svakom."</div>
                 </div>
 
                 <div class="pt-2">
                     <label class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">Učač</label>
-                    <select id="reciter-select"
+                    <select id="inp-reciter"
                         class="w-full bg-slate-950/50 text-slate-300 rounded-xl p-2.5 text-sm border border-slate-800 outline-none focus:border-emerald-500 transition-colors cursor-pointer appearance-none">
                         <option value="Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net" class="bg-slate-900">Ahmed el-Adžemi</option>
                         <option value="Hudhaify_128kbps" class="bg-slate-900">Ali el-Huzejfi</option>
@@ -541,7 +541,7 @@
                 <div class="pt-2">
                     <label class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1"
                         data-i18n="appTheme">Tema aplikacije</label>
-                    <select id="theme-select"
+                    <select id="inp-theme"
                         class="w-full bg-slate-950/50 text-slate-300 rounded-xl p-2.5 text-sm border border-slate-800 outline-none focus:border-emerald-500 transition-colors cursor-pointer appearance-none">
                         <option value="" class="bg-slate-900" data-i18n="themeEmerald">Smaragdna (Standardno)
                         </option>
@@ -555,7 +555,7 @@
 
                 <div class="pt-2">
                     <label class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">Tema stranice (Mushaaf)</label>
-                    <select id="page-theme-select"
+                    <select id="inp-page-theme"
                         class="w-full bg-slate-950/50 text-slate-300 rounded-xl p-2.5 text-sm border border-slate-800 outline-none focus:border-emerald-500 transition-colors cursor-pointer appearance-none">
                         <option value="original" class="bg-slate-900" selected>Standardna</option>
                         <option value="sepia" class="bg-slate-900">Sepia</option>
@@ -572,7 +572,7 @@
                             čitanje</span>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="lightmode-toggle" class="sr-only peer">
+                        <input type="checkbox" id="chk-lightmode" class="sr-only peer">
                         <div
                             class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
                         </div>
@@ -588,7 +588,7 @@
                             završi</span>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="autoplay-toggle" class="sr-only peer" checked>
+                        <input type="checkbox" id="chk-autoplay" class="sr-only peer" checked>
                         <div
                             class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
                         </div>
@@ -603,7 +603,7 @@
                         <span class="text-[10px] text-slate-500" data-i18n="tajweedDesc">Pravila učenja u bojama</span>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="tajweed-toggle" class="sr-only peer" checked>
+                        <input type="checkbox" id="chk-tajweed" class="sr-only peer" checked>
                         <div
                             class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
                         </div>
@@ -617,7 +617,7 @@
                         <span class="text-[10px] text-slate-500" data-i18n="audioPlayerDesc">Prikaži kontrolu zvuka</span>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="audio-toggle" class="sr-only peer" checked>
+                        <input type="checkbox" id="chk-audio" class="sr-only peer" checked>
                         <div
                             class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
                         </div>
@@ -631,7 +631,7 @@
                         <span class="text-[10px] text-slate-500" data-i18n="disableWordAudioDesc">Onemogući zvuk pri kliku</span>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="word-audio-toggle" class="sr-only peer">
+                        <input type="checkbox" id="chk-word-audio" class="sr-only peer">
                         <div
                             class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
                         </div>
@@ -645,7 +645,7 @@
                         <span class="text-[10px] text-slate-500" data-i18n="tajweedLegendDesc">Prikaži legendu ispod ajeta</span>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="tajweed-legend-toggle" class="sr-only peer" checked>
+                        <input type="checkbox" id="chk-tajweed-legend" class="sr-only peer" checked>
                         <div
                             class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
                         </div>
@@ -659,7 +659,7 @@
                         <span class="text-[10px] text-slate-500" data-i18n="showNotesDesc">Prikaži polje za podsjetnike</span>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="notes-toggle" class="sr-only peer" checked>
+                        <input type="checkbox" id="chk-notes" class="sr-only peer" checked>
                         <div
                             class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
                         </div>
@@ -675,17 +675,17 @@
                 <span data-i18n="dataTransfer">Backup</span>
             </h3>
             <div class="flex gap-2">
-                <button id="export-btn"
+                <button id="btn-export"
                     class="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold py-2 rounded-lg transition-colors border border-slate-700">
                     <ion-icon name="download-outline"></ion-icon>
                     <span data-i18n="export">Izvezi</span>
                 </button>
-                <button id="import-btn"
+                <button id="btn-import"
                     class="flex-1 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold py-2 rounded-lg transition-colors border border-slate-700">
                     <ion-icon name="cloud-upload-outline"></ion-icon>
                     <span data-i18n="import">Uvezi</span>
                 </button>
-                <input type="file" id="import-file" class="hidden" accept=".json">
+                <input type="file" id="inp-import-file" class="hidden" accept=".json">
             </div>
         </div>
 
@@ -694,28 +694,28 @@
     </aside>
 
     <!-- ===== Bookmarks Overlay (Mobile) ===== -->
-    <div id="bookmarks-overlay"
+    <div id="ovl-bookmarks"
         class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 md:hidden"
         style="z-index: 100001;">
     </div>
 
     <!-- ===== Hifz Overlay (Mobile) ===== -->
-    <div id="hifz-overlay"
+    <div id="ovl-hifz"
         class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 md:hidden"
         style="z-index: 100001;">
     </div>
 
     <!-- ===== Hifz Drawer (Mobile) ===== -->
-    <aside id="hifz-drawer"
+    <aside id="dwr-hifz"
         class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 pb-24 flex flex-col shrink-0 overflow-y-auto transform translate-x-full transition-transform duration-300 shadow-2xl md:hidden"
         style="z-index: 100002;">
-        
+
         <div class="flex justify-between items-center mb-6 shrink-0 border-b border-slate-800 pb-4">
             <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
                 <ion-icon name="repeat-outline"></ion-icon>
                 <span>Hifz Mod</span>
             </h2>
-            <button id="hifz-close-mobile" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
+            <button id="btn-close-hifz" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -726,10 +726,10 @@
                 <div class="flex items-center justify-between gap-2">
                     <div class="flex flex-col flex-1">
                         <span class="text-sm font-bold text-rose-400 uppercase tracking-wider">Aktiviraj</span>
-                        <span id="hifz-range-text-mobile" class="text-[11px] text-slate-500 line-clamp-1">Klikni ajet za opseg</span>
+                        <span id="dsp-hifz-range-mobile" class="text-[11px] text-slate-500 line-clamp-1">Klikni ajet za opseg</span>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer shrink-0">
-                        <input type="checkbox" id="hifz-toggle-mobile" class="sr-only peer">
+                        <input type="checkbox" id="chk-hifz-mobile" class="sr-only peer">
                         <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500"></div>
                     </label>
                 </div>
@@ -757,7 +757,7 @@
 
             <!-- Scrollable Ayah Grid (Mobile) -->
             <div class="flex-1 overflow-y-auto custom-scrollbar bg-slate-950/50 p-3 rounded-xl border border-slate-800/60 min-h-[120px]">
-                <div id="ayah-grid-mobile" class="grid grid-cols-5 content-start gap-2">
+                <div id="cnt-ayah-grid-mobile" class="grid grid-cols-5 content-start gap-2">
                     <!-- Ayah cells will be injected here -->
                 </div>
             </div>
@@ -766,7 +766,7 @@
     </aside>
 
     <!-- ===== Bookmarks Drawer (Mobile) ===== -->
-    <aside id="bookmarks-drawer"
+    <aside id="dwr-bookmarks"
         class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 pb-24 flex flex-col shrink-0 overflow-y-auto transform translate-x-full transition-transform duration-300 shadow-2xl md:hidden"
         style="z-index: 100002;">
         <div class="flex justify-between items-center mb-6 shrink-0 border-b border-slate-800 pb-4">
@@ -774,12 +774,12 @@
                 <ion-icon name="bookmarks-outline"></ion-icon>
                 <span data-i18n="bookmarks">Zapamćeno</span>
             </h2>
-            <button id="bookmarks-close" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
+            <button id="btn-close-bookmarks" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
 
-        <div id="bookmarks-list-mobile"
+        <div id="lst-bookmarks-mobile"
             class="flex-1 overflow-y-auto flex flex-col gap-2 pr-2 custom-scrollbar text-sm min-h-[150px]">
             <div class="text-slate-500 italic text-center w-full mt-2 text-xs" data-i18n="noBookmarks">Još nema
                 oznaka</div>
@@ -787,15 +787,15 @@
     </aside>
 
     <!-- ===== Search Modal (Mobile) ===== -->
-    <div id="search-modal" class="modal-overlay hidden animate-modal-fade-in" style="z-index: 200000;">
+    <div id="mdl-search" class="modal-overlay hidden animate-modal-fade-in" style="z-index: 200000;">
         <div class="modal-container modal-container-lg h-[80vh] flex flex-col animate-modal-slide-up shadow-modal">
             <div class="shrink-0 border-b border-slate-800 p-4 relative z-10 bg-slate-900 rounded-t-2xl">
                 <div class="flex items-center gap-3 w-full">
-                    <button class="text-slate-400 hover:text-emerald-400 transition-colors p-1" data-modal-close="search-modal">
+                    <button class="text-slate-400 hover:text-emerald-400 transition-colors p-1" data-modal-close="mdl-search">
                         <ion-icon name="arrow-back-outline" class="text-2xl"></ion-icon>
                     </button>
                     <div class="relative w-full">
-                        <input type="text" id="search-input-modal" data-i18n-placeholder="searchPlaceholder"
+                        <input type="text" id="inp-search-modal" data-i18n-placeholder="searchPlaceholder"
                             placeholder="Pretraži tekst ili ajet (2:255)..."
                             class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-full text-[0.875rem] placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
                         <ion-icon name="search-outline"
@@ -804,8 +804,8 @@
                 </div>
             </div>
             <div class="p-0 relative flex-1 bg-slate-900 rounded-b-2xl overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700">
-                <div id="search-results-list-modal" class="flex flex-col"></div>
-                <div id="search-empty-state-modal" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden"
+                <div id="lst-search-results-modal" class="flex flex-col"></div>
+                <div id="dsp-search-empty-modal" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden"
                     data-i18n="noResults">
                     Nema rezultata
                 </div>
@@ -814,14 +814,14 @@
     </div>
 
     <!-- ===== About Modal ===== -->
-    <div id="about-modal" class="modal-overlay hidden animate-modal-fade-in" style="z-index: 200000;">
+    <div id="mdl-about" class="modal-overlay hidden animate-modal-fade-in" style="z-index: 200000;">
         <div class="modal-container max-h-[85vh] flex flex-col animate-modal-slide-up shadow-modal">
             <div class="modal-header shrink-0">
                 <h2 class="modal-title">
                     <ion-icon name="information-circle-outline" class="text-emerald-400"></ion-icon>
                     O aplikaciji
                 </h2>
-                <button class="modal-close" data-modal-close="about-modal">
+                <button class="modal-close" data-modal-close="mdl-about">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
@@ -874,14 +874,14 @@
     </div>
 
     <!-- ===== Version Modal ===== -->
-    <div id="version-modal" class="modal-overlay hidden animate-modal-fade-in" style="z-index: 200000;">
+    <div id="mdl-version" class="modal-overlay hidden animate-modal-fade-in" style="z-index: 200000;">
         <div class="modal-container max-h-[85vh] flex flex-col animate-modal-slide-up shadow-modal">
             <div class="modal-header shrink-0">
                 <h2 class="modal-title">
                     <ion-icon name="git-branch-outline" class="text-emerald-400"></ion-icon>
                     Verzija
                 </h2>
-                <button class="modal-close" data-modal-close="version-modal">
+                <button class="modal-close" data-modal-close="mdl-version">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
@@ -974,14 +974,14 @@
     </div>
 
     <!-- ===== Surah & Hifz Modal ===== -->
-    <div id="surah-hifz-modal" class="modal-overlay hidden animate-modal-fade-in">
+    <div id="mdl-surah" class="modal-overlay hidden animate-modal-fade-in">
         <div class="modal-container max-h-[85vh] flex flex-col animate-modal-slide-up shadow-modal">
             <div class="modal-header shrink-0">
                 <h2 class="modal-title">
                     <ion-icon name="book-outline" class="text-emerald-400"></ion-icon>
                     Sura
                 </h2>
-                <button class="modal-close" data-modal-close="surah-hifz-modal">
+                <button class="modal-close" data-modal-close="mdl-surah">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
@@ -990,7 +990,7 @@
                 <!-- Hifz Mode has been moved to Mobile Drawer -->                <!-- Surah List -->
                 <div>
                     <h3 class="text-slate-200 font-bold mb-4 text-sm uppercase tracking-wider">Izaberi suru</h3>
-                    <div id="modal-surah-list" class="flex flex-col gap-1 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700 pr-1">
+                    <div id="lst-surah-modal" class="flex flex-col gap-1 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700 pr-1">
                         <!-- Populated by JS -->
                     </div>
                 </div>
@@ -1001,39 +1001,39 @@
 
 
     <!-- Actions & Navigation Toolbar -->
-    <div id="main-action-toolbar" class="fixed md:relative left-2 right-2 md:left-auto md:right-auto md:mt-8 flex items-center justify-center z-[9998] w-[calc(100%-1rem)] md:w-full max-w-lg mx-auto" style="bottom: 5.5rem;">
+    <div id="tlb-actions" class="fixed md:relative left-2 right-2 md:left-auto md:right-auto md:mt-8 flex items-center justify-center z-[9998] w-[calc(100%-1rem)] md:w-full max-w-lg mx-auto" style="bottom: 5.5rem;">
         <div class="flex items-center gap-2 sm:gap-3 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-2xl p-2 shadow-2xl w-full max-w-lg">
-            <button id="prev-btn"
+            <button id="btn-prev"
                 class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all active:scale-95 shrink-0">
                 <ion-icon name="arrow-back-outline" class="text-lg sm:text-xl"></ion-icon>
             </button>
 
-            <button id="record-btn"
+            <button id="btn-record"
                 class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl transition-all active:scale-95 shadow-lg relative overflow-hidden shrink-0 hover:shadow-xl"
                 style="background-color: rgba(244, 63, 94, 0.29); color: white;"
                 onmouseover="this.style.backgroundColor='rgba(244, 63, 94, 0.5)'"
                 onmouseout="this.style.backgroundColor='rgba(244, 63, 94, 0.29)'">
-                <div id="mic-meter-container" class="absolute inset-0 hidden pointer-events-none" style="background-color: rgba(0, 0, 0, 0.2);">
-                    <div id="mic-meter-bar" class="h-full transition-all duration-75 w-0" style="background-color: #9a2236;">
+                <div id="cnt-mic-meter" class="absolute inset-0 hidden pointer-events-none" style="background-color: rgba(0, 0, 0, 0.2);">
+                    <div id="bar-mic-meter" class="h-full transition-all duration-75 w-0" style="background-color: #9a2236;">
                     </div>
                 </div>
-                <ion-icon name="mic-outline" id="record-icon" class="text-lg sm:text-xl relative z-10 shrink-0"></ion-icon>
+                <ion-icon name="mic-outline" id="icon-record" class="text-lg sm:text-xl relative z-10 shrink-0"></ion-icon>
                 <span id="record-text" class="hidden text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap relative z-10" style="color: white;" data-i18n="record">Snimi</span>
             </button>
 
-            <button id="valid-btn"
+            <button id="btn-valid"
                 class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 h-10 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent text-xs sm:text-base">
                 <ion-icon name="checkmark-circle-outline" class="text-base sm:text-xl"></ion-icon>
                 <span data-i18n="valid">Tačno</span>
             </button>
 
-            <button id="bookmark-btn"
+            <button id="btn-bookmark"
                 class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 h-10 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent text-xs sm:text-base">
                 <ion-icon name="bookmark-outline" class="text-base sm:text-xl"></ion-icon>
                 <span data-i18n="bookmark">Označi</span>
             </button>
 
-            <button id="next-btn"
+            <button id="btn-next"
                 class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all active:scale-95 shrink-0">
                 <ion-icon name="arrow-forward-outline" class="text-lg sm:text-xl"></ion-icon>
             </button>
@@ -1041,34 +1041,34 @@
     </div>
 
     <!-- Mobile Bottom Navigation -->
-    <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-700 flex md:hidden justify-around items-center p-2" style="z-index: 9998;">
-        <button id="nav-surah-btn" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-emerald-400 transition-colors w-16">
+    <nav id="nav-bottom" class="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-700 flex md:hidden justify-around items-center p-2" style="z-index: 9998;">
+        <button id="btn-nav-surah" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-emerald-400 transition-colors w-16">
             <ion-icon name="book-outline" class="text-2xl mb-1"></ion-icon>
             <span class="text-[10px] font-medium" data-i18n="surah">Sura</span>
         </button>
-        <button id="nav-hifz-btn" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-rose-400 transition-colors w-16">
+        <button id="btn-nav-hifz" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-rose-400 transition-colors w-16">
             <ion-icon name="repeat-outline" class="text-2xl mb-1"></ion-icon>
             <span class="text-[10px] font-medium" data-i18n="hifz">Hifz</span>
         </button>
-        <button id="nav-search-btn" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-emerald-400 transition-colors w-16">
+        <button id="btn-nav-search" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-emerald-400 transition-colors w-16">
             <ion-icon name="search-outline" class="text-2xl mb-1"></ion-icon>
             <span class="text-[10px] font-medium" data-i18n="search">Traži</span>
         </button>
-        <button id="nav-bookmarks-btn" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-emerald-400 transition-colors w-16">
+        <button id="btn-nav-bookmarks" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-emerald-400 transition-colors w-16">
             <ion-icon name="bookmark-outline" class="text-2xl mb-1"></ion-icon>
             <span class="text-[10px] font-medium" data-i18n="bookmarks">Oznake</span>
         </button>
-        <button id="nav-settings-btn" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-emerald-400 transition-colors w-16">
+        <button id="btn-nav-settings" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-emerald-400 transition-colors w-16">
             <ion-icon name="options-outline" class="text-2xl mb-1"></ion-icon>
             <span class="text-[10px] font-medium" data-i18n="preferences">Postavke</span>
         </button>
     </nav>
 
     <!-- Hidden audio element for playback -->
-    <audio id="audio-playback" class="hidden"></audio>
+    <audio id="aud-playback" class="hidden"></audio>
 
     <!-- Swipe UX: First-time Toast -->
-    <div id="swipe-toast" class="swipe-toast">
+    <div id="toast-swipe" class="swipe-toast">
         <div class="toast-direction">
             <ion-icon name="arrow-back-outline"></ion-icon>
             <span>Prethodni ajet</span>
@@ -1088,6 +1088,7 @@
             "js/tajweed_engine.js",
             "js/i18n.js",
             "js/config.js",
+            "js/validation.js",
             "js/utils.js",
             "js/effects.js",
             "js/audio.js",
@@ -1105,6 +1106,13 @@
 
         scriptsToLoad.forEach(src => {
             document.write(`<script src="${src}?v=${APP_VERSION}"><\/script>`);
+        });
+
+        // Run validation after all scripts load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof window.runAllValidations === 'function') {
+                window.runAllValidations();
+            }
         });
 
         // Ensure the version UI displays stay updated automatically

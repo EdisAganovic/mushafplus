@@ -192,7 +192,8 @@ swipe-toast                  → toast-swipe
 - [ ] Verify all drawers/modals open/close correctly
 - [ ] Test mobile and desktop layouts
 - [ ] Check browser console for errors
-- [ ] Verify search functionality works with new names
+- [ ] Verify search functionality works with new namesInvalid URI. Load of media resource  failed. localhost:8000
+
 
 ---
 

@@ -34,14 +34,12 @@ window.applySettings = function () {
   els.arabicDisplay.style.lineHeight = AppState.settings.arLineHeight;
 
   // Sync preview
-  const previewAr = document.getElementById("settings-preview-ar");
-  const previewBs = document.getElementById("settings-preview-bs");
-  if (previewAr) {
-    previewAr.style.fontSize = `${AppState.settings.arSize / 100}rem`;
-    previewAr.style.lineHeight = AppState.settings.arLineHeight;
+  if (els.settingsPreviewAr) {
+    els.settingsPreviewAr.style.fontSize = `${AppState.settings.arSize / 100}rem`;
+    els.settingsPreviewAr.style.lineHeight = AppState.settings.arLineHeight;
   }
-  if (previewBs) {
-    previewBs.style.fontSize = `${AppState.settings.bsSize / 100}rem`;
+  if (els.settingsPreviewBs) {
+    els.settingsPreviewBs.style.fontSize = `${AppState.settings.bsSize / 100}rem`;
   }
 
   // Audio Player Visibility

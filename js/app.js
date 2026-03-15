@@ -48,8 +48,6 @@ function showErrorToast(msg) {
  */
 async function init() {
   try {
-    if (els.syncStatus) els.syncStatus.innerText = T.loading;
-
     // 1. Validate Data Source
     if (typeof QURAN_DATA === "undefined") {
       throw new Error("QURAN_DATA missing. Check quran_data.js.");
@@ -129,16 +127,14 @@ async function init() {
     applySettings();
     applyTranslations();
     updateReciterLabel();
-    if (els.syncStatus) els.syncStatus.innerText = T.ready;
 
     // --- UPDATE NOTIFICATION ---
     const lastSeenVersion = localStorage.getItem("last_seen_version");
     if (lastSeenVersion && lastSeenVersion !== APP_VERSION) {
       setTimeout(() => {
-        const modal = document.getElementById("version-modal");
-        if (modal) {
-          modal.setAttribute("data-auto-open", "true");
-          openModal("version-modal");
+        if (els.versionModal) {
+          els.versionModal.setAttribute("data-auto-open", "true");
+          openModal("mdl-version");
         }
       }, 1000);
     }
@@ -156,7 +152,6 @@ async function init() {
     }
   } catch (error) {
     console.error("Init failed:", error);
-    if (els.syncStatus) els.syncStatus.innerText = T.error;
     alert("Load Error: " + error.message);
   }
 }
@@ -297,16 +292,38 @@ function setupEventListeners() {
 
   // Update UI on time/progress events (recitation)
   if (els.ayahAudio) {
-    els.ayahAudio.ontimeupdate = () => {
+    els.ayahAudio.addEventListener("timeupdate", () => {
       if (typeof updateAyahAudioUI === "function") updateAyahAudioUI();
-    };
-    els.ayahAudio.onended = () => {
+    });
+
+    els.ayahAudio.addEventListener("play", () => {
+      if (els.ayahPlayIcon) els.ayahPlayIcon.classList.add("hidden");
+      if (els.ayahPauseIcon) els.ayahPauseIcon.classList.remove("hidden");
+    });
+
+    els.ayahAudio.addEventListener("pause", () => {
+      if (els.ayahPlayIcon) els.ayahPlayIcon.classList.remove("hidden");
+      if (els.ayahPauseIcon) els.ayahPauseIcon.classList.add("hidden");
+    });
+
+    els.ayahAudio.addEventListener("ended", () => {
       resetAyahAudioUI();
       // Auto-advance to next ayah if enabled
       if (AppState.settings.autoplay && typeof nextAyah === "function") {
+        console.log("[Audio] Ayah ended, auto-advancing...");
         nextAyah();
+        // Crucial: Start playback of the new ayah
+        setTimeout(() => {
+          if (els.ayahAudio) {
+            console.log("[Audio] Autoplay starting next track...");
+            els.ayahAudio.play().catch(e => {
+                console.warn("[Autoplay] Playback blocked or failed:", e);
+                resetAyahAudioUI();
+            });
+          }
+        }, 300); // Slightly longer delay for safer source switching
       }
-    };
+    });
   }
 
   // Update UI on time/progress events (user recording)
@@ -489,8 +506,7 @@ function setupEventListeners() {
       els.arSizeVal.innerText = `${size}%`;
       els.arabicDisplay.style.fontSize = `${size / 100}rem`;
       // Update preview
-      const previewAr = document.getElementById("settings-preview-ar");
-      if (previewAr) previewAr.style.fontSize = `${size / 100}rem`;
+      if (els.settingsPreviewAr) els.settingsPreviewAr.style.fontSize = `${size / 100}rem`;
       localStorage.setItem("quran_ar_size", size);
     });
   }
@@ -503,8 +519,7 @@ function setupEventListeners() {
       els.bsSizeVal.innerText = `${size}%`;
       els.translationDisplay.style.fontSize = `${size / 100}rem`;
       // Update preview
-      const previewBs = document.getElementById("settings-preview-bs");
-      if (previewBs) previewBs.style.fontSize = `${size / 100}rem`;
+      if (els.settingsPreviewBs) els.settingsPreviewBs.style.fontSize = `${size / 100}rem`;
       localStorage.setItem("quran_bs_size", size);
     });
   }
@@ -517,8 +532,7 @@ function setupEventListeners() {
       els.arLhVal.innerText = lh;
       els.arabicDisplay.style.lineHeight = lh;
       // Update preview
-      const previewAr = document.getElementById("settings-preview-ar");
-      if (previewAr) previewAr.style.lineHeight = lh;
+      if (els.settingsPreviewAr) els.settingsPreviewAr.style.lineHeight = lh;
       localStorage.setItem("quran_ar_lh", lh);
     });
   }
@@ -531,9 +545,8 @@ function setupMobileNavHandlers() {
   // Surah modal
   if (els.navSurahBtn) {
     els.navSurahBtn.onclick = () => {
-      const modal = document.getElementById("surah-hifz-modal");
-      if (modal && !modal.classList.contains("hidden")) {
-        closeModal("surah-hifz-modal");
+      if (els.surahHifzModal && !els.surahHifzModal.classList.contains("hidden")) {
+        closeModal("mdl-surah");
       } else {
         closeAllMenusAndModals();
         openModal("surah-hifz-modal");
@@ -558,12 +571,11 @@ function setupMobileNavHandlers() {
   // Search modal
   if (els.navSearchBtn) {
     els.navSearchBtn.onclick = () => {
-      const modal = document.getElementById("search-modal");
-      if (modal && !modal.classList.contains("hidden")) {
-        closeModal("search-modal");
+      if (els.searchModal && !els.searchModal.classList.contains("hidden")) {
+        closeModal("mdl-search");
       } else {
         closeAllMenusAndModals();
-        openModal("search-modal");
+        openModal("mdl-search");
         if (els.searchInputModal) {
           setTimeout(() => els.searchInputModal.focus(), 100);
         }
@@ -734,15 +746,12 @@ function setupHifzMode() {
  */
 function setupModals() {
   // About & Version buttons
-  const aboutBtn = document.getElementById("about-btn");
-  if (aboutBtn) aboutBtn.onclick = () => openModal("about-modal");
+  if (els.aboutBtn) els.aboutBtn.onclick = () => openModal("mdl-about");
 
-  const versionBtn = document.getElementById("version-btn");
-  if (versionBtn) {
-    versionBtn.onclick = () => {
-      const modal = document.getElementById("version-modal");
-      if (modal) modal.removeAttribute("data-auto-open");
-      openModal("version-modal");
+  if (els.versionBtn) {
+    els.versionBtn.onclick = () => {
+      if (els.versionModal) els.versionModal.removeAttribute("data-auto-open");
+      openModal("mdl-version");
     };
   }
 

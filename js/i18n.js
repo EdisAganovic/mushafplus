@@ -37,6 +37,9 @@ window.T = {
 
   // Sidebar
   menu: "Meni",
+  surah: "Sura",
+  hifz: "Hifz",
+  search: "Traži",
   surahProgress: "Proučeno ajeta",
   ayahGrid: "Ajeti",
   bookmarks: "Zapamćeno",
@@ -112,7 +115,6 @@ window.applyTranslations = function () {
     if (T[key] !== undefined) el.title = T[key];
   });
   // Title & page title
-  const titleEl = document.getElementById("app-title");
-  if (titleEl) titleEl.textContent = T.appTitle;
+  if (els.appTitle) els.appTitle.textContent = T.appTitle;
   document.title = T.appTitle;
 };

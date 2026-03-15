@@ -102,9 +102,18 @@ window.startRecording = async function () {
       // Update User Player Source
       els.audioPlayback.src = audioUrl;
       els.audioPlayback._customDuration = duration;
-      els.audioPlayback.load();
       
-      // Chrome Fix: Hint duration by seeking (sometimes helps)
+      // Suppress abort errors (benign browser behavior when playback is interrupted)
+      els.audioPlayback.onerror = () => {
+        // Silently ignore abort errors - they're normal when user interrupts playback
+        if (els.audioPlayback.error?.code !== MediaError.MEDIA_ERR_ABORTED) {
+          console.error('[Audio] Playback error:', els.audioPlayback.error);
+        }
+      };
+      
+      els.audioPlayback.load();
+
+      // Chrome fix: Hint duration by seeking (sometimes helps)
       els.audioPlayback.currentTime = 1e101;
       const onSeeked = () => {
         els.audioPlayback.currentTime = 0;

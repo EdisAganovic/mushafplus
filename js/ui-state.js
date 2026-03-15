@@ -175,10 +175,9 @@ function closeModal(id) {
  * (Currently disabled based on user preference - toolbar stays visible)
  */
 window.updateToolbarVisibility = function() {
-  const toolbar = document.getElementById("main-action-toolbar");
-  if (!toolbar) return;
+  if (!els.mainActionToolbar) return;
   // Toolbar stays visible per user request
-  toolbar.style.display = "flex";
+  els.mainActionToolbar.style.display = "flex";
 };
 
 /**
@@ -196,14 +195,12 @@ function closeAllMenusAndModals() {
     if (els?.hifzOverlay && !els.hifzOverlay.classList.contains("hidden"))
       closeHifz();
 
-    const surahModal = document.getElementById("surah-hifz-modal");
-    if (surahModal && !surahModal.classList.contains("hidden"))
-      closeModal("surah-hifz-modal");
+    if (els.surahHifzModal && !els.surahHifzModal.classList.contains("hidden"))
+      closeModal("mdl-surah");
 
-    const searchModal = document.getElementById("search-modal");
-    if (searchModal && !searchModal.classList.contains("hidden"))
-      closeModal("search-modal");
-    
+    if (els.searchModal && !els.searchModal.classList.contains("hidden"))
+      closeModal("mdl-search");
+
     // Visibility is handled by the close* functions above via updateToolbarVisibility()
   } catch (e) {
     console.error("[UI] Error closing menus:", e);

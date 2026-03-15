@@ -175,9 +175,6 @@ window.initSearchHandlers = function() {
 
   if (els.searchInputModal) {
     els.searchInputModal.oninput = (e) => {
-      const idleState = document.getElementById("search-idle-state-modal");
-      if (idleState) idleState.classList.add("hidden");
-
       handleSearchInput(
         e.target.value,
         els.searchInputModal,
