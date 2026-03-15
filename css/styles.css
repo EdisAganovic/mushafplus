@@ -1097,6 +1097,7 @@ body.hide-notes #ayah-notes-container {
 .flex-row-reverse-spread {
   display: flex !important;
   flex-direction: row-reverse !important;
+  justify-content: center !important;
   transition: all 0.3s ease;
   gap: 0.5rem;
   padding: 1rem 0.5rem;
@@ -1106,7 +1107,7 @@ body.hide-notes #ayah-notes-container {
   max-height: 850px;
   min-height: 400px;
   width: 100%;
-  max-width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
   overflow: hidden;
 }
@@ -1179,7 +1180,7 @@ body.hide-notes #ayah-notes-container {
 
   #spread-view>div {
     width: 50% !important;
-    max-width: none !important;
+    max-width: 650px !important;
   }
 }
 
