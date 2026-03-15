@@ -2,6 +2,11 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.1.3] - 2026-03-15
+
+### Improved
+- **Detekcija SVG slojeva**: Unapređen algoritam za precizniju identifikaciju naslova džuza i sura na vrhu stranice (npr. str. 245 i 252), čime je osigurana ispravna vidljivost i bojenje zaglavlja.
+
 ## [0.1.2] - 2026-03-15
 
 ### Added

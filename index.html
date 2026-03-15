@@ -16,7 +16,7 @@
     <!-- Global App Configuration -->
     <script>
         // IMPORTANT: Change this version to force cache refresh for all users
-        const APP_VERSION = "0.1.2"; 
+        const APP_VERSION = "0.1.3"; 
     </script>
 
     <!-- UI Styles and Favicon (Dynamic versioning) -->
@@ -568,27 +568,6 @@
                     </select>
                 </div>
 
-                <div class="pt-6 border-t border-slate-800/50 mt-4">
-                    <label class="text-[10px] text-slate-400 uppercase tracking-wider block mb-4" data-i18n="pageTheme">Tema stranice (Mushaf)</label>
-                    <div class="flex justify-around items-center bg-slate-950/30 p-4 rounded-xl border border-slate-800 relative gap-4">
-                        <button class="btn-theme-dot" data-theme="original" data-label="Standard" style="background-color: #fcfaf0;"></button>
-                        <button class="btn-theme-dot" data-theme="sepia" data-label="Sepia" style="background-color: #f4ecd8;"></button>
-                        <button class="btn-theme-dot" data-theme="night" data-label="Noć" style="background-color: #1e293b;"></button>
-                        <button class="btn-theme-dot" data-theme="green" data-label="Zelena" style="background-color: #064e3b;"></button>
-                        
-                        <!-- Settings Drawer Theme Preview -->
-                        <div id="cnt-theme-preview-settings" class="absolute right-full mr-4 top-0 bg-slate-900/95 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 shadow-2xl opacity-0 pointer-events-none transition-all duration-300 translate-x-2 z-[200] min-w-[240px] hidden md:block">
-                            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 border-b border-slate-800 pb-2 flex justify-between items-center">
-                                <span data-i18n="colorPalette">Paleta boja</span>
-                                <span class="dsp-preview-theme-name text-emerald-400">Standard</span>
-                            </div>
-                            <div class="lst-theme-palette grid grid-cols-1 gap-y-1.5">
-                                <!-- Items injected via JS -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
 
 
                 <div
@@ -874,7 +853,7 @@
                     </div>
                     <div class="about-info-box">
                         <span class="about-info-label">Verzija</span>
-                        <span class="about-info-value">0.1.1</span>
+                        <span class="about-info-value">0.1.3</span>
                     </div>
                 </div>
             </div>
@@ -894,6 +873,37 @@
                 </button>
             </div>
             <div class="modal-body modal-body-scroll">
+                <!-- v0.1.3 -->
+                <div class="changelog-entry">
+                    <div class="changelog-header">
+                        <span class="changelog-version-pill">0.1.3</span>
+                        <h4 class="changelog-title">SVG Optimizacija</h4>
+                        <span class="changelog-date">15. mart 2026.</span>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-improved">Poboljšano</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Detekcija SVG slojeva</strong> — Unapređen algoritam za precizniju identifikaciju naslova džuza i sura na vrhu stranice.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- v0.1.2 -->
+                <div class="changelog-entry">
+                    <div class="changelog-header">
+                        <span class="changelog-version-pill">0.1.2</span>
+                        <h4 class="changelog-title">SVG Slojevi</h4>
+                        <span class="changelog-date">15. mart 2026.</span>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-new">Novo</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Sistem slojeva</strong> — Automatsko bojenje okvira, teksta i ornamentalnih elemenata u SVG stranicama.</li>
+                             <li class="changelog-item"><strong>Teme Mushafa</strong> — 4 nove palete boja (Standard, Sepia, Noć, Zelena) koje se primjenjuju na sve elemente stranice.</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- v0.1.1 -->
                 <div class="changelog-entry">
                     <div class="changelog-header">
@@ -906,74 +916,6 @@
                         <ul class="changelog-list">
                              <li class="changelog-item"><strong>Tema aplikacije</strong> — Dodan event listener za promjenu teme.</li>
                              <li class="changelog-item"><strong>Tema stranice</strong> — Poboljšana funkcionalnost za promjenu teme Mushaf stranice.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- v0.1.0 -->
-                <div class="changelog-entry">
-                    <div class="changelog-header">
-                        <span class="changelog-version-pill">0.1.0</span>
-                        <h4 class="changelog-title">Audio & UI</h4>
-                        <span class="changelog-date">15. mart 2026.</span>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-new">Novo</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Audio plejer</strong> — Potpuno funkcionalan audio plejer sa kontrolama za play/pause, traženje, brzinu i ponavljanje.</li>
-                        </ul>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-improved">Poboljšano</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Slideri za tekst</strong> — Veličina arapskog teksta, prijevoda i visina linije sada rade ispravno.</li>
-                             <li class="changelog-item"><strong>Postavke</strong> — Dodani prekidači za tedžvid, tedžvid legendu, svjetli režim i zvuk riječi.</li>
-                        </ul>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-removed">Smanjeno</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Verzija modal</strong> — Smanjena širina i poboljšana kompaktnost za bolji prikaz.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- v0.0.19 -->
-                <div class="changelog-entry">
-                    <div class="changelog-header">
-                        <span class="changelog-version-pill">0.0.19</span>
-                        <h4 class="changelog-title">Teme i Layout</h4>
-                        <span class="changelog-date">15. mart 2026.</span>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-improved">Poboljšano</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Tema na računarskom prikazu</strong> — Pozadinska boja teme se sada primjenjuje na cijeli ekran u pregledu 2 stranice.</li>
-                             <li class="changelog-item"><strong>Teme za tamni režim</strong> — Riješen je problem sa obrtanjem boja tako da je tekst sada savršeno vidljiv u svim temama i u tamnom režimu aplikacije.</li>
-                             <li class="changelog-item"><strong>Raspored alata</strong> — Tasteri za izmjenu tema ispod stranica su vizuelno polupani sa većim razmacima.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- v0.0.18 -->
-                <div class="changelog-entry">
-                    <div class="changelog-header">
-                        <span class="changelog-version-pill">0.0.18</span>
-                        <h4 class="changelog-title">Audio & Mobile</h4>
-                        <span class="changelog-date">15. mart 2026.</span>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-new">Novo</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Audio kontrola</strong> — Nova opcija za potpuno isključivanje zvuka pri kliku na pojedinačne riječi (Postavke).</li>
-                             <li class="changelog-item"><strong>Mobilni Toolbar</strong> — Glavne tasteri za navigaciju su sada fiksni na dnu ekrana za brži i lakši pristup.</li>
-                        </ul>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-improved">Poboljšano</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Optimizacija prostora</strong> — Smanjeni razmaci i poboljšan raspored na ajet kartici za bolji prikaz.</li>
-                             <li class="changelog-item"><strong>Veći scrollarea</strong> — Povećana vidljiva lista u izborniku sura na mobilnim uređajima.</li>
                         </ul>
                     </div>
                 </div>

@@ -22,13 +22,17 @@ The system uses specific criteria to differentiate between paths based on their 
   - **Teardrop Labels:** Complex black paths (Juz/Hizb info) inside side teardrops.
   - **Verse Numerals:** Small black paths with no internal subpaths.
   - **Surah/Juz Headers:** Medium-length black paths at the top.
+  - **Surah Band Text:** White calligraphy rendered inside search band frames.
 
-### 2. Detection Logic (`detectSVGLayers`)
-The detector performs a single pass over all paths:
-1.  **Metadata Extraction:** Calculates length and subpath count for every `<path>`.
-2.  **Layer Assignment:** Iteratively assigns paths to layers based on the priority:
-    -   `borderFrame` -> `teardrop` -> `arabicText` -> `teardropLabel` -> `verseNumerals` -> `surahHeader` -> `pageNumber`.
-3.  **Element Tagging:** Each element is labeled with a `data-layer-type` attribute for easy CSS targeting and debugging.
+### 2. Detection Logic (`detectSVGLayers`) — V4 Top-Down
+The system uses a hierarchical approach rather than simple path heuristics:
+1.  **Metadata Extraction:** Calculates path length, loop count (`z`), and vertical translation (`ty`) for every element.
+2.  **Semantic Container Identification:** Identifies major `<g>` groups under `g10` (Green frame group, Special group, Numeral group, Text group).
+3.  **Group Classification:** 
+    -   **Green Containers:** Processed for `borderFrame`, `surahBand`, and `teardrop` backgrounds.
+    -   **Black Containers:** Classified based on path count and total length. "Body Text" is identified if paths > 10 or total length is huge, solving the "per-word" encoding issue.
+4.  **Positional Detection:** Uses `ty` (Y-translation) to distinguish `surahHeader` (top) from `pageNumber` (bottom) when they reside in the same group.
+5.  **Element Tagging:** Elements are labeled with `data-layer-type` attributes for CSS targeting.
 
 ### 3. Theme Subsystem (`LAYER_COLORS`)
 The system supports multiple premium themes out of the box:
@@ -55,5 +59,6 @@ This function broadcasts the change to all visible SVG containers (main card and
 
 ## Technical Implementation Details
 - **Stroke Enhancement:** For `verseNumerals`, the system applies a matching stroke (`stroke-width: 0.5`) to ensure readability across all themes and resolutions.
+- **Fill Rule Override:** For background elements (`teardrop`, `surahBand`, `bigTeardrop`), the system overrides `evenodd` with `nonzero` to ensure solid color filling and prevent transparent "holes" from the original SVG cutouts.
 - **Performance:** Detection is performed once per SVG load and cached via DOM attributes. Theme updates are efficient, only modifying styles of previously identified layers.
 - **Robustness:** The system uses `.quran-page-svg-container` and other shared selectors to find SVG elements regardless of which view (Card vs Spread) is active.

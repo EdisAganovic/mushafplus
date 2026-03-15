@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v0.1.1";
+const CACHE_VERSION = "v0.1.3";
 const STATIC_CACHE = `mushaf-static-${CACHE_VERSION}`;
 const AUDIO_RECITATION_CACHE = `mushaf-recitation-${CACHE_VERSION}`;
 const AUDIO_WORD_CACHE = `mushaf-word-${CACHE_VERSION}`;

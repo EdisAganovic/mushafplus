@@ -10,40 +10,48 @@ window.LAYER_COLORS = {
     'borderFrame': '#C4922A',      // Gold border
     'teardrop': '#1B7A6A',         // Teal teardrop shapes
     'arabicText': '#1e293b',       // Dark text
-    'verseNumerals': '#FFFFFF',    // White numerals for better contrast inside teardrops
+    'verseNumerals': 'var(--page-bg)', // Cutout effect matching background
     'surahHeader': '#E8943A',      // Orange headers
-    'teardropLabel': '#9B6ED4',    // Purple labels (Hizb/Juz)
+    'teardropLabel': 'var(--page-bg)', // Cutout effect
     'surahBand': '#C4922A',        // Gold horizontal band
+    'surahBandText': 'var(--page-bg)', // Cutout effect inside band
+    'bigTeardrop': '#C4922A',      // Gold background for Juz/Hizb marker
     'pageNumber': '#4a90d9'        // Blue page numbers
   },
   sepia: {
     'borderFrame': '#8B7355',      // Brown border
     'teardrop': '#6B8E7E',         // Muted teal
     'arabicText': '#5d4037',       // Brown text
-    'verseNumerals': '#FFFFFF',    // White numerals
+    'verseNumerals': 'var(--page-bg)',
     'surahHeader': '#D48846',      // Muted orange
-    'teardropLabel': '#8B6BB8',    // Muted purple
+    'teardropLabel': 'var(--page-bg)',
     'surahBand': '#8B7355',        // Muted brown
+    'surahBandText': 'var(--page-bg)',
+    'bigTeardrop': '#8B7355',      // Muted brown side marker
     'pageNumber': '#5A7FA8'        // Muted blue
   },
   night: {
     'borderFrame': '#94A3B8',      // Slate gold
     'teardrop': '#64748B',         // Slate teal
     'arabicText': '#cbd5e1',       // Light text
-    'verseNumerals': '#FFFFFF',    // White numerals
+    'verseNumerals': 'var(--page-bg)',
     'surahHeader': '#FBBF77',      // Light orange
-    'teardropLabel': '#A78BDB',    // Light purple
+    'teardropLabel': 'var(--page-bg)',
     'surahBand': '#94A3B8',        // Slate gold
+    'surahBandText': 'var(--page-bg)',
+    'bigTeardrop': '#94A3B8',      // Slate gold side marker
     'pageNumber': '#7FA8D4'        // Light blue
   },
   green: {
     'borderFrame': '#059669',      // Emerald gold
     'teardrop': '#10B981',         // Emerald
     'arabicText': '#064e3b',       // Dark green text
-    'verseNumerals': '#FFFFFF',    // White numerals
+    'verseNumerals': 'var(--page-bg)',
     'surahHeader': '#F59E0B',      // Amber
-    'teardropLabel': '#8B5CF6',    // Violet
+    'teardropLabel': 'var(--page-bg)',
     'surahBand': '#059669',        // Emerald gold
+    'surahBandText': 'var(--page-bg)',
+    'bigTeardrop': '#059669',      // Emerald gold side marker
     'pageNumber': '#3B82F6'        // Blue
   }
 };
@@ -53,11 +61,11 @@ const DETECTION_CONFIG = {
   GREEN_FILL: '#bfe8c1',
   BLACK_FILL: '#231f20',
   
-  // Border & Frame: Green paths with multiple subpaths
-  BORDER_MIN_SUBPATHS: 2,
+  // Border & Frame: Green paths with multiple closed loops
+  BORDER_MIN_LOOPS: 2,
   
-  // Teardrop: Green paths with single subpath and medium length
-  TEARDROP_MAX_SUBPATHS: 1,
+  // Teardrop: Green paths with a single loop and medium length
+  TEARDROP_MAX_LOOPS: 1,
   TEARDROP_MIN_LEN: 800,
   TEARDROP_MAX_LEN: 2500,
   
@@ -67,7 +75,7 @@ const DETECTION_CONFIG = {
   LABEL_MAX_LEN: 50000,
   
   // Surah Band: Green horizontal framing band
-  SURAH_BAND_SUBPATHS: 1,
+  SURAH_BAND_MAX_LOOPS: 1,
   SURAH_BAND_MIN_LEN: 1800,
   SURAH_BAND_MAX_LEN: 10000,
   
@@ -88,167 +96,163 @@ const DETECTION_CONFIG = {
  * @returns {Array} Array of detected layers with elements and colors
  */
 function detectSVGLayers(svgEl, theme = 'original') {
-  const paths = Array.from(svgEl.querySelectorAll('path[fill]'));
+  const colors = LAYER_COLORS[theme] || LAYER_COLORS.original;
   const layers = [];
   const usedEls = new Set();
-  const colors = LAYER_COLORS[theme] || LAYER_COLORS.original;
+  
+  const GREEN = DETECTION_CONFIG.GREEN_FILL;
+  const BLACK = DETECTION_CONFIG.BLACK_FILL;
+  const WHITE = '#ffffff';
 
-  // Gather path metadata
-  const pathData = paths.map(el => {
+  // ── Helpers ──────────────────────────────────────────────
+  const pInfo = (el) => {
     const d = el.getAttribute('d') || '';
     const fill = (el.getAttribute('fill') || '').toLowerCase();
-    const zCount = (d.match(/z/gi) || []).length;
-    return { el, fill, len: d.length, z: zCount };
-  }).filter(p => p.fill && p.fill !== 'none');
+    const loops = (d.match(/z/gi) || []).length;
+    const subpaths = (d.match(/[Mm]/g) || []).length;
+    
+    // Normalize white fill
+    const normalizedFill = (fill === '#fff' || fill === 'white' || fill === '#ffffff') ? WHITE : fill;
+    
+    // Y-position from nearest translate ancestor
+    let ty = 200; // Default middle
+    let cur = el.parentElement;
+    while (cur && cur !== svgEl) {
+      const tr = cur.getAttribute('transform') || '';
+      const m = tr.match(/translate\s*\(\s*[\d.+-]+\s+([\d.+-]+)/);
+      if (m) { ty = parseFloat(m[1]); break; }
+      cur = cur.parentElement;
+    }
+    return { el, fill: normalizedFill, len: d.length, loops, subpaths, ty };
+  };
 
-  // ── LAYER 1: Border & Frame ──
-  const borderEl = pathData.find(p => 
-    p.fill === DETECTION_CONFIG.GREEN_FILL && p.z >= DETECTION_CONFIG.BORDER_MIN_SUBPATHS
-  );
-  if (borderEl) {
-    const desc = borderEl.len > 5000
-      ? `Rectangular frame + ornate border edge (${(borderEl.len/1000).toFixed(0)}K)`
-      : `Page frame + ornament + circular window (${(borderEl.len/1000).toFixed(1)}K)`;
-    layers.push({
-      name: 'borderFrame',
-      els: [borderEl.el],
-      color: colors.borderFrame,
-      desc,
-      meta: `fill:${DETECTION_CONFIG.GREEN_FILL} · ${borderEl.z} subpaths`
-    });
-    usedEls.add(borderEl.el);
-  }
+  const getFirstMeaningfulGroup = (el) => {
+    let cur = el;
+    while (cur) {
+      const gChildren = Array.from(cur.children).filter(c => c.tagName === 'g');
+      const pChildren = Array.from(cur.children).filter(c => c.tagName === 'path');
+      if (pChildren.length > 0 || gChildren.length !== 1) return cur;
+      cur = gChildren[0];
+    }
+    return el;
+  };
 
-  // ── LAYER 2: Teardrop Shapes ──
-  const teardrops = pathData.filter(p =>
-    p.fill === DETECTION_CONFIG.GREEN_FILL && 
-    p.z <= DETECTION_CONFIG.TEARDROP_MAX_SUBPATHS && 
-    p.len >= DETECTION_CONFIG.TEARDROP_MIN_LEN && 
-    p.len <= DETECTION_CONFIG.TEARDROP_MAX_LEN && 
-    !usedEls.has(p.el)
-  );
-  if (teardrops.length) {
-    teardrops.forEach(p => usedEls.add(p.el));
-    layers.push({
-      name: 'teardrop',
-      els: teardrops.map(p => p.el),
-      color: colors.teardrop,
-      desc: `${teardrops.length} ornamental teardrop medallion backgrounds`,
-      meta: `fill:${DETECTION_CONFIG.GREEN_FILL} · open curves`
-    });
-  }
+  // 1. GATHER ALL PATH DATA
+  const allPaths = Array.from(svgEl.querySelectorAll('path[fill]')).map(pInfo)
+    .filter(p => p.fill && p.fill !== 'none');
 
-  // ── LAYER 3: Surah Band ──
-  const surahBand = pathData.filter(p =>
-    p.fill === DETECTION_CONFIG.GREEN_FILL && 
-    p.z === DETECTION_CONFIG.SURAH_BAND_SUBPATHS && 
-    p.len >= DETECTION_CONFIG.SURAH_BAND_MIN_LEN && 
-    p.len <= DETECTION_CONFIG.SURAH_BAND_MAX_LEN && 
-    !usedEls.has(p.el)
-  );
-  if (surahBand.length) {
-    surahBand.forEach(p => usedEls.add(p.el));
-    layers.push({
-      name: 'surahBand',
-      els: surahBand.map(p => p.el),
-      color: colors.surahBand,
-      desc: 'Decorative horizontal band framing the surah name',
-      meta: `fill:${DETECTION_CONFIG.GREEN_FILL} · horizontal band`
-    });
-  }
+  // 2. IDENTIFY SEMANTIC CONTAINERS (TOP-DOWN)
+  const g10 = svgEl.querySelector('#g10') || svgEl.querySelector('g');
+  if (!g10) return [];
 
-  // ── LAYER 4: Arabic Body Text ──
-  const blackPaths = pathData.filter(p => 
-    p.fill === DETECTION_CONFIG.BLACK_FILL && !usedEls.has(p.el)
-  );
-  if (blackPaths.length) {
-    const bodyText = blackPaths.reduce((a, b) => a.len > b.len ? a : b);
-    usedEls.add(bodyText.el);
-    layers.push({
-      name: 'arabicText',
-      els: [bodyText.el],
-      color: colors.arabicText,
-      desc: `Body calligraphy — all verses on this page`,
-      meta: `fill:${DETECTION_CONFIG.BLACK_FILL} · ${(bodyText.len/1000).toFixed(0)}K chars`
-    });
-  }
+  const topGroups = Array.from(g10.children)
+    .filter(c => c.tagName === 'g')
+    .map(getFirstMeaningfulGroup);
 
-  // ── LAYER 5: Teardrop Labels ──
-  const tearLabels = pathData.filter(p =>
-    p.fill === DETECTION_CONFIG.BLACK_FILL && 
-    p.z > DETECTION_CONFIG.LABEL_MIN_SUBPATHS && 
-    p.len >= DETECTION_CONFIG.LABEL_MIN_LEN && 
-    p.len <= DETECTION_CONFIG.LABEL_MAX_LEN && 
-    !usedEls.has(p.el)
-  );
-  if (tearLabels.length) {
-    tearLabels.forEach(p => usedEls.add(p.el));
-    layers.push({
-      name: 'teardropLabel',
-      els: tearLabels.map(p => p.el),
-      color: colors.teardropLabel,
-      desc: `Juzʾ & Ḥizb labels inside large side teardrop markers`,
-      meta: `fill:${DETECTION_CONFIG.BLACK_FILL} · ${tearLabels[0].z} subpaths · ${(tearLabels[0].len/1000).toFixed(0)}K chars`
-    });
-  }
+  topGroups.forEach(group => {
+    const groupPaths = allPaths.filter(p => group.contains(p.el) && !usedEls.has(p.el));
+    if (!groupPaths.length) return;
 
-  // ── LAYER 6: Verse Numerals ──
-  const numerals = pathData.filter(p =>
-    p.fill === DETECTION_CONFIG.BLACK_FILL && 
-    p.z === DETECTION_CONFIG.NUMERAL_MAX_SUBPATHS && 
-    p.len < DETECTION_CONFIG.NUMERAL_MAX_LEN && 
-    !usedEls.has(p.el)
-  );
-  if (numerals.length) {
-    numerals.forEach(p => usedEls.add(p.el));
-    layers.push({
-      name: 'verseNumerals',
-      els: numerals.map(p => p.el),
-      color: colors.verseNumerals,
-      desc: `Hindi-Arabic numeral strokes inside each teardrop medallion`,
-      meta: `fill:${DETECTION_CONFIG.BLACK_FILL} · ${numerals.length} numeral${numerals.length > 1 ? 's' : ''}`
-    });
-  }
+    const greens = groupPaths.filter(p => p.fill === GREEN);
+    const whites = groupPaths.filter(p => p.fill === WHITE);
+    const blacks = groupPaths.filter(p => p.fill === BLACK);
 
-  // ── LAYER 7: Surah/Juzʾ Headers ──
-  const headers = pathData.filter(p =>
-    p.fill === DETECTION_CONFIG.BLACK_FILL && 
-    p.len >= DETECTION_CONFIG.HEADER_MIN_LEN && 
-    p.len <= DETECTION_CONFIG.HEADER_MAX_LEN && 
-    p.z <= DETECTION_CONFIG.HEADER_MAX_SUBPATHS && 
-    !usedEls.has(p.el)
-  );
-  if (headers.length) {
-    headers.forEach(p => usedEls.add(p.el));
-    const isBasmala = headers.length === 1 && headers[0].len < 15000;
-    layers.push({
-      name: 'surahHeader',
-      els: headers.map(p => p.el),
-      color: colors.surahHeader,
-      desc: isBasmala
-        ? 'Basmala / surah header calligraphic band'
-        : `Surah name + Juzʾ label at top of page (${headers.length} elements)`,
-      meta: `fill:${DETECTION_CONFIG.BLACK_FILL} · ${headers.map(p => (p.len/1000).toFixed(0)+'K').join(', ')}`
-    });
-  }
+    // ── WHITE PATHS (Surah Band Text) ──
+    if (whites.length > 0) {
+      addLayer('surahBandText', whites, layers, colors.surahBandText, 'Calligraphy inside ornamental band', usedEls);
+    }
 
-  // ── LAYER 8: Page Number ──
-  const remaining = pathData.filter(p => 
-    p.fill === DETECTION_CONFIG.BLACK_FILL && !usedEls.has(p.el)
-  );
-  if (remaining.length) {
-    remaining.forEach(p => usedEls.add(p.el));
-    layers.push({
-      name: 'pageNumber',
-      els: remaining.map(p => p.el),
-      color: colors.pageNumber,
-      desc: 'Page numeral at the bottom of the page',
-      meta: `fill:${DETECTION_CONFIG.BLACK_FILL} · ${remaining.map(p => (p.len/1000).toFixed(1)+'K').join(', ')}`
-    });
+    // ── TYPE A: GREEN CONTAINER (Border + Teardrops + Surah Band) ──
+    if (greens.length > 0) {
+      // Border & Frame (Multiple loops or very long)
+      const borders = greens.filter(p => !usedEls.has(p.el) && (p.loops >= DETECTION_CONFIG.BORDER_MIN_LOOPS || p.len > 15000));
+      if (borders.length) addLayer('borderFrame', borders, layers, colors.borderFrame, 'Page frame and ornate border', usedEls);
+
+      // Surah Band (Single loop, long)
+      const bands = greens.filter(p => !usedEls.has(p.el) && p.loops === 1 && p.len >= DETECTION_CONFIG.SURAH_BAND_MIN_LEN);
+      if (bands.length) addLayer('surahBand', bands, layers, colors.surahBand, 'Horizontal surah framing band', usedEls);
+
+      // Big Side Teardrop (Single loop, medium)
+      const bigTears = greens.filter(p => !usedEls.has(p.el) && p.loops === 1 && p.len < DETECTION_CONFIG.SURAH_BAND_MIN_LEN);
+      if (bigTears.length) addLayer('bigTeardrop', bigTears, layers, colors.bigTeardrop, 'Large margin marker background', usedEls);
+
+      // Normal Teardrops (Remainder of green)
+      const drops = greens.filter(p => !usedEls.has(p.el));
+      if (drops.length) addLayer('teardrop', drops, layers, colors.teardrop, 'Verse number backgrounds', usedEls);
+    } 
+    
+    // ── TYPE B/C/D: BLACK CONTAINERS ──
+    if (blacks.length > 0) {
+      const remainingBlacks = blacks.filter(p => !usedEls.has(p.el));
+      if (!remainingBlacks.length) return;
+
+      const allSmall = remainingBlacks.every(p => p.len < 2000);
+      const totalLen = remainingBlacks.reduce((acc, p) => acc + p.len, 0);
+      const isBody = remainingBlacks.length > 10 || totalLen > 60000;
+
+      if (allSmall && remainingBlacks.length <= 12) {
+        // TYPE B: NUMERALS
+        addLayer('verseNumerals', remainingBlacks, layers, colors.verseNumerals, 'Verse numerals', usedEls);
+      } 
+      else if (isBody) {
+        // TYPE C: BODY TEXT
+        addLayer('arabicText', remainingBlacks, layers, colors.arabicText, 'Main Arabic scripture calligraphy', usedEls);
+      } 
+      else {
+        // TYPE D: MIXED (Headers, Page Numbers, Special labels)
+        // 1. Teardrop Labels (Complex, Juz/Hizb info)
+        const labels = remainingBlacks.filter(p => p.loops > 5 && p.len > 3000 && p.ty < 480);
+        if (labels.length) addLayer('teardropLabel', labels, layers, colors.teardropLabel, 'Juzʾ & Ḥizb side labels', usedEls);
+
+        // 2. Headers (Top position)
+        const headers = remainingBlacks.filter(p => !usedEls.has(p.el) && p.ty > 480);
+        if (headers.length) addLayer('surahHeader', headers, layers, colors.surahHeader, 'Surah or Juzʾ top header', usedEls);
+
+        // 3. Page Numbers (Bottom position)
+        const pages = remainingBlacks.filter(p => !usedEls.has(p.el) && p.ty < 60);
+        if (pages.length) addLayer('pageNumber', pages, layers, colors.pageNumber, 'Page reference numeral', usedEls);
+
+        // 4. Fallback for remaining mixed black
+        const rest = remainingBlacks.filter(p => !usedEls.has(p.el));
+        if (rest.length) addLayer('arabicText', rest, layers, colors.arabicText, 'Miscellaneous calligraphy', usedEls);
+      }
+    }
+  });
+
+  // 3. FINAL FALLBACK: Process any strays
+  const strays = allPaths.filter(p => !usedEls.has(p.el));
+  if (strays.length) {
+    const sGreens = strays.filter(p => p.fill === GREEN);
+    const sBlacks = strays.filter(p => p.fill === BLACK);
+    if (sGreens.length) addLayer('teardrop', sGreens, layers, colors.teardrop, 'Stray ornamental shapes', usedEls);
+    if (sBlacks.length) addLayer('arabicText', sBlacks, layers, colors.arabicText, 'Stray calligraphic elements', usedEls);
   }
 
   return layers;
 }
+
+// ══ HELPER: ADD LAYER CONVENIENCE ══
+function addLayer(name, paths, layers, color, desc, usedElsSet) {
+  const els = paths.map(p => {
+    usedElsSet.add(p.el);
+    return p.el;
+  });
+  
+  const existing = layers.find(l => l.name === name);
+  if (existing) {
+    existing.els.push(...els);
+  } else {
+    layers.push({
+      name,
+      els,
+      color,
+      desc,
+      meta: `group:${els.length} · fill:${paths[0].fill}`
+    });
+  }
+}
+
+
 
 /**
  * Applies layer colors to SVG elements
@@ -262,6 +266,13 @@ function applySVGLayerColors(layers, theme = 'original') {
     layer.els.forEach(el => {
       el.setAttribute('data-layer-type', layer.name);
       
+      // Specifically for ornament backgrounds, we override the evenodd fill rule
+      // to prevent transparent "holes" appearing when we recolor.
+      const BACKGROUND_LAYERS = ['teardrop', 'surahBand', 'bigTeardrop'];
+      if (BACKGROUND_LAYERS.includes(layer.name)) {
+        el.style.fillRule = 'nonzero';
+      }
+
       // Specifically for verse numerals, we ensure they are visible with a stroke 
       // if the theme requires it. This can also be moved to CSS.
       if (layer.name === 'verseNumerals') {
