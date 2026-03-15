@@ -100,6 +100,231 @@
   color: #94a3b8 !important;
 }
 
+/* ===== Global Typography Consistency ===== */
+body, button, input, select, textarea {
+  font-family: 'Outfit', sans-serif !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* --- Word Interaction: Visual Feedback --- */
+.word-pressing {
+  background-color: rgba(var(--theme-500), 0.2) !important;
+  transform: scale(0.95);
+  transition: transform 0.2s ease;
+}
+
+/* ===== Changelog / Version History Styles ===== */
+.changelog-entry {
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgb(var(--slate-800));
+}
+
+.changelog-entry:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.changelog-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.changelog-version-pill {
+  background: rgb(var(--theme-500));
+  color: white;
+  padding: 0.15rem 0.6rem;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.changelog-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgb(var(--slate-100));
+}
+
+.changelog-date {
+  font-size: 0.8rem;
+  color: rgb(var(--slate-500));
+  margin-left: auto;
+}
+
+.changelog-section {
+  margin-bottom: 1.25rem;
+}
+
+.changelog-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+}
+
+.badge-new { 
+  background: rgba(16, 185, 129, 0.1); 
+  color: #10b981; 
+  border: 1px solid rgba(16, 185, 129, 0.2); 
+}
+
+.badge-fixed { 
+  background: rgba(244, 63, 94, 0.1); 
+  color: #f43f5e; 
+  border: 1px solid rgba(244, 63, 94, 0.2); 
+}
+
+.badge-improved { 
+  background: rgba(59, 130, 246, 0.1); 
+  color: #3b82f6; 
+  border: 1px solid rgba(59, 130, 246, 0.2); 
+}
+
+.badge-removed { 
+  background: rgba(245, 158, 11, 0.1); 
+  color: #f59e0b; 
+  border: 1px solid rgba(245, 158, 11, 0.2); 
+}
+
+.changelog-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.changelog-item {
+  position: relative;
+  padding-left: 1.25rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgb(var(--slate-400));
+}
+
+.changelog-item::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: rgb(var(--theme-500));
+  font-weight: 800;
+  opacity: 0.7;
+}
+
+.changelog-item strong {
+  color: rgb(var(--slate-200));
+  font-weight: 600;
+}
+
+/* ===== About Modal Content Styles ===== */
+.about-hero {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  background: linear-gradient(to bottom, rgba(var(--slate-800), 0.3), transparent);
+  border-radius: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.about-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, rgb(var(--theme-400)), rgb(var(--theme-600)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.about-subtitle {
+  font-size: 0.75rem;
+  color: rgb(var(--slate-500));
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+
+.about-card {
+  background: rgba(var(--slate-950), 0.5);
+  border: 1px solid rgb(var(--slate-800));
+  border-radius: 1rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.about-card-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: rgb(var(--theme-400));
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.about-feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.about-feature-item {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: rgb(var(--slate-300));
+  line-height: 1.4;
+}
+
+.about-feature-icon {
+  color: rgb(var(--theme-500));
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.about-info-box {
+  background: rgba(var(--slate-950), 0.5);
+  border: 1px solid rgb(var(--slate-800));
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.about-info-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgb(var(--slate-500));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+  display: block;
+}
+
+.about-info-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgb(var(--slate-200));
+}
+
 /* --- Light mode: notes section label --- */
 .light #ayah-notes-container {
   opacity: 1 !important;
@@ -537,14 +762,18 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.85);
+  background: rgba(2, 6, 23, 0.8);
   backdrop-filter: blur(8px);
-  z-index: 9000;
+  z-index: 10001;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  animation: modalFadeIn 0.25s ease-out;
+  transition: opacity 0.3s ease;
+}
+
+.animate-modal-fade-in {
+  animation: modalFadeIn 0.3s ease-out forwards;
 }
 
 .modal-overlay.hidden {
@@ -559,8 +788,17 @@
   max-width: 420px;
   box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.6),
     0 0 0 1px rgba(255, 255, 255, 0.05);
-  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
+  position: relative;
+}
+
+.animate-modal-slide-up {
+  animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.shadow-modal {
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .modal-container-lg {
@@ -884,27 +1122,6 @@ body.hide-notes #ayah-notes-container {
     min-height: auto !important;
   }
 
-  .quran-page-left,
-  .quran-page-right {
-    border-radius: 16px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
-    border: none !important;
-  }
-}
-
-.quran-page-left {
-  border-radius: 24px 4px 4px 24px !important;
-  box-shadow: inset -30px 0 30px -20px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.3) !important;
-}
-
-.quran-page-right {
-  border-radius: 4px 24px 24px 4px !important;
-  box-shadow: inset 30px 0 30px -20px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.3) !important;
-}
-
-.light .quran-page-card {
-  background-color: #fff !important;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08) !important;
 }
 
 .quran-page-svg-container {
@@ -913,9 +1130,6 @@ body.hide-notes #ayah-notes-container {
   justify-content: center;
   width: 100%;
   height: 100%;
-  min-height: 0;
-  /* Important for flex-shrink */
-  min-width: 0;
   overflow: hidden;
   position: relative;
 }
@@ -929,9 +1143,9 @@ body.hide-notes #ayah-notes-container {
   transition: filter 0.3s ease;
 }
 
-/* Dark Mode SVG visibility: Invert colors but preserve green tones via hue-rotate */
-.dark .quran-page-svg-container svg {
-  filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(0.9);
+/* Dark Mode SVG visibility: handled by CSS variables for theme text color */
+.dark.spread-mode-active .quran-page-svg-container svg {
+  filter: none;
 }
 
 /* Light mode adjustments for SVG color ifcurrentColor is used */
@@ -943,32 +1157,6 @@ body.hide-notes #ayah-notes-container {
   display: inline;
   position: relative;
   border-radius: 4px;
-}
-
-/* Page "Book" effect */
-#spread-card {
-  perspective: 1000px;
-}
-
-.quran-ayah-number {
-  transform: translateY(-1px);
-  user-select: none;
-}
-
-/* Light mode adjustments for spread */
-.light .quran-page-text {
-  color: #1e293b;
-}
-
-.light .quran-ayah-number {
-  background-color: #f1f5f9 !important;
-  border-color: #cbd5e1 !important;
-  color: rgb(var(--theme-600)) !important;
-}
-
-.light #spread-card .bg-slate-900 {
-  background-color: #ffffff;
-  border-color: #e2e8f0;
 }
 
 /* Responsive spread */
@@ -993,4 +1181,209 @@ body.hide-notes #ayah-notes-container {
     width: 50% !important;
     max-width: none !important;
   }
+}
+
+/* ===== Page Theme Toggle Buttons ===== */
+#page-theme-toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.theme-dot-btn {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--slate-700), 0.5);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.theme-dot-btn:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+.theme-dot-btn.active {
+  border-color: rgb(var(--theme-500));
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px rgba(var(--theme-500), 0.2);
+}
+
+.theme-dot-btn::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: -1.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgb(var(--slate-400));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.theme-dot-btn.active::after {
+  color: rgb(var(--theme-400));
+}
+
+/* ===== Page Theme Variables & Logic ===== */
+:root {
+  --page-bg: #fcfaf0;
+  --page-text: #1e293b;
+  --page-border: #e2e8f0;
+}
+
+/* Theme Classes applied to BODY */
+
+/* 1. Original (Standard) */
+.quran-theme-original {
+  --page-bg: #fcfaf0;
+  --page-text: #1e293b;
+  --page-border: #e2e8f0;
+}
+
+.dark .quran-theme-original {
+  --page-bg: #0f172a;
+  --page-text: #f1f5f9;
+  --page-border: #1e293b;
+}
+
+/* 2. Sepia */
+.quran-theme-sepia {
+  --page-bg: #fcfaf0;
+  --page-text: #5d4037;
+  --page-border: #d7ccc8;
+}
+
+.dark .quran-theme-sepia {
+  --page-bg: #2d241e;
+  --page-text: #d4c3b3;
+  --page-border: #3d322a;
+}
+
+/* 3. Night (Noć) */
+.quran-theme-night {
+  --page-bg: #fcfaf0;
+  --page-text: #334155;
+  --page-border: #cbd5e1;
+}
+
+.dark .quran-theme-night {
+  --page-bg: #020617;
+  --page-text: #cbd5e1;
+  --page-border: #0f172a;
+}
+
+/* 4. Green (Zelena) */
+.quran-theme-green {
+  --page-bg: #fcfaf0;
+  --page-text: #064e3b;
+  --page-border: #a7f3d0;
+}
+
+.dark .quran-theme-green {
+  --page-bg: #022c22;
+  --page-text: #d1fae5;
+  --page-border: #064e3b;
+}
+
+/* Apply to elements */
+body.spread-mode-active {
+  background-color: var(--page-bg) !important;
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.spread-mode-active #app-container,
+body.spread-mode-active #main-content,
+body.spread-mode-active header {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+body.spread-mode-active header {
+  backdrop-filter: none !important;
+}
+
+.quran-svg-text {
+  fill: var(--page-text) !important;
+  transition: fill 0.3s ease;
+}
+
+/* Border and Ayah Frame Colors */
+.quran-svg-border {
+  stroke: var(--page-text) !important;
+  opacity: 0.2;
+}
+
+/* Theme specific Ayah Markers */
+/* Original */
+.quran-theme-original .quran-svg-ayah-frame {
+  fill: #059669 !important;
+}
+
+.quran-theme-original .quran-svg-border {
+  stroke: #059669 !important;
+}
+
+/* Sepia */
+.quran-theme-sepia .quran-svg-ayah-frame {
+  fill: #8d6e63 !important;
+}
+
+.quran-theme-sepia .quran-svg-border {
+  stroke: #8d6e63 !important;
+}
+
+/* Night */
+.quran-theme-night .quran-svg-ayah-frame {
+  fill: #475569 !important;
+}
+
+.quran-theme-night .quran-svg-border {
+  stroke: #475569 !important;
+}
+
+/* Green */
+.quran-theme-green .quran-svg-ayah-frame {
+  fill: #10b981 !important;
+}
+
+.quran-theme-green .quran-svg-border {
+  stroke: #10b981 !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #page-theme-toggle-container {
+    gap: 1.5rem;
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+
+  .theme-dot-btn {
+    width: 2.8rem;
+    height: 2.8rem;
+  }
+}
+
+/* Sidebar page theme select styling */
+#page-theme-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.25rem;
+  padding-right: 2.5rem;
+}
+
+#page-theme-select:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgb(var(--theme-500))'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
 }

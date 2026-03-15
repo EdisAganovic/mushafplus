@@ -4,104 +4,89 @@
  * Handles dynamic content injection for Arabic text, Ayah grid, and persistence state UI feedback.
  */
 
+// --- VIRTUAL SCROLLING CONSTANTS ---
+// These values must match the CSS in tailwind.config.js / styles.css
+const VIRTUAL_GRID = {
+  ITEMS_PER_ROW: 5,      // grid-cols-5
+  ROW_HEIGHT: 52,        // h-11 (44px) + gap-2 (8px)
+  BUFFER_ROWS: 4,        // Extra rows for smooth scrolling
+  CELL_HEIGHT: 44,       // h-11 = 2.75rem = 44px
+  GAP_SIZE: 8,           // gap-2 = 0.5rem = 8px
+  SCROLL_OFFSET: 20,     // Padding for scrollIntoView
+  AUTO_SCROLL_DELAY: 100 // ms before auto-scrolling to active ayah
+};
+
 /**
  * Renders the main Ayah display area.
  * - Splits Arabic text into interactive spans for word-highlighting.
  * - Loads translations, notes, and previous recording states.
  * - Synchronizes audio player sources.
  */
-const TAJWEED_TOOLTIPS = {
-  LAFZATULLAH: {
-    name: "Lafzatullah",
-    desc: "Ime Allaha se uvijek čita podebljano (tafkhim)",
-  },
-  izhar: {
-    name: "Izhar",
-    desc: "Jasno izgovaranje nun sakina ili tenvina bez spajanja",
-  },
-  ikhfaa: {
-    name: "Ihfa",
-    desc: "Skriveno izgovaranje nun sakina ili tenvina pred određenim harfovima",
-  },
-  idghamWithGhunna: {
-    name: "Idgam me'al-gunne",
-    desc: "Spajanje uz nazalni zvuk (gunnu) kod nun sakina",
-  },
-  iqlab: { name: "Iklab", desc: "Pretvaranje nun sakina u mim pred harfom ba" },
-  qalqala: {
-    name: "Kalkala",
-    desc: "Odzvanjanje harfova ق ط ب ج د kad su sakin",
-  },
-  idghamWithoutGhunna: {
-    name: "Idgam bila gunne",
-    desc: "Spajanje bez nazalnog zvuka kod lam i ra",
-  },
-  ghunna: { name: "Gunna", desc: "Nazalni zvuk koji traje dva hareketa" },
-  prolonging: {
-    name: "Medd",
-    desc: "Duženje samoglasnika preko uobičajenog trajanja",
-  },
-  alefTafreeq: {
-    name: "Elif tefrik",
-    desc: "Elif koji se piše ali se ne izgovara",
-  },
-  hamzatulWasli: {
-    name: "Hemzetul-vasl",
-    desc: "Hemze koje se čita samo na početku, inače se preskače",
-  },
-};
+// --- TAJWEED TOOLTIPS & LOGIC EXTRACTED TO tajweed_engine.js ---
 
-/**
- * GLOBAL TAJWEED TOOLTIP MANAGEMENT
- * Prevents "breaking" Arabic letters by avoiding position:relative on inline segments.
- */
-let globalTajweedTooltip = null;
-
-function getGlobalTooltip() {
-  if (!globalTajweedTooltip) {
-    globalTajweedTooltip = document.createElement("div");
-    globalTajweedTooltip.className = "tajweed-tooltip";
-    // We force some styles here to ensure it works globally
-    globalTajweedTooltip.style.position = "fixed";
-    globalTajweedTooltip.style.display = "none";
-    globalTajweedTooltip.style.zIndex = "9999";
-    document.body.appendChild(globalTajweedTooltip);
-  }
-  return globalTajweedTooltip;
-}
-
-function showTajweedTooltip(target, tip) {
-  const tooltip = getGlobalTooltip();
-  tooltip.innerHTML = `<strong>${tip.name}</strong><div class="mt-1 opacity-90">${tip.desc}</div>`;
-
-  tooltip.style.display = "block";
-  const rect = target.getBoundingClientRect();
-  const tooltipRect = tooltip.getBoundingClientRect();
-
-  // Position it above the span, centered horizontally
-  let left = rect.left + rect.width / 2;
-
-  // Basic screen boundary check
-  if (left - tooltipRect.width / 2 < 10) left = tooltipRect.width / 2 + 10;
-  if (left + tooltipRect.width / 2 > window.innerWidth - 10)
-    left = window.innerWidth - tooltipRect.width / 2 - 10;
-
-  tooltip.style.left = left + "px";
-  tooltip.style.top = "auto";
-  tooltip.style.bottom = window.innerHeight - rect.top + 10 + "px";
-}
-
-function hideTajweedTooltip() {
-  if (globalTajweedTooltip) {
-    globalTajweedTooltip.style.display = "none";
-    globalTajweedTooltip.dataset.activeTarget = "";
-  }
-}
+// Global tracking for word interaction to handle re-renders correctly
+let wordPressTimer = null;
+let isWordLongPress = false;
+let activeWordSpan = null;
+let wordPressStartX = 0;
+let wordPressStartY = 0;
 
 // Global click listener to hide tooltip when clicking outside
 document.addEventListener("click", () => {
-  hideTajweedTooltip();
+  if (typeof hideTajweedTooltip === "function") hideTajweedTooltip();
 });
+
+/**
+ * Dynamically moves the main action toolbar based on screen size.
+ * - Desktop: Placed inside #desktop-toolbar-placeholder (relative/static flow).
+ * - Mobile: Placed at bottom of document (viewport fixed).
+ */
+window.relocateToolbar = function () {
+  const toolbar = document.getElementById("main-action-toolbar");
+  const desktopPlaceholder = document.getElementById("desktop-toolbar-placeholder");
+  
+  if (!toolbar || !desktopPlaceholder) return;
+  
+  const isDesktop = window.innerWidth >= 768;
+  
+  if (isDesktop) {
+    // Desktop: Move inside the card placeholder
+    if (!desktopPlaceholder.contains(toolbar)) {
+      desktopPlaceholder.appendChild(toolbar);
+      toolbar.style.position = ""; // Revert to CSS classes
+      toolbar.style.bottom = "";
+      toolbar.style.top = "";
+      toolbar.style.left = "";
+      toolbar.style.right = "";
+      toolbar.style.width = "";
+      toolbar.style.zIndex = "";
+    }
+  } else {
+    // Mobile: Move to the bottom of the body (before mobile nav)
+    const mobileNav = document.getElementById("mobile-bottom-nav");
+    
+    // Force explicit bottom/top to avoid browser guesswork
+    toolbar.style.position = "fixed";
+    toolbar.style.bottom = "5.5rem"; // Sit above the ~64px bottom nav
+    toolbar.style.top = "auto";
+    toolbar.style.left = "0.5rem";
+    toolbar.style.right = "0.5rem";
+    toolbar.style.width = "calc(100% - 1rem)";
+    toolbar.style.zIndex = "9999"; // Top-most
+    
+    if (mobileNav && toolbar.nextElementSibling !== mobileNav) {
+      document.body.insertBefore(toolbar, mobileNav);
+    } else if (!mobileNav && toolbar.parentElement !== document.body) {
+      document.body.appendChild(toolbar);
+    }
+  }
+  
+  // Ensure visibility state is respected after relocation (mobile hidden states)
+  if (typeof updateToolbarVisibility === "function") updateToolbarVisibility();
+};
+
+// Add resize listener to handle dynamic swaps
+window.addEventListener("resize", window.relocateToolbar);
 
 /**
  * Helper: Returns all ayahs for a specific page number.
@@ -181,6 +166,9 @@ window.renderAyah = function () {
     els.currentSurahName.textContent = `${AppState.currentSurah.id}. ${AppState.currentSurah.trans}`;
   }
 
+  // Relocate toolbar based on current device constraints
+  relocateToolbar();
+
   // Handle Spread Mode Toggle
   if (AppState.settings.spreadMode) {
     els.ayahCard.classList.add("hidden");
@@ -190,6 +178,15 @@ window.renderAyah = function () {
   } else {
     els.ayahCard.classList.remove("hidden");
     els.spreadCard.classList.add("hidden");
+  }
+
+  // 0. Bismillah Visibility Logic (before first ayah, except Surah 1 and 9)
+  if (els.bismillahDisplay) {
+    if (AppState.currentAyahIndex === 0 && AppState.currentSurah.id !== 1 && AppState.currentSurah.id !== 9) {
+      els.bismillahDisplay.classList.remove("hidden");
+    } else {
+      els.bismillahDisplay.classList.add("hidden");
+    }
   }
 
   // 1. Arabic word-by-word injection with Tajweed support
@@ -330,14 +327,77 @@ window.renderAyah = function () {
     wordIndex++;
   });
 
-  // -- OPTIMIZATION: Use Event Delegation for word clicks and tooltips --
-  // This replaces N listeners with 1 listener on the container
-  els.arabicDisplay.onclick = (e) => {
+  // -- Word Interaction: Click to play, Long Press (3s) to highlight --
+  els.arabicDisplay.onpointerdown = (e) => {
     const wordSpan = e.target.closest(".quran-word");
-    if (wordSpan) {
-      const idx = parseInt(wordSpan.dataset.index);
+    if (!wordSpan) return;
+
+    // Reset everything
+    isWordLongPress = false;
+    wordPressStartX = e.clientX;
+    wordPressStartY = e.clientY;
+
+    if (activeWordSpan) activeWordSpan.classList.remove("word-pressing");
+    activeWordSpan = wordSpan;
+    activeWordSpan.classList.add("word-pressing");
+
+    clearTimeout(wordPressTimer);
+    wordPressTimer = setTimeout(() => {
+      isWordLongPress = true;
+      const idx = parseInt(activeWordSpan.dataset.index);
       toggleWordHighlight(key, idx);
+      
+      // Haptic/Visual feedback
+      if (navigator.vibrate) navigator.vibrate(50);
+      activeWordSpan.classList.remove("word-pressing");
+      activeWordSpan.classList.add("animate-pulse"); // Quick flash on success
+      setTimeout(() => {
+          if (activeWordSpan) activeWordSpan.classList.remove("animate-pulse");
+      }, 500);
+    }, 2000);
+  };
+
+  els.arabicDisplay.onpointermove = (e) => {
+    if (!activeWordSpan || isWordLongPress) return;
+    
+    // If moved more than 10px, cancel the press
+    const dist = Math.hypot(e.clientX - wordPressStartX, e.clientY - wordPressStartY);
+    if (dist > 10) {
+      clearTimeout(wordPressTimer);
+      activeWordSpan.classList.remove("word-pressing");
     }
+  };
+
+  els.arabicDisplay.onpointerup = (e) => {
+    clearTimeout(wordPressTimer);
+    if (activeWordSpan) activeWordSpan.classList.remove("word-pressing");
+    
+    if (!isWordLongPress) {
+      const wordSpan = e.target.closest(".quran-word");
+      if (wordSpan) {
+        const idx = parseInt(wordSpan.dataset.index);
+        playWordAudio(AppState.currentSurah.id, ayah.id, idx);
+      }
+    }
+    // Cleanup reference after a delay to allow callbacks
+    setTimeout(() => { activeWordSpan = null; }, 10);
+  };
+
+  els.arabicDisplay.onpointerleave = () => {
+    clearTimeout(wordPressTimer);
+    if (activeWordSpan) activeWordSpan.classList.remove("word-pressing");
+    activeWordSpan = null;
+  };
+
+  els.arabicDisplay.onpointercancel = () => {
+    clearTimeout(wordPressTimer);
+    if (activeWordSpan) activeWordSpan.classList.remove("word-pressing");
+    activeWordSpan = null;
+  };
+
+  // Disable context menu on words to prevent interference with long press
+  els.arabicDisplay.oncontextmenu = (e) => {
+    if (e.target.closest(".quran-word")) e.preventDefault();
   };
 
   els.arabicDisplay.onmouseover = (e) => {
@@ -470,12 +530,14 @@ window.renderAyah = function () {
 
   // 3. Sync Recording State
   if (AppState.recordings[key]) {
+    const rec = AppState.recordings[key];
     els.userAudioContainer.classList.remove("hidden");
-    if (els.audioPlayback.src !== AppState.recordings[key]) {
+    if (els.audioPlayback.src !== rec.url) {
       els.audioPlayback.pause();
       els.audioPlayback.removeAttribute("src");
       els.audioPlayback.load();
-      els.audioPlayback.src = AppState.recordings[key];
+      els.audioPlayback.src = rec.url;
+      els.audioPlayback._customDuration = rec.duration || 0;
       els.audioPlayback.load();
       resetUserAudioUI();
     }
@@ -684,316 +746,178 @@ window.updateGridCellState = function (idx) {
 };
 
 /**
- * Rebuilds the scrollable Ayah grid in the sidebar.
- * Uses pill-shaped cells with inline icons for Juz/Page/Hifz indicators.
+ * Rebuilds the scrollable Ayah grid in the sidebar using a virtual scrolling approach
+ * that only renders cells currently in or near the viewport.
  */
 window.renderAyahGrid = function () {
-  if (els.ayahGrid) els.ayahGrid.innerHTML = "";
-  if (els.ayahGridMobile) els.ayahGridMobile.innerHTML = "";
-
-  const frag = document.createDocumentFragment();
-  const fragMobile = document.createDocumentFragment();
   const surahId = AppState.currentSurah.id;
+  const verses = AppState.currentSurah.verses;
+
+  // Initialize or reset virtual scrolling for both desktop and mobile containers
+  const containers = [
+    { el: els.ayahGrid, parent: els.ayahGrid?.parentElement },
+    { el: els.ayahGridMobile, parent: els.ayahGridMobile?.parentElement }
+  ];
+
+  containers.forEach(cfg => {
+    if (!cfg.el || !cfg.parent) return;
+
+    // Reset container if surah changed
+    if (cfg.el.dataset.surahId !== String(surahId)) {
+      cfg.el.dataset.surahId = surahId;
+      cfg.el.innerHTML = "";
+      cfg.parent.scrollTop = 0;
+    }
+
+    // Attach scroll listener once
+    if (!cfg.parent.dataset.virtualized) {
+      cfg.parent.dataset.virtualized = "true";
+      cfg.parent.addEventListener("scroll", () => {
+        requestAnimationFrame(() => updateVirtualGrid(cfg.el, cfg.parent));
+      });
+    }
+
+    updateVirtualGrid(cfg.el, cfg.parent);
+  });
+
+  // Setup Event Delegation for dynamic clicks (once)
+  if (!window._gridClickInitialized) {
+    const delegateClick = (e) => {
+      const btn = e.target.closest("button.ayah-cell");
+      if (!btn) return;
+      const idx = parseInt(btn.dataset.index);
+
+      if (AppState.hifzEnabled) {
+        if (AppState.hifzRange.start === null) {
+          AppState.hifzRange.start = idx;
+          AppState.hifzRange.end = null;
+          if (els.hifzRangeText) els.hifzRangeText.innerText = `Opseg: ${idx + 1} - ...`;
+          if (els.hifzRangeTextMobile) els.hifzRangeTextMobile.innerText = `Opseg: ${idx + 1} - ...`;
+        } else if (AppState.hifzRange.end === null) {
+          AppState.hifzRange.end = idx;
+          const min = Math.min(AppState.hifzRange.start, AppState.hifzRange.end);
+          const max = Math.max(AppState.hifzRange.start, AppState.hifzRange.end);
+          if (els.hifzRangeText) els.hifzRangeText.innerText = `Opseg: ${min + 1} - ${max + 1}`;
+          if (els.hifzRangeTextMobile) els.hifzRangeTextMobile.innerText = `Opseg: ${min + 1} - ${max + 1}`;
+        } else {
+          AppState.hifzRange.start = idx;
+          AppState.hifzRange.end = null;
+          if (els.hifzRangeText) els.hifzRangeText.innerText = `Opseg: ${idx + 1} - ...`;
+          if (els.hifzRangeTextMobile) els.hifzRangeTextMobile.innerText = `Opseg: ${idx + 1} - ...`;
+        }
+        localStorage.setItem("quran_hifzRange", JSON.stringify(AppState.hifzRange));
+        renderAyahGrid(); // Trigger re-virtualization
+      } else {
+        if (typeof closeHifz === "function") closeHifz();
+        if (window.innerWidth < 768 && typeof closeSidebar === "function") closeSidebar();
+        goToAyah(idx + 1);
+      }
+    };
+
+    if (els.ayahGrid) els.ayahGrid.onclick = delegateClick;
+    if (els.ayahGridMobile) els.ayahGridMobile.onclick = delegateClick;
+    window._gridClickInitialized = true;
+  }
+
+  // Auto-scroll active ayah into view
+  setTimeout(() => {
+    // We need to force render or find it. Virtual scrolling might have it unmounted.
+    // Easiest: scroll the parent container to the calculated offset.
+    const targetRow = Math.floor(AppState.currentAyahIndex / VIRTUAL_GRID.ITEMS_PER_ROW);
+    const targetScroll = targetRow * VIRTUAL_GRID.ROW_HEIGHT - VIRTUAL_GRID.SCROLL_OFFSET;
+
+    containers.forEach(cfg => {
+       if (cfg.parent) cfg.parent.scrollTop = targetScroll;
+    });
+  }, VIRTUAL_GRID.AUTO_SCROLL_DELAY);
+
+  AppState._prevGridIndex = AppState.currentAyahIndex;
+};
+
+/**
+ * Updates the contents of the virtual grid based on scroll position.
+ */
+function updateVirtualGrid(container, parent) {
+  const verses = AppState.currentSurah.verses;
+  const surahId = AppState.currentSurah.id;
+  const totalItems = verses.length;
+  const { ITEMS_PER_ROW, ROW_HEIGHT, BUFFER_ROWS } = VIRTUAL_GRID;
+
+  const parentHeight = parent.clientHeight;
+  const scrollTop = parent.scrollTop;
+
+  const startRow = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - BUFFER_ROWS);
+  const endRow = Math.min(Math.ceil(totalItems / ITEMS_PER_ROW), Math.ceil((scrollTop + parentHeight) / ROW_HEIGHT) + BUFFER_ROWS);
+
+  const startIndex = startRow * ITEMS_PER_ROW;
+  const endIndex = Math.min(totalItems, endRow * ITEMS_PER_ROW);
+
+  const totalRows = Math.ceil(totalItems / ITEMS_PER_ROW);
+  container.style.height = `${totalRows * ROW_HEIGHT}px`;
+  container.style.paddingTop = `${startRow * ROW_HEIGHT}px`;
+  
+  // Create fragment for visible slice
+  const frag = document.createDocumentFragment();
   const hasMetadata = typeof window.getJuzStartAt === "function";
-
-  // Pre-compute hifz boundaries
+  
   const hifzActive = AppState.hifzEnabled;
-  const hifzHasRange =
-    hifzActive &&
-    AppState.hifzRange.start !== null &&
-    AppState.hifzRange.end !== null;
-  const hifzMin = hifzHasRange
-    ? Math.min(AppState.hifzRange.start, AppState.hifzRange.end)
-    : null;
-  const hifzMax = hifzHasRange
-    ? Math.max(AppState.hifzRange.start, AppState.hifzRange.end)
-    : null;
+  const hifzHasRange = hifzActive && AppState.hifzRange.start !== null && AppState.hifzRange.end !== null;
+  const hifzMin = hifzHasRange ? Math.min(AppState.hifzRange.start, AppState.hifzRange.end) : null;
+  const hifzMax = hifzHasRange ? Math.max(AppState.hifzRange.start, AppState.hifzRange.end) : null;
 
-  AppState.currentSurah.verses.forEach((verse, index) => {
-    const cell = document.createElement("button");
+  for (let i = startIndex; i < endIndex; i++) {
+    const verse = verses[i];
     const key = `${surahId}-${verse.id}`;
-
-    const isActive = index === AppState.currentAyahIndex;
+    const isActive = i === AppState.currentAyahIndex;
     const isChecked = AppState.checkedAyats.has(key);
-    const isHifzRange =
-      hifzMin !== null && index >= hifzMin && index <= hifzMax;
+    const isHifzRange = hifzMin !== null && i >= hifzMin && i <= hifzMax;
     const hasNotes = !!AppState.notes[key];
 
-    // 1. Detect juz/page starts
-    let juzStart = null;
-    let pageStart = null;
-    if (hasMetadata) {
-      juzStart = window.getJuzStartAt(surahId, verse.id);
-      pageStart = window.getPageStartAt(surahId, verse.id);
-    }
+    const cell = document.createElement("button");
+    cell.dataset.index = i;
+    cell.className = "ayah-cell relative h-11 w-full px-1 flex rounded-lg text-xs font-medium transition-all items-center justify-center ";
 
-    // 2. Collect indicators (dots)
+    // Indicators
+    let juzStart = hasMetadata ? window.getJuzStartAt(surahId, verse.id) : null;
+    let pageStart = hasMetadata ? window.getPageStartAt(surahId, verse.id) : null;
     const dots = [];
-    if (isHifzRange && hifzActive) {
-      dots.push('<div class="w-2 h-2 bg-rose-400 rounded-full"></div>');
-    }
+    if (isHifzRange && hifzActive) dots.push('<div class="w-2 h-2 bg-rose-400 rounded-full"></div>');
     if (juzStart !== null) {
       dots.push('<div class="w-2 h-2 bg-amber-500 rounded-full"></div>');
       cell.title = `Džuz ${juzStart}`;
     }
     if (pageStart !== null) {
       dots.push('<div class="w-2 h-2 bg-blue-400 rounded-full"></div>');
-      cell.title = cell.title
-        ? cell.title + ` · Str. ${pageStart}`
-        : `Str. ${pageStart}`;
+      cell.title = (cell.title ? cell.title + " · " : "") + `Str. ${pageStart}`;
     }
 
-    // 3. Base class & Dynamic layout
-    cell.className =
-      "ayah-cell relative h-11 w-full px-1 flex rounded-lg text-xs font-medium transition-all active:scale-95 ";
-
-    let html = "";
     if (dots.length > 0) {
-      cell.classList.add("flex-col", "items-center", "justify-center", "gap-1");
-      html = `<span class="text-[10px] leading-none">${index + 1}</span>
-                <div class="flex items-center justify-center gap-1 opacity-90 w-full">${dots.join("")}</div>`;
+      cell.classList.add("flex-col", "gap-1");
+      cell.innerHTML = `<span class="text-[10px] leading-none">${i + 1}</span><div class="flex items-center justify-center gap-1 opacity-90 w-full">${dots.join("")}</div>`;
     } else {
-      cell.classList.add("items-center", "justify-center");
-      html = `<span class="text-xs">${index + 1}</span>`;
+      cell.innerHTML = `<span class="text-xs">${i + 1}</span>`;
     }
 
-    cell.innerHTML = html;
-
-    // 4. State styling
+    // Styles
     if (isActive) {
-      cell.classList.add(
-        "bg-slate-800",
-        "text-emerald-400",
-        "border",
-        "border-emerald-500",
-        "shadow-md",
-        "shadow-emerald-500/20",
-      );
+      cell.classList.add("bg-slate-800", "text-emerald-400", "border", "border-emerald-500", "shadow-md", "shadow-emerald-500/20");
     } else if (isChecked) {
       cell.classList.add("bg-emerald-600", "text-white");
     } else if (isHifzRange) {
-      cell.classList.add(
-        "bg-rose-500/10",
-        "border",
-        "border-dashed",
-        "border-rose-500/30",
-        "text-rose-300",
-        "hover:bg-rose-500/20",
-      );
+      cell.classList.add("bg-rose-500/10", "border", "border-dashed", "border-rose-500/30", "text-rose-300");
     } else {
-      cell.classList.add(
-        "bg-slate-800",
-        "text-slate-300",
-        "border",
-        "border-slate-700",
-        "hover:bg-slate-600",
-      );
+      cell.classList.add("bg-slate-800", "text-slate-300", "border", "border-slate-700", "hover:bg-slate-600");
     }
 
-    if (hasNotes) {
-      cell.style.borderBottom = "2px solid #f59e0b";
-    }
-
-    cell.dataset.index = index;
+    if (hasNotes) cell.style.borderBottom = "2px solid #f59e0b";
     frag.appendChild(cell);
-
-    const cellMobile = cell.cloneNode(true);
-    fragMobile.appendChild(cellMobile);
-  });
-
-  if (els.ayahGrid) els.ayahGrid.appendChild(frag);
-  if (els.ayahGridMobile) els.ayahGridMobile.appendChild(fragMobile);
-
-  // Setup Event Delegation for dynamic clicks
-  const delegateClick = (e) => {
-    const btn = e.target.closest("button.ayah-cell");
-    if (!btn) return;
-    const idx = parseInt(btn.dataset.index);
-
-    if (AppState.hifzEnabled) {
-      if (AppState.hifzRange.start === null) {
-        AppState.hifzRange.start = idx;
-        AppState.hifzRange.end = null;
-        if (els.hifzRangeText)
-          els.hifzRangeText.innerText = `Opseg: ${idx + 1} - ...`;
-        if (els.hifzRangeTextMobile)
-          els.hifzRangeTextMobile.innerText = `Opseg: ${idx + 1} - ...`;
-      } else if (AppState.hifzRange.end === null) {
-        AppState.hifzRange.end = idx;
-        const min = Math.min(AppState.hifzRange.start, AppState.hifzRange.end);
-        const max = Math.max(AppState.hifzRange.start, AppState.hifzRange.end);
-        if (els.hifzRangeText)
-          els.hifzRangeText.innerText = `Opseg: ${min + 1} - ${max + 1}`;
-        if (els.hifzRangeTextMobile)
-          els.hifzRangeTextMobile.innerText = `Opseg: ${min + 1} - ${max + 1}`;
-      } else {
-        AppState.hifzRange.start = idx;
-        AppState.hifzRange.end = null;
-        if (els.hifzRangeText)
-          els.hifzRangeText.innerText = `Opseg: ${idx + 1} - ...`;
-        if (els.hifzRangeTextMobile)
-          els.hifzRangeTextMobile.innerText = `Opseg: ${idx + 1} - ...`;
-      }
-      localStorage.setItem(
-        "quran_hifzRange",
-        JSON.stringify(AppState.hifzRange),
-      );
-      renderAyahGrid(); // Full grid re-render to apply ranges easily
-    } else {
-      if (typeof closeHifz === "function") closeHifz();
-      if (window.innerWidth < 768 && typeof closeSidebar === "function")
-        closeSidebar();
-      goToAyah(idx + 1);
-    }
-  };
-
-  if (els.ayahGrid) els.ayahGrid.onclick = delegateClick;
-  if (els.ayahGridMobile) els.ayahGridMobile.onclick = delegateClick;
-
-  // Auto-scroll active ayah into view
-  setTimeout(() => {
-    const activeCell = els.ayahGrid.querySelector(".ayah-cell.bg-slate-800");
-    if (activeCell) {
-      activeCell.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  }, 100);
-  AppState._prevGridIndex = AppState.currentAyahIndex;
-};
-
-/**
- * Renders the side-by-side spread view using SVG data (RTL).
- */
-const PAGE_SVG_CACHE = new Map();
-
-/**
- * Pre-processes an SVG string to prevent ID collisions.
- */
-function preprocessSvg(svgText, pageNum) {
-  const prefix = `p${pageNum}-`;
-  // Prefix id="..."
-  let processed = svgText.replace(/id="([^"]+)"/g, `id="${prefix}$1"`);
-  // Prefix url(#...)
-  processed = processed.replace(/url\(#([^)]+)\)/g, `url(#${prefix}$1)`);
-  // Prefix xlink:href="#..."
-  processed = processed.replace(/xlink:href="#([^"]+)"/g, `xlink:href="#${prefix}$1"`);
-  // Replace original light green (#bfe8c1) with app's emerald green (#10b981)
-  processed = processed.replace(/#bfe8c1/gi, "#10b981");
-
-  // Ensure SVG is responsive: remove hardcoded width/height if they exist, add 100% and preserveAspectRatio
-  processed = processed.replace(/<svg([^>]*)>/, (match, p1) => {
-    // Remove existing width/height attributes from the tag
-    let updated = p1.replace(/\s(width|height)="[^"]*"/g, '');
-    return `<svg${updated} width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="shape-rendering: geometricPrecision;">`;
-  });
-
-  return processed;
-}
-
-/**
- * Prefetches and caches adjacent pages for smoother navigation.
- */
-async function prefetchAdjacentPages(pageNum) {
-  const pagesToPrefetch = [pageNum + 1, pageNum + 2, pageNum - 1].filter(
-    (p) => p >= 1 && p <= 604 && !PAGE_SVG_CACHE.has(p)
-  );
-
-  for (const p of pagesToPrefetch) {
-    const paddedPage = String(p).padStart(3, "0");
-    const svgUrl = `assets/optimized/${paddedPage}.svg`;
-    fetch(svgUrl)
-      .then((res) => (res.ok ? res.text() : null))
-      .then((text) => {
-        if (text) PAGE_SVG_CACHE.set(p, preprocessSvg(text, p));
-      })
-      .catch(() => {});
-  }
-}
-
-window.renderSpread = async function () {
-  if (!els.spreadView) return;
-  
-  // Keep inputs in sync
-  syncNavigationInputs();
-  
-  const currentAyah = AppState.currentSurah.verses[AppState.currentAyahIndex];
-  const currentPage = getPageNumber(AppState.currentSurah.id, currentAyah.id);
-
-  let leftPageNum, rightPageNum;
-  if (currentPage === 1) {
-    leftPageNum = null;
-    rightPageNum = 1;
-  } else {
-    // Medina Mushaf: Even on Left, Odd on Right
-    if (currentPage % 2 === 0) {
-      leftPageNum = currentPage;
-      rightPageNum = currentPage + 1 <= 604 ? currentPage + 1 : null;
-    } else {
-      leftPageNum = currentPage - 1;
-      rightPageNum = currentPage;
-    }
   }
 
-  els.spreadView.innerHTML = "";
-  // We use the CSS class for row-reverse
-  els.spreadView.className = "w-full flex-row-reverse-spread animate-fade-in";
+  container.innerHTML = "";
+  container.appendChild(frag);
+}
 
-  // Build promises for both pages [Right, Left]
-  // Because of row-reverse:
-  // idx 0 (Right) will appear on the RIGHT
-  // idx 1 (Left) will appear on the LEFT
-  const pagePromises = [leftPageNum, rightPageNum].map(async (pageNum, idx) => {
-    const isRight = idx === 1; // Now the second element is the right page
-    const pageCol = document.createElement("div");
-    pageCol.className = "flex-1 flex flex-col items-center min-w-0 h-full scrollbar-hidden";
-
-    if (pageNum === null) {
-      pageCol.classList.add("hidden", "lg:flex", "invisible");
-      return pageCol;
-    }
-
-    const pageCard = document.createElement("div");
-    // Apply asymmetrical rounding for the spine effect
-    pageCard.className = `w-full bg-transparent shadow-none flex flex-col h-full ${isRight ? 'quran-page-right' : 'quran-page-left'} quran-page-card`;
-
-    const pageContent = document.createElement("div");
-    pageContent.className = "flex-1 flex items-center justify-center quran-page-svg-container overflow-hidden";
-    
-    // SVG Path (Local)
-    const paddedPage = String(pageNum).padStart(3, '0');
-    const svgUrl = `assets/optimized/${paddedPage}.svg`;
-    
-    try {
-      if (PAGE_SVG_CACHE.has(pageNum)) {
-        pageContent.innerHTML = PAGE_SVG_CACHE.get(pageNum);
-      } else {
-        const response = await fetch(svgUrl);
-        if (!response.ok) throw new Error("SVG not found");
-        const svgText = await response.text();
-        const processed = preprocessSvg(svgText, pageNum);
-        PAGE_SVG_CACHE.set(pageNum, processed);
-        pageContent.innerHTML = processed;
-      }
-    } catch (e) {
-      console.error("Failed to load page SVG", e);
-      pageContent.innerHTML = `<div class="text-rose-500 font-bold p-10">Stranica ${pageNum} nije pronađena</div>`;
-    }
-
-    pageCard.appendChild(pageContent);
-
-
-    pageCol.appendChild(pageCard);
-    return pageCol;
-  });
-
-  const columns = await Promise.all(pagePromises);
-  columns.forEach((col) => els.spreadView.appendChild(col));
-
-  // Background prefetch adjacent pages
-  prefetchAdjacentPages(currentPage);
-  // Sync Nav Inputs
-  if (els.pageInput) els.pageInput.value = currentPage;
-  if (els.juzInput) els.juzInput.value = getJuzNumber(AppState.currentSurah.id, currentAyah.id);
-};
+// --- SPREAD VIEW LOGIC EXTRACTED TO spread_engine.js ---
 
 /**
  * Renders the bookmarks list in the sidebar and mobile drawer.

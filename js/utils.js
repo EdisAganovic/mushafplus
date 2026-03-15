@@ -10,7 +10,7 @@
  * @returns {string} e.g. "3:45"
  */
 window.formatTime = function (seconds) {
-  if (isNaN(seconds)) return "0:00";
+  if (isNaN(seconds) || !isFinite(seconds) || seconds < 0) return "0:00";
   const min = Math.floor(seconds / 60);
   const sec = Math.floor(seconds % 60);
   return `${min}:${sec.toString().padStart(2, "0")}`;
@@ -42,6 +42,17 @@ window.applySettings = function () {
   }
   if (previewBs) {
     previewBs.style.fontSize = `${AppState.settings.bsSize / 100}rem`;
+  }
+
+  // Audio Player Visibility
+  if (els.audioToggle) {
+    els.audioToggle.checked = AppState.settings.showAudioPlayer;
+  }
+  if (els.wordAudioToggle) {
+    els.wordAudioToggle.checked = AppState.settings.disableWordAudio;
+  }
+  if (els.ayahAudioContainer) {
+    els.ayahAudioContainer.classList.toggle("hidden-player", !AppState.settings.showAudioPlayer);
   }
 };
 

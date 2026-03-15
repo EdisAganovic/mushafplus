@@ -2,6 +2,37 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.1.1] - 2026-03-15
+
+### Fixed
+- **Tema aplikacije**: Dodan nedostajući event listener za promjenu teme aplikacije (Smaragdna, Plava, Zlatna, Ruža, Ljubičasta, Tirkizna).
+- **Tema stranice**: Poboljšana funkcionalnost za promjenu teme stranice (Mushaf) kroz postavke.
+
+## [0.1.0] - 2026-03-15
+
+### Beta verzija
+
+### Added
+- **Audio Plejer Kontrole**: Potpuno funkcionalan audio plejer sa:
+  - Play/Pause dugmad za oba audio izvora (recitacija i korisnički snimci)
+  - Traženje kroz klik na progress bar
+  - Kontrola brzine reprodukcije (0.5x - 2x)
+  - Loop opcija za ponavljanje ajeta
+  - Automatsko učitavanje sljedećeg ajeta (autoplay opcija)
+- **Postavke Prekidači**: Dodani nedostajući prekidači u postavkama:
+  - Tedžvid prikaz
+  - Tedžvid legenda
+  - Svjetli režim (Light Mode)
+  - Zvuk riječi (Word Audio)
+
+### Fixed
+- **Slideri za tekst**: Veličina arapskog teksta, prijevoda i visina linije sada rade ispravno i odmah se primjenjuju.
+- **Service Worker Cache**: Ažurirana verzija cache-a za ispravno učitavanje svih datoteka.
+
+### Changed
+- **Verzija Modal**: Smanjena širina modala (520px → 380px) i poboljšana kompaktnost za bolji prikaz.
+- **Verzija oznaka**: Prelazak sa 0.0.x na 0.1.x verziju za beta izdanje.
+
 ## [0.0.14] - 2026-03-12
 
 ### Fixed
@@ -73,7 +104,7 @@ All notable changes to the Mushaf Plus project will be documented in this file.
 ### Added
 
 - **Last Read Ayah Memory**: The application now remembers the exact Ayah you were reading. Upon reopening the app or refreshing the page, it will automatically navigate back to your last viewed Ayah instead of starting from the beginning of the Surah.
-- **About Modal**: New "O aplikaciji" button in the Settings drawer opens a modal showing author credits (Edis Aganović / N-UM.com), collaborator (Zehrina Buljubašić, prof.), and Qur'an translation credit (Muhammed Mehanović, prof.).
+- **About Modal**: New "O aplikaciji" button in the Settings drawer opens a modal showing author credits (Edis Aganović / N-UM.com) and Qur'an translation credit (Muhammed Mehanović, prof.).
 - **Version & Changelog Modal**: New "Verzija" button in Settings opens a scrollable modal displaying the full version history in user-friendly Bosnian, with color-coded tags for new features, improvements, and fixes.
 - **Modal System**: Reusable modal overlay system with blurred backdrop, slide-up animation, close-on-X, close-on-overlay-click, and Escape key support.
 

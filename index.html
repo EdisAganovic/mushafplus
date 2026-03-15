@@ -16,7 +16,7 @@
     <!-- Global App Configuration -->
     <script>
         // IMPORTANT: Change this version to force cache refresh for all users
-        const APP_VERSION = "0.0.14.1"; 
+        const APP_VERSION = "0.1.1"; 
     </script>
 
     <!-- UI Styles and Favicon (Dynamic versioning) -->
@@ -43,56 +43,54 @@
 <body class="bg-slate-950 text-slate-50 font-outfit h-screen overflow-hidden flex flex-col">
 
     <!-- Header -->
-    <header class="bg-slate-900 border-b-2 border-emerald-800 shadow-lg z-10 shrink-0 w-full">
+    <header class="hidden md:block bg-slate-900 border-b-2 border-emerald-800 shadow-lg z-10 shrink-0 w-full">
         <!-- Desktop/Tablet Header row -->
-        <div class="max-w-[1400px] mx-auto flex flex-col md:flex-row w-full items-center">
+        <div class="max-w-[1400px] mx-auto flex flex-col md:flex-row w-full items-center px-4 py-2 gap-3">
+            
+            <!-- Left: Title -->
+            <div class="flex items-center gap-3 shrink-0">
+                <span class="text-2xl hidden md:inline">📖</span>
+                <h1 id="app-title"
+                    class="text-lg font-bold bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent whitespace-nowrap">
+                    Mushaf Plus
+                </h1>
+            </div>
 
-            <!-- Mimic Main Content Area Structure -->
-            <div class="hidden md:flex flex-1 px-3 sm:px-6 py-[0.5rem]  w-full justify-center items-center">
-                <div class="w-full max-w-4xl flex items-center justify-between">
-                    <!-- Left group: title -->
-                    <div class="hidden md:flex items-center gap-[0.5rem] shrink-0">
-                        <span class="text-[1.5rem] hidden md:inline">📖</span>
-                        <h1 id="app-title"
-                            class="text-[1.125rem] font-bold bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent whitespace-nowrap">
-                            Mushaf Plus
-                        </h1>
-                    </div>
-
-                    <!-- Desktop Search -->
-                    <div class="relative group z-50 hidden sm:flex shrink-0 ml-4">
-                        <div class="relative w-full max-w-[200px] xl:max-w-[300px]">
-                            <input type="text" id="search-input" data-i18n-placeholder="searchPlaceholder"
-                                placeholder="Pretraži tekst ili ajet (2:255)..."
-                                class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-full text-[0.875rem] placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
-                            <ion-icon name="search-outline"
-                                class="absolute left-[0.75rem] top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors"></ion-icon>
-                        </div>
-                        <div id="search-results-container"
-                            class="absolute top-[3rem] left-0 right-0 w-[400px] max-h-[24rem] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-y-auto hidden flex-col custom-scrollbar z-50">
-                            <div id="search-results-list" class="flex flex-col"></div>
-                            <div id="search-empty-state" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden"
-                                data-i18n="noResults">
-                                Nema rezultata
-                            </div>
+            <!-- Right: Search, Navigation & Actions -->
+            <div class="flex-1 flex items-center justify-end gap-2 sm:gap-4 w-full md:w-auto">
+                <!-- Desktop Search -->
+                <div class="relative group z-50 hidden sm:flex shrink-0 flex-1 max-w-[240px] xl:max-w-[320px]">
+                    <input type="text" id="search-input" data-i18n-placeholder="searchPlaceholder"
+                        placeholder="Pretraži tekst ili ajet (2:255)..."
+                        class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-full text-[0.875rem] placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
+                    <ion-icon name="search-outline"
+                        class="absolute left-[0.75rem] top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-500 transition-colors"></ion-icon>
+                    
+                    <div id="search-results-container"
+                        class="absolute top-[3rem] left-0 right-0 w-[400px] max-h-[24rem] bg-slate-900 border border-slate-700 rounded-xl shadow-2xl overflow-y-auto hidden flex-col custom-scrollbar z-50">
+                        <div id="search-results-list" class="flex flex-col"></div>
+                        <div id="search-empty-state" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden"
+                            data-i18n="noResults">
+                            Nema rezultata
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Mimic Sidebar Structure -->
-            <div class="hidden md:flex items-center justify-between md:justify-end px-3 sm:px-6 pt-3 md:mt-0 sm:py-[0.75rem] w-full md:w-80 shrink-0 gap-[0.5rem]">
+                <!-- Page Input -->
                 <div class="relative flex items-center shrink-0">
                     <input type="number" id="header-page-input" min="1" max="604" placeholder="Str."
                         class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] w-14 px-2 rounded-lg outline-none focus:border-emerald-500 transition-colors text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                 </div>
+
+                <!-- Surah Select -->
                 <select id="surah-select"
-                    class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] px-[0.5rem] rounded-lg outline-none focus:border-emerald-500 transition-colors cursor-pointer text-[0.875rem] min-w-0 w-0 flex-grow sm:w-auto sm:flex-grow-0 overflow-hidden text-ellipsis">
+                    class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] px-[0.5rem] rounded-lg outline-none focus:border-emerald-500 transition-colors cursor-pointer text-[0.875rem] min-w-0 flex-1 max-w-[220px]">
                     <option value="" disabled selected class="bg-slate-900" data-i18n="selectSurah">Izaberi suru...
                     </option>
                 </select>
 
-                <div class="flex items-center gap-[0.5rem] shrink-0">
+                <!-- Action Buttons -->
+                <div class="flex items-center gap-2 shrink-0">
                     <button id="spread-toggle"
                         class="text-slate-300 hover:text-emerald-500 bg-slate-950 border border-slate-700 hover:bg-slate-800 transition-colors w-[2.5rem] h-[2.5rem] text-[1.25rem] rounded-lg flex items-center justify-center shrink-0"
                         title="Dvolisnica (Spread mode)">
@@ -134,11 +132,13 @@
     <div id="app-container" class="flex-1 flex flex-col md:flex-row overflow-hidden max-w-[1400px] mx-auto w-full">
 
         <!-- Main Content Area -->
-        <main id="main-content" class="flex-1 flex flex-col p-3 sm:p-6 overflow-y-auto items-center min-h-0">
+        <main id="main-content" class="flex-1 flex flex-col overflow-y-auto items-center min-h-0">
 
             <!-- Ayah Card -->
             <div id="ayah-card"
-                class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-8 shadow-2xl flex flex-col items-center min-h-[250px] sm:min-h-[400px] justify-start relative shrink-0">
+                class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl p-3 sm:p-8 shadow-2xl flex flex-col items-center min-h-[200px] sm:min-h-[400px] justify-start relative shrink-0">
+
+           
 
                 <!-- Navigation Hint -->
                 <div class="w-full text-center mb-1">
@@ -146,35 +146,47 @@
                 </div>
 
                 <!-- Navigation Badges -->
-                <div class="w-full flex justify-center items-center mt-1.5 pt-3 sm:mb-6 gap-3 sm:gap-4 overflow-x-auto no-scrollbar px-4">
+                <div class="w-full flex justify-center items-center mt-1 sm:mb-6 gap-1.5 sm:gap-4 overflow-x-auto no-scrollbar px-3 sm:px-0">
                     <!-- Ayah Badge -->
-                    <div class="text-[10px] sm:text-sm font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20 flex items-center shadow-md shrink-0">
-                        <label for="ayah-input" data-i18n="ayahLabel" class="cursor-pointer mr-1 opacity-90">Ajet</label>
+                    <div class="text-[10px] sm:text-sm font-mono text-emerald-500 bg-emerald-500/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-emerald-500/20 flex items-center shadow-md shrink-0">
+                        <label for="ayah-input" data-i18n="ayahLabel" class="cursor-pointer mr-0.5 sm:mr-1 opacity-90">Ajet</label>
                         <input type="number" id="ayah-input" min="1" max="286" placeholder="0"
                             class="bg-transparent border-none text-emerald-400 font-bold w-7 sm:w-9 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                         <span class="opacity-90 ml-0.5">/ <span id="total-ayahs-num">0</span></span>
                     </div>
 
                     <!-- Juz Badge -->
-                    <div class="text-[10px] sm:text-sm font-mono text-amber-500 bg-amber-500/10 px-3 py-1.5 rounded-full border border-amber-500/20 flex items-center gap-1 shadow-md shrink-0">
+                    <div class="text-[10px] sm:text-sm font-mono text-amber-500 bg-amber-500/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-amber-500/20 flex items-center gap-1 shadow-md shrink-0">
                         <label for="juz-input" data-i18n="juzLabel" class="opacity-90 cursor-pointer">Džuz</label>
                         <input type="number" id="juz-input" min="1" max="30" placeholder="0"
                             class="bg-transparent border-none text-amber-400 font-bold w-5 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                     </div>
 
                     <!-- Page Badge -->
-                    <div class="text-[10px] sm:text-sm font-mono text-blue-400 bg-blue-500/10 px-3 py-1.5 rounded-full border border-blue-500/20 flex items-center shadow-md shrink-0">
+                    <div class="text-[10px] sm:text-sm font-mono text-blue-400 bg-blue-500/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-blue-500/20 flex items-center shadow-md shrink-0">
                         <label for="page-input" data-i18n="pageLabel" class="opacity-90 cursor-pointer mr-0.5">Str.</label>
                         <input type="number" id="page-input" min="1" max="604" placeholder="0"
-                            class="bg-transparent border-none text-blue-300 font-bold w-7 sm:w-10 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                            class="bg-transparent border-none text-blue-300 font-bold w-6 sm:w-10 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                         <div id="page-progress-container" class="hidden flex items-center ml-1 pl-1">
                             <label for="page-progress" class="opacity-90 cursor-pointer mr-0.5">Ajet&nbsp;</label>
                             <span id="page-progress" class="text-blue-300 font-bold whitespace-nowrap"></span>
                         </div>
                     </div>
                 </div>
+                <div id="bismillah-display"
+                    class="w-full mb-3 sm:mb-6 hidden select-none text-center transition-all duration-300">
+                    <div class="font-quran quran-text text-2xl sm:text-3xl text-emerald-500/80 leading-relaxed" dir="rtl">
+                        بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
+                    </div>
+                    <div class="text-xs sm:text-sm font-medium text-slate-400 mt-1 italic">
+                        S imenom Allaha, Svemilosnog, Milostivog!
+                    </div>
+                    <div class="flex justify-center mt-3">
+                        <div class="h-[1px] w-16 bg-emerald-500/10"></div>
+                    </div>
+                </div>
                 <div id="arabic-display"
-                    class="font-quran quran-text text-[1.5rem] mt-4 sm:text-4xl md:text-5xl text-right w-full text-slate-100 selection:bg-emerald-800 transition-all duration-300">
+                    class="font-quran quran-text text-[2rem] mt-4 sm:text-4xl md:text-5xl text-right w-full text-slate-100 selection:bg-emerald-800 transition-all duration-300">
                 </div>
 
                 <!-- Tajweed Legend -->
@@ -188,45 +200,10 @@
                 
                 
 
-                <!-- Actions & Navigation -->
-                <div class="flex items-center gap-2 sm:gap-3 mt-6 sm:mt-8 w-full max-w-lg">
-                    <button id="prev-btn"
-                        class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all active:scale-95 shrink-0">
-                        <ion-icon name="arrow-back-outline" class="text-lg sm:text-xl"></ion-icon>
-                    </button>
-
-                    <button id="record-btn"
-                        class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl transition-all active:scale-95 shadow-lg relative overflow-hidden shrink-0"
-                        style="background-color: rgba(244, 63, 94, 0.29); color: white;">
-                        <div id="mic-meter-container" class="absolute inset-0 hidden pointer-events-none" style="background-color: rgba(0, 0, 0, 0.2);">
-                            <div id="mic-meter-bar" class="h-full transition-all duration-75 w-0" style="background-color: #9a2236;">
-                            </div>
-                        </div>
-                        <ion-icon name="mic-outline" id="record-icon" class="text-lg sm:text-xl relative z-10 shrink-0"></ion-icon>
-                        <span id="record-text" class="hidden text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap relative z-10" style="color: white;" data-i18n="record">Snimi</span>
-                    </button>
-
-                    <button id="valid-btn"
-                        class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-3 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent text-xs sm:text-base">
-                        <ion-icon name="checkmark-circle-outline" class="text-base sm:text-xl"></ion-icon>
-                        <span data-i18n="valid">Tačno</span>
-                    </button>
-
-                    <button id="bookmark-btn"
-                        class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2 sm:py-3 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent text-xs sm:text-base">
-                        <ion-icon name="bookmark-outline" class="text-base sm:text-xl"></ion-icon>
-                        <span data-i18n="bookmark">Označi</span>
-                    </button>
-
-                    <button id="next-btn"
-                        class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all active:scale-95 shrink-0">
-                        <ion-icon name="arrow-forward-outline" class="text-lg sm:text-xl"></ion-icon>
-                    </button>
-                </div>
 
                 <!-- Navigation Controls -->
                 <div id="ayah-audio-container"
-                    class="mt-6 sm:mt-8 hidden w-full max-w-lg flex flex-col items-center gap-2">
+                    class="mt-4 sm:mt-8 hidden w-full max-w-lg flex flex-col items-center gap-2">
                     <div
                         class="flex items-center gap-2 sm:gap-4 w-full bg-slate-800/40 p-2 sm:p-3 rounded-2xl border border-slate-700/50 backdrop-blur-sm shadow-inner">
                         <button id="ayah-play-btn"
@@ -265,7 +242,7 @@
 
 
                 <!-- User Recording Player -->
-                 <div id="user-audio-container" class="mt-2 hidden w-full max-w-lg flex flex-col items-center gap-2">
+                 <div id="user-audio-container" class="mt-1 hidden w-full max-w-lg flex flex-col items-center gap-2">
                     <div
                         class="flex items-center gap-2 sm:gap-4 w-full p-2 sm:p-3 rounded-2xl border backdrop-blur-sm shadow-inner"
                         style="background-color: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.2);">
@@ -294,6 +271,9 @@
                     </div>
                 </div>
 
+                <!-- Actions & Navigation Toolbar Placeholder (Desktop only) -->
+                <div id="desktop-toolbar-placeholder" class="hidden md:block w-full max-w-lg mx-auto"></div>
+
 
                 <!-- Notes Section -->
                 <div id="ayah-notes-container"
@@ -309,27 +289,37 @@
                 </div>
             </div> <!-- Close Ayah Card -->
 
+
             <!-- Spread Card (Initially Hidden) -->
             <div id="spread-card" class="hidden w-full flex flex-col items-center animate-fade-in">
                 <div id="spread-view" class="w-full flex flex-col lg:flex-row-reverse gap-4 lg:gap-8 items-start justify-center">
                     <!-- Dynamic Quran Pages -->
                 </div>
+
+                <!-- Quick Page Theme Toggle -->
+                <div id="page-theme-toggle-container" class="mt-8 mb-4">
+                    <button class="theme-dot-btn" data-theme="original" data-label="Standard" title="Standardna" style="background-color: #fcfaf0;"></button>
+                    <button class="theme-dot-btn" data-theme="sepia" data-label="Sepia" title="Sepia (Topla)" style="background-color: #f4ecd8;"></button>
+                    <button class="theme-dot-btn" data-theme="night" data-label="Noć" title="Tamna (Noć)" style="background-color: #1e293b;"></button>
+                    <button class="theme-dot-btn" data-theme="green" data-label="Zelena" title="Zelena (Klasik)" style="background-color: #064e3b;"></button>
+                </div>
             </div>
 
 
             <!-- Spacer to prevent mobile bottom nav from covering content -->
-            <div class="h-40 sm:h-16 w-full shrink-0"></div>
+            <div class="h-40 sm:h-16 w-full shrink-0 sm:hidden"></div>
 
         </main>
 
         <!-- Sidebar Overlay (Mobile) -->
         <div id="sidebar-overlay"
-            class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300 md:hidden">
+            class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[10001] hidden opacity-0 transition-opacity duration-300 md:hidden">
         </div>
 
         <!-- Sidebar -->
         <aside id="sidebar"
-            class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 flex flex-col shrink-0 overflow-y-auto z-50 transform translate-x-full transition-transform duration-300 md:relative md:translate-x-0 md:w-80 shadow-2xl md:shadow-none">
+            class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 pb-24 md:pb-6 flex flex-col shrink-0 overflow-y-auto transform translate-x-full transition-transform duration-300 md:relative md:translate-x-0 md:w-80 shadow-2xl md:shadow-none"
+            style="z-index: 100002;">
 
             <div class="flex justify-between items-center mb-6 md:hidden">
                 <h2 class="text-lg font-bold text-slate-200" data-i18n="menu">Meni</h2>
@@ -450,12 +440,14 @@
 
     <!-- Settings Overlay -->
     <div id="settings-overlay"
-        class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300">
+        class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"
+        style="z-index: 100001;">
     </div>
 
     <!-- Settings Drawer -->
     <aside id="settings-drawer"
-        class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 flex flex-col shrink-0 overflow-y-auto z-50 transform translate-x-full transition-transform duration-300 shadow-2xl">
+        class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 pb-24 md:pb-6 flex flex-col shrink-0 overflow-y-auto transform translate-x-full transition-transform duration-300 shadow-2xl"
+        style="z-index: 100002;">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
                 <ion-icon name="options-outline"></ion-icon>
@@ -487,9 +479,9 @@
                     <div class="flex justify-between mb-1 translate-y-1">
                         <label class="text-[10px] text-slate-400 uppercase tracking-wider"
                             data-i18n="arabicFontSize">Veličina arapskog fonta</label>
-                        <span id="ar-size-val" class="text-xs font-bold text-emerald-400">140%</span>
+                        <span id="ar-size-val" class="text-xs font-bold text-emerald-400">200%</span>
                     </div>
-                    <input type="range" id="ar-size-slider" min="80" max="600" step="10" value="140"
+                    <input type="range" id="ar-size-slider" min="80" max="600" step="10" value="200"
                         class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
                 </div>
 
@@ -518,7 +510,7 @@
                     <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Prikaz — Arapski
                     </div>
                     <div id="settings-preview-ar" class="font-quran text-slate-100 text-right" dir="rtl"
-                        style="font-size:1.4rem; line-height:1.6">قُلْ هُوَ ٱللَّهُ أَحَدٌ ١ ٱللَّهُ ٱلصَّمَدُ ٢</div>
+                        style="font-size:2rem; line-height:1.6">قُلْ هُوَ ٱللَّهُ أَحَدٌ ١ ٱللَّهُ ٱلصَّمَدُ ٢</div>
                 </div>
 
                 <!-- Live Preview: Translation -->
@@ -558,6 +550,17 @@
                         <option value="rose" class="bg-slate-900" data-i18n="themeRose">Ruža</option>
                         <option value="purple" class="bg-slate-900" data-i18n="themePurple">Ljubičasta</option>
                         <option value="teal" class="bg-slate-900" data-i18n="themeTeal">Tirkizna</option>
+                    </select>
+                </div>
+
+                <div class="pt-2">
+                    <label class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">Tema stranice (Mushaaf)</label>
+                    <select id="page-theme-select"
+                        class="w-full bg-slate-950/50 text-slate-300 rounded-xl p-2.5 text-sm border border-slate-800 outline-none focus:border-emerald-500 transition-colors cursor-pointer appearance-none">
+                        <option value="original" class="bg-slate-900" selected>Standardna</option>
+                        <option value="sepia" class="bg-slate-900">Sepia</option>
+                        <option value="night" class="bg-slate-900">Tamna (Noć)</option>
+                        <option value="green" class="bg-slate-900">Zelena</option>
                     </select>
                 </div>
 
@@ -601,6 +604,34 @@
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" id="tajweed-toggle" class="sr-only peer" checked>
+                        <div
+                            class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
+                        </div>
+                    </label>
+                </div>
+
+                <div
+                    class="pt-2 flex items-center justify-between bg-slate-950/30 p-3 rounded-xl border border-slate-800 mt-2">
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold text-slate-300" data-i18n="audioPlayer">Audio plejer</span>
+                        <span class="text-[10px] text-slate-500" data-i18n="audioPlayerDesc">Prikaži kontrolu zvuka</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="audio-toggle" class="sr-only peer" checked>
+                        <div
+                            class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
+                        </div>
+                    </label>
+                </div>
+
+                <div
+                    class="pt-2 flex items-center justify-between bg-slate-950/30 p-3 rounded-xl border border-slate-800 mt-2">
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold text-slate-300" data-i18n="disableWordAudio">Isključi audio za riječi</span>
+                        <span class="text-[10px] text-slate-500" data-i18n="disableWordAudioDesc">Onemogući zvuk pri kliku</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="word-audio-toggle" class="sr-only peer">
                         <div
                             class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
                         </div>
@@ -664,17 +695,20 @@
 
     <!-- ===== Bookmarks Overlay (Mobile) ===== -->
     <div id="bookmarks-overlay"
-        class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300 md:hidden">
+        class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 md:hidden"
+        style="z-index: 100001;">
     </div>
 
     <!-- ===== Hifz Overlay (Mobile) ===== -->
     <div id="hifz-overlay"
-        class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300 md:hidden">
+        class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300 md:hidden"
+        style="z-index: 100001;">
     </div>
 
     <!-- ===== Hifz Drawer (Mobile) ===== -->
     <aside id="hifz-drawer"
-        class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 flex flex-col shrink-0 overflow-y-auto z-50 transform translate-x-full transition-transform duration-300 shadow-2xl md:hidden">
+        class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 pb-24 flex flex-col shrink-0 overflow-y-auto transform translate-x-full transition-transform duration-300 shadow-2xl md:hidden"
+        style="z-index: 100002;">
         
         <div class="flex justify-between items-center mb-6 shrink-0 border-b border-slate-800 pb-4">
             <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
@@ -733,7 +767,8 @@
 
     <!-- ===== Bookmarks Drawer (Mobile) ===== -->
     <aside id="bookmarks-drawer"
-        class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 flex flex-col shrink-0 overflow-y-auto z-50 transform translate-x-full transition-transform duration-300 shadow-2xl md:hidden">
+        class="fixed inset-y-0 right-0 w-4/5 sm:w-80 bg-slate-900 border-l border-slate-800 p-6 pb-24 flex flex-col shrink-0 overflow-y-auto transform translate-x-full transition-transform duration-300 shadow-2xl md:hidden"
+        style="z-index: 100002;">
         <div class="flex justify-between items-center mb-6 shrink-0 border-b border-slate-800 pb-4">
             <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
                 <ion-icon name="bookmarks-outline"></ion-icon>
@@ -752,9 +787,9 @@
     </aside>
 
     <!-- ===== Search Modal (Mobile) ===== -->
-    <div id="search-modal" class="modal-overlay hidden md:hidden">
-        <div class="modal-container p-0 h-[80vh] flex flex-col justify-start">
-            <div class="modal-header shrink-0 border-b border-slate-800 p-4 relative z-10 bg-slate-900 rounded-t-2xl">
+    <div id="search-modal" class="modal-overlay hidden animate-modal-fade-in">
+        <div class="modal-container modal-container-lg h-[80vh] flex flex-col animate-modal-slide-up shadow-modal">
+            <div class="shrink-0 border-b border-slate-800 p-4 relative z-10 bg-slate-900 rounded-t-2xl">
                 <div class="flex items-center gap-3 w-full">
                     <button class="text-slate-400 hover:text-emerald-400 transition-colors p-1" data-modal-close="search-modal">
                         <ion-icon name="arrow-back-outline" class="text-2xl"></ion-icon>
@@ -768,7 +803,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-body modal-body-scroll p-0 relative flex-1 bg-slate-900 rounded-b-2xl">
+            <div class="p-0 relative flex-1 bg-slate-900 rounded-b-2xl overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700">
                 <div id="search-results-list-modal" class="flex flex-col"></div>
                 <div id="search-empty-state-modal" class="p-[1rem] text-center text-[0.875rem] text-slate-500 hidden"
                     data-i18n="noResults">
@@ -779,119 +814,183 @@
     </div>
 
     <!-- ===== About Modal ===== -->
-    <div id="about-modal" class="modal-overlay hidden">
-        <div class="modal-container">
-            <div class="modal-header">
+    <div id="about-modal" class="modal-overlay hidden animate-modal-fade-in">
+        <div class="modal-container max-h-[85vh] flex flex-col animate-modal-slide-up shadow-modal">
+            <div class="modal-header shrink-0">
                 <h2 class="modal-title">
-                    <ion-icon name="information-circle-outline"></ion-icon>
+                    <ion-icon name="information-circle-outline" class="text-emerald-400"></ion-icon>
                     O aplikaciji
                 </h2>
                 <button class="modal-close" data-modal-close="about-modal">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="about-logo">📖</div>
-                <h3 class="about-app-name">Mushaf Plus</h3>
-                <p class="about-tagline">Interaktivni Mushaf za učenje i preslušavanje Kur'ana</p>
+            <div class="modal-body modal-body-scroll">
+                <div class="about-hero">
+                    <div class="text-4xl mb-3">📖</div>
+                    <h3 class="about-title">Mushaf Plus</h3>
+                    <p class="about-subtitle">Interaktivni Mushaf za učenje i preslušavanje</p>
+                </div>
 
-                <div class="about-credits">
-                    <div class="about-credit-item">
-                        <span class="about-label">Autor</span>
-                        <span class="about-value">Edis Aganović za stranicu <strong>N-UM.com</strong></span>
+                <div class="about-card">
+                    <span class="about-card-title">Ključne mogućnosti</span>
+                    <div class="about-feature-list">
+                         <div class="about-feature-item">
+                            <span class="about-feature-icon">✓</span>
+                            <span><strong>Audio po riječi</strong> — Klikni na bilo koju riječ za trenutni izgovor.</span>
+                         </div>
+                         <div class="about-feature-item">
+                            <span class="about-feature-icon">✓</span>
+                            <span><strong>Memorisanje</strong> — Dugo držanje (2s) za markiranje naučenih ajeta.</span>
+                         </div>
+                         <div class="about-feature-item">
+                            <span class="about-feature-icon">✓</span>
+                            <span><strong>Hifz Mod</strong> — Napredno ponavljanje određenog opsega ajeta.</span>
+                         </div>
+                         <div class="about-feature-item">
+                            <span class="about-feature-icon">✓</span>
+                            <span><strong>Tedžvid</strong> — Detaljno bojenje pravila sa interaktivnim objašnjenjima.</span>
+                         </div>
                     </div>
-                    <div class="about-credit-item">
-                        <span class="about-label">Saradnik</span>
-                        <span class="about-value">Zehrina Buljubašić, prof.</span>
+                </div>
+
+                <div class="about-grid">
+                    <div class="about-info-box">
+                        <span class="about-info-label">Autor</span>
+                        <span class="about-info-value">Edis Aganović</span>
                     </div>
-                    <div class="about-credit-item">
-                        <span class="about-label">Prevod tumačenja Kur'ana</span>
-                        <span class="about-value">Muhammed Mehanović, prof.</span>
+                    <div class="about-info-box">
+                        <span class="about-info-label">Verzija</span>
+                        <span class="about-info-value">0.1.1</span>
                     </div>
-                    <div class="about-credit-item">
-                        <span class="about-label">Datum</span>
-                        <span class="about-value">11.3.2026.</span>
-                    </div>
+                </div>
+
+                <div class="about-info-box">
+                    <span class="about-info-label">Prevod tumačenja</span>
+                    <span class="about-info-value">M. Mehanović, prof.</span>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ===== Version Modal ===== -->
-    <div id="version-modal" class="modal-overlay hidden">
-        <div class="modal-container modal-container-lg">
-            <div class="modal-header">
+    <div id="version-modal" class="modal-overlay hidden animate-modal-fade-in">
+        <div class="modal-container max-h-[85vh] flex flex-col animate-modal-slide-up shadow-modal">
+            <div class="modal-header shrink-0">
                 <h2 class="modal-title">
-                    <ion-icon name="git-branch-outline"></ion-icon>
-                    Verzija i novosti
+                    <ion-icon name="git-branch-outline" class="text-emerald-400"></ion-icon>
+                    Verzija
                 </h2>
                 <button class="modal-close" data-modal-close="version-modal">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
             <div class="modal-body modal-body-scroll">
-                <!-- v0.0.14 -->
+                <!-- v0.1.1 -->
                 <div class="changelog-entry">
-                    <h4 class="changelog-version">Verzija 0.0.14 <span class="changelog-date">— 12. mart 2026.</span></h4>
+                    <div class="changelog-header">
+                        <span class="changelog-version-pill">0.1.1</span>
+                        <h4 class="changelog-title">Nova verzija</h4>
+                        <span class="changelog-date">15. mart 2026.</span>
+                    </div>
                     <div class="changelog-section">
-                        <span class="changelog-tag tag-fixed" style="background-color: #fca5a5; color: #450a0a;">Popravljeno</span>
+                        <span class="changelog-badge badge-fixed">Popravke</span>
                         <ul class="changelog-list">
-                            <li><strong>Kompatibilnost snimanja (iPhone/iOS)</strong> — Riješen problem gdje se snimci nisu mogli reprodukovati na iPhone uređajima. Aplikacija sada automatski detektuje najbolje podržani format (prioritet na <code>audio/mp4</code> za iOS) kako bi osigurala besprijekoran rad na svim platformama.</li>
+                             <li class="changelog-item"><strong>Tema aplikacije</strong> — Dodan event listener za promjenu teme.</li>
+                             <li class="changelog-item"><strong>Tema stranice</strong> — Poboljšana funkcionalnost za promjenu teme Mushaf stranice.</li>
                         </ul>
                     </div>
                 </div>
 
-                <!-- v0.0.13 -->
+                <!-- v0.1.0 -->
                 <div class="changelog-entry">
-                    <h4 class="changelog-version">Verzija 0.0.13 <span class="changelog-date">— 11. mart 2026.</span></h4>
+                    <div class="changelog-header">
+                        <span class="changelog-version-pill">0.1.0</span>
+                        <h4 class="changelog-title">Audio & UI</h4>
+                        <span class="changelog-date">15. mart 2026.</span>
+                    </div>
                     <div class="changelog-section">
-                        <span class="changelog-tag tag-new">Novo</span>
+                        <span class="changelog-badge badge-new">Novo</span>
                         <ul class="changelog-list">
-                            <li><strong>Novi vizuelni identitet snimanja</strong> — Dinamičko širenje dugmeta za snimanje, uvođenje Mic Meter indikatora u realnom vremenu te nova <code>rose</code> vizuelna tema za korisničke snimke.</li>
-                            <li><strong>Kontekstualni tajmer/brojač</strong> — Dodavanje indikatora koliko je ajeta preostalo na trenutnoj stranici, što olakšava planiranje učenja.</li>
+                             <li class="changelog-item"><strong>Audio plejer</strong> — Potpuno funkcionalan audio plejer sa kontrolama za play/pause, traženje, brzinu i ponavljanje.</li>
                         </ul>
                     </div>
                     <div class="changelog-section">
-                        <span class="changelog-tag tag-fixed" style="background-color: #fca5a5; color: #450a0a;">Popravljeno</span>
+                        <span class="changelog-badge badge-improved">Poboljšano</span>
                         <ul class="changelog-list">
-                            <li><strong>Mobilna navigacija</strong> — Lebdeći donji meni se sada prikazuje isključivo na pametnim telefonima, dok na desktop uređajima ostaje skriven.</li>
+                             <li class="changelog-item"><strong>Slideri za tekst</strong> — Veličina arapskog teksta, prijevoda i visina linije sada rade ispravno.</li>
+                             <li class="changelog-item"><strong>Postavke</strong> — Dodani prekidači za tedžvid, tedžvid legendu, svjetli režim i zvuk riječi.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-removed">Smanjeno</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Verzija modal</strong> — Smanjena širina i poboljšana kompaktnost za bolji prikaz.</li>
                         </ul>
                     </div>
                 </div>
 
-                <!-- v0.0.11 -->
+                <!-- v0.0.19 -->
                 <div class="changelog-entry">
-                    <h4 class="changelog-version">Verzija 0.0.11 <span class="changelog-date">— 27. februar 2026.</span></h4>
+                    <div class="changelog-header">
+                        <span class="changelog-version-pill">0.0.19</span>
+                        <h4 class="changelog-title">Teme i Layout</h4>
+                        <span class="changelog-date">15. mart 2026.</span>
+                    </div>
                     <div class="changelog-section">
-                        <span class="changelog-tag tag-fixed" style="background-color: #fca5a5; color: #450a0a;">Popravljeno</span>
+                        <span class="changelog-badge badge-improved">Poboljšano</span>
                         <ul class="changelog-list">
-                            <li><strong>Tedžvid na mobitelu</strong> — Isključeno prikazivanje tedžvid objašnjenja (iskačućih oblačića) prilikom tapkanja/označavanja arapskih riječi na mobilnim uređajima, kako ne bi ometali fokus na tekst.</li>
+                             <li class="changelog-item"><strong>Tema na računarskom prikazu</strong> — Pozadinska boja teme se sada primjenjuje na cijeli ekran u pregledu 2 stranice.</li>
+                             <li class="changelog-item"><strong>Teme za tamni režim</strong> — Riješen je problem sa obrtanjem boja tako da je tekst sada savršeno vidljiv u svim temama i u tamnom režimu aplikacije.</li>
+                             <li class="changelog-item"><strong>Raspored alata</strong> — Tasteri za izmjenu tema ispod stranica su vizuelno polupani sa većim razmacima.</li>
                         </ul>
                     </div>
                 </div>
 
+                <!-- v0.0.18 -->
+                <div class="changelog-entry">
+                    <div class="changelog-header">
+                        <span class="changelog-version-pill">0.0.18</span>
+                        <h4 class="changelog-title">Audio & Mobile</h4>
+                        <span class="changelog-date">15. mart 2026.</span>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-new">Novo</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Audio kontrola</strong> — Nova opcija za potpuno isključivanje zvuka pri kliku na pojedinačne riječi (Postavke).</li>
+                             <li class="changelog-item"><strong>Mobilni Toolbar</strong> — Glavne tasteri za navigaciju su sada fiksni na dnu ekrana za brži i lakši pristup.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-improved">Poboljšano</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Optimizacija prostora</strong> — Smanjeni razmaci i poboljšan raspored na ajet kartici za bolji prikaz.</li>
+                             <li class="changelog-item"><strong>Veći scrollarea</strong> — Povećana vidljiva lista u izborniku sura na mobilnim uređajima.</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- ===== Surah & Hifz Modal ===== -->
-    <div id="surah-hifz-modal" class="modal-overlay hidden">
-        <div class="modal-container">
-            <div class="modal-header">
+    <div id="surah-hifz-modal" class="modal-overlay hidden animate-modal-fade-in">
+        <div class="modal-container max-h-[85vh] flex flex-col animate-modal-slide-up shadow-modal">
+            <div class="modal-header shrink-0">
                 <h2 class="modal-title">
-                    <ion-icon name="book-outline"></ion-icon>
+                    <ion-icon name="book-outline" class="text-emerald-400"></ion-icon>
                     Sura
                 </h2>
                 <button class="modal-close" data-modal-close="surah-hifz-modal">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
-            <div class="modal-body modal-body-scroll space-y-4">
-                
+            <div class="modal-body modal-body-scroll space-y-6">
+
                 <!-- Hifz Mode has been moved to Mobile Drawer -->                <!-- Surah List -->
                 <div>
-                    <h3 class="text-slate-200 font-bold mb-2 text-sm uppercase tracking-wider">Izaberi suru</h3>
-                    <div id="modal-surah-list" class="flex flex-col gap-1 max-h-[50vh] overflow-y-auto custom-scrollbar pr-1">
+                    <h3 class="text-slate-200 font-bold mb-4 text-sm uppercase tracking-wider">Izaberi suru</h3>
+                    <div id="modal-surah-list" class="flex flex-col gap-1 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700 pr-1">
                         <!-- Populated by JS -->
                     </div>
                 </div>
@@ -900,8 +999,49 @@
         </div>
     </div>
 
+
+    <!-- Actions & Navigation Toolbar -->
+    <div id="main-action-toolbar" class="fixed md:relative left-2 right-2 md:left-auto md:right-auto md:mt-8 flex items-center justify-center z-[9998] w-[calc(100%-1rem)] md:w-full max-w-lg mx-auto" style="bottom: 5.5rem;">
+        <div class="flex items-center gap-2 sm:gap-3 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-2xl p-2 shadow-2xl w-full max-w-lg">
+            <button id="prev-btn"
+                class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all active:scale-95 shrink-0">
+                <ion-icon name="arrow-back-outline" class="text-lg sm:text-xl"></ion-icon>
+            </button>
+
+            <button id="record-btn"
+                class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl transition-all active:scale-95 shadow-lg relative overflow-hidden shrink-0 hover:shadow-xl"
+                style="background-color: rgba(244, 63, 94, 0.29); color: white;"
+                onmouseover="this.style.backgroundColor='rgba(244, 63, 94, 0.5)'"
+                onmouseout="this.style.backgroundColor='rgba(244, 63, 94, 0.29)'">
+                <div id="mic-meter-container" class="absolute inset-0 hidden pointer-events-none" style="background-color: rgba(0, 0, 0, 0.2);">
+                    <div id="mic-meter-bar" class="h-full transition-all duration-75 w-0" style="background-color: #9a2236;">
+                    </div>
+                </div>
+                <ion-icon name="mic-outline" id="record-icon" class="text-lg sm:text-xl relative z-10 shrink-0"></ion-icon>
+                <span id="record-text" class="hidden text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap relative z-10" style="color: white;" data-i18n="record">Snimi</span>
+            </button>
+
+            <button id="valid-btn"
+                class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 h-10 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent text-xs sm:text-base">
+                <ion-icon name="checkmark-circle-outline" class="text-base sm:text-xl"></ion-icon>
+                <span data-i18n="valid">Tačno</span>
+            </button>
+
+            <button id="bookmark-btn"
+                class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 h-10 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent text-xs sm:text-base">
+                <ion-icon name="bookmark-outline" class="text-base sm:text-xl"></ion-icon>
+                <span data-i18n="bookmark">Označi</span>
+            </button>
+
+            <button id="next-btn"
+                class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all active:scale-95 shrink-0">
+                <ion-icon name="arrow-forward-outline" class="text-lg sm:text-xl"></ion-icon>
+            </button>
+        </div>
+    </div>
+
     <!-- Mobile Bottom Navigation -->
-    <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 w-full bg-slate-900/95 backdrop-blur-md border-t border-slate-800 flex md:hidden justify-around items-center p-2 pb-[env(safe-area-inset-bottom,0.5rem)] z-[60] transition-transform duration-300">
+    <nav id="mobile-bottom-nav" class="fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-700 flex md:hidden justify-around items-center p-2" style="z-index: 9998;">
         <button id="nav-surah-btn" class="flex flex-col items-center justify-center p-2 text-slate-400 hover:text-emerald-400 transition-colors w-16">
             <ion-icon name="book-outline" class="text-2xl mb-1"></ion-icon>
             <span class="text-[10px] font-medium" data-i18n="surah">Sura</span>
@@ -945,17 +1085,24 @@
         const scriptsToLoad = [
             "data/quran_data.js",
             "js/tajweed.js",
+            "js/tajweed_engine.js",
             "js/i18n.js",
             "js/config.js",
             "js/utils.js",
             "js/effects.js",
             "js/audio.js",
+            "js/spread_engine.js",
             "js/render.js",
             "js/actions.js",
             "js/quranMeta.js",
+            // Refactored modules (must load before app.js)
+            "js/ui-state.js",
+            "js/search-handler.js",
+            "js/keyboard-shortcuts.js",
+            "js/gesture-handler.js",
             "js/app.js"
         ];
-        
+
         scriptsToLoad.forEach(src => {
             document.write(`<script src="${src}?v=${APP_VERSION}"><\/script>`);
         });
@@ -1020,7 +1167,7 @@
                 toast.id = 'pwa-update-toast';
                 // Inline styles for slide-up animation without an external class
                 toast.style.cssText = `
-                    position: fixed; bottom: 5rem; left: 50%; width: 90%; max-width: 320px;
+                    position: fixed; bottom: 8.5rem; left: 50%; width: 90%; max-width: 320px;
                     transform: translateX(-50%) translateY(20px); opacity: 0;
                     background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px);
                     border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px;

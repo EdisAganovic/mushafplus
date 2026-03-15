@@ -1,6 +1,7 @@
-const CACHE_VERSION = "v0.0.14.1";
+const CACHE_VERSION = "v0.1.1";
 const STATIC_CACHE = `mushaf-static-${CACHE_VERSION}`;
-const AUDIO_CACHE = `mushaf-audio-${CACHE_VERSION}`;
+const AUDIO_RECITATION_CACHE = `mushaf-recitation-${CACHE_VERSION}`;
+const AUDIO_WORD_CACHE = `mushaf-word-${CACHE_VERSION}`;
 
 const ASSETS_TO_CACHE = [
   "./",
@@ -24,8 +25,10 @@ async function trimCache(cacheName, maxItems) {
   const cache = await caches.open(cacheName);
   const keys = await cache.keys();
   if (keys.length > maxItems) {
+    // Delete oldest (FIFO)
     await cache.delete(keys[0]);
-    await trimCache(cacheName, maxItems);
+    // Note: We don't recurse here to keep it simple, 
+    // it will eventually trim down on subsequent fetches.
   }
 }
 
@@ -45,7 +48,9 @@ self.addEventListener("message", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
-  const isAudio = url.pathname.endsWith(".mp3");
+  const isMp3 = url.pathname.endsWith(".mp3");
+  const isWordAudio = isMp3 && url.pathname.includes("/assets/audio/");
+  const isRecitation = isMp3 && !isWordAudio;
 
   event.respondWith(
     caches.match(event.request).then((response) => {
@@ -57,15 +62,22 @@ self.addEventListener("fetch", (event) => {
         }
 
         const responseToCache = networkResponse.clone();
-        const targetCache = isAudio ? AUDIO_CACHE : STATIC_CACHE;
-
-        caches.open(targetCache).then((cache) => {
-          cache.put(event.request, responseToCache);
-          // If it's audio, keep only the last 20 tracks to prevent storage exhaustion
-          if (isAudio) {
-            trimCache(AUDIO_CACHE, 20);
-          }
-        });
+        
+        if (isWordAudio) {
+          caches.open(AUDIO_WORD_CACHE).then((cache) => {
+            cache.put(event.request, responseToCache);
+            trimCache(AUDIO_WORD_CACHE, 300); // Cache up to 300 words (~20MB)
+          });
+        } else if (isRecitation) {
+          caches.open(AUDIO_RECITATION_CACHE).then((cache) => {
+            cache.put(event.request, responseToCache);
+            trimCache(AUDIO_RECITATION_CACHE, 20); // Cache up to 20 recitations (~30MB)
+          });
+        } else {
+          caches.open(STATIC_CACHE).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
 
         return networkResponse;
       });
@@ -74,7 +86,7 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  const cacheWhitelist = [STATIC_CACHE, AUDIO_CACHE];
+  const cacheWhitelist = [STATIC_CACHE, AUDIO_RECITATION_CACHE, AUDIO_WORD_CACHE];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(

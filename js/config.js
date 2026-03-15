@@ -8,6 +8,32 @@
  * - els: Mapping of every interactive HTML element by ID.
  */
 
+// Helper: Safe localStorage parsing with error handling
+function safeParseStorage(key, fallback) {
+  try {
+    const item = localStorage.getItem(key);
+    if (item === null || item === "") return fallback;
+    return JSON.parse(item);
+  } catch (e) {
+    console.error(`[Storage] Failed to parse "${key}":`, e);
+    return fallback;
+  }
+}
+
+// Helper: Safe localStorage size migration with error handling
+function migrateSizeValue(key, fallback) {
+  try {
+    const v = parseFloat(localStorage.getItem(key) || fallback);
+    if (isNaN(v)) return parseFloat(fallback);
+    if (v < 10) return Math.round(v * 100); // was rem
+    if (v > 10 && v < 80) return Math.round((v / 16) * 100); // was px
+    return v; // already %
+  } catch (e) {
+    console.error(`[Storage] Failed to migrate "${key}":`, e);
+    return parseFloat(fallback);
+  }
+}
+
 window.AppState = {
   data: [], // Full Quran data (Arabic + Translation)
   currentSurah: null, // Currently selected Surah object
@@ -23,38 +49,35 @@ window.AppState = {
   recordingMimeType: "audio/webm", // Selected mime type for current device
 
   // NEW RUNTIME STATE
-  hifzEnabled: false,
-  hifzRange: { start: null, end: null },
+  hifzEnabled: safeParseStorage("quran_hifzEnabled", false),
+  hifzRange: safeParseStorage("quran_hifzRange", { start: null, end: null }),
   currentReciter:
-    localStorage.getItem("quran_reciter") || "Muhammad_Ayyoub_128kbps",
+    safeParseStorage("quran_reciter", "Muhammad_Ayyoub_128kbps"),
 
-  // PERSISTENT DATA (Loaded from localStorage)
+  // PERSISTENT DATA (Loaded from localStorage with error handling)
   checkedAyats: new Set(
-    JSON.parse(localStorage.getItem("quran_checked") || "[]"),
+    safeParseStorage("quran_checked", [])
   ),
   bookmarks: new Set(
-    JSON.parse(localStorage.getItem("quran_bookmarks") || "[]"),
+    safeParseStorage("quran_bookmarks", [])
   ),
-  notes: JSON.parse(localStorage.getItem("quran_notes") || "{}"),
-  highlights: JSON.parse(localStorage.getItem("quran_highlights") || "{}"),
+  notes: safeParseStorage("quran_notes", {}),
+  highlights: safeParseStorage("quran_highlights", {}),
   settings: (() => {
-    // Helper: migrate old px/rem values to percentage (run once per load)
-    const migrateSize = (key, fallback) => {
-      const v = parseFloat(localStorage.getItem(key) || fallback);
-      if (v < 10) return Math.round(v * 100); // was rem
-      if (v > 10 && v < 80) return Math.round((v / 16) * 100); // was px
-      return v; // already %
-    };
     return {
       layouts: {}, // Cache for page-by-page word positions
-      arSize: migrateSize("quran_ar_size", "140"),
-      bsSize: migrateSize("quran_bs_size", "100"),
+      arSize: migrateSizeValue("quran_ar_size", "200"),
+      bsSize: migrateSizeValue("quran_bs_size", "100"),
       arLineHeight: parseFloat(localStorage.getItem("quran_ar_lh") || "1.6"),
       tajweed: localStorage.getItem("quran_tajweed") !== "false",
       tajweedLegend: localStorage.getItem("quran_tajweed_legend") !== "false",
       lightMode: localStorage.getItem("quran_lightmode") === "true",
       showNotes: localStorage.getItem("quran_show_notes") !== "false",
       spreadMode: localStorage.getItem("quran_spread_mode") === "true",
+      showAudioPlayer: localStorage.getItem("quran_show_audio") !== "false",
+      disableWordAudio: localStorage.getItem("quran_disable_word_audio") === "true",
+      pageTheme: localStorage.getItem("quran_page_theme") || "original",
+      autoplay: localStorage.getItem("quran_autoplay") === "true",
     };
   })(),
 };
@@ -82,6 +105,7 @@ window.els = {
 
   // Main Display
   currentSurahName: document.getElementById("current-surah-name"),
+  bismillahDisplay: document.getElementById("bismillah-display"),
   arabicDisplay: document.getElementById("arabic-display"),
   translationDisplay: document.getElementById("translation-display"),
   totalAyahsNum: document.getElementById("total-ayahs-num"),
@@ -173,12 +197,16 @@ window.els = {
   settingsOverlay: document.getElementById("settings-overlay"),
   settingsClose: document.getElementById("settings-close"),
   themeSelect: document.getElementById("theme-select"),
+  pageThemeSelect: document.getElementById("page-theme-select"),
+  themeDots: document.querySelectorAll(".theme-dot-btn"),
   reciterSelect: document.getElementById("reciter-select"),
   autoplayToggle: document.getElementById("autoplay-toggle"),
   tajweedToggle: document.getElementById("tajweed-toggle"),
   tajweedLegendToggle: document.getElementById("tajweed-legend-toggle"),
   lightmodeToggle: document.getElementById("lightmode-toggle"),
   notesToggle: document.getElementById("notes-toggle"),
+  audioToggle: document.getElementById("audio-toggle"),
+  wordAudioToggle: document.getElementById("word-audio-toggle"),
 
   // Swipe UX Elements
   swipeToast: document.getElementById("swipe-toast"),

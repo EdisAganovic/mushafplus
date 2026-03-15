@@ -7,6 +7,9 @@
 let recordTimerInterval = null;
 let recordStartTime = null;
 
+// Flag to prevent race condition in getUserMedia
+let isRequestingMic = false;
+
 /**
  * Initiates the microphone recording session.
  * Reuses AppState.audioStream if available to prevent multiple browser prompts.
@@ -29,10 +32,21 @@ function getSupportedMimeType() {
 
 window.startRecording = async function () {
   try {
+    // CRITICAL FIX #1: Prevent race condition - only one getUserMedia call at a time
+    if (isRequestingMic) {
+      console.warn("[Recording] Already requesting microphone access, ignoring duplicate call");
+      return;
+    }
+
     if (!AppState.audioStream) {
-      AppState.audioStream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
+      isRequestingMic = true;
+      try {
+        AppState.audioStream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+      } finally {
+        isRequestingMic = false;
+      }
     }
 
     const mimeType = getSupportedMimeType();
@@ -47,30 +61,39 @@ window.startRecording = async function () {
     };
 
     AppState.mediaRecorder.onstop = () => {
-      const audioBlob = new Blob(AppState.audioChunks, { 
-        type: AppState.recordingMimeType 
+      const audioBlob = new Blob(AppState.audioChunks, {
+        type: AppState.recordingMimeType
       });
       const audioUrl = URL.createObjectURL(audioBlob);
       const key = `${AppState.currentSurah.id}-${
         AppState.currentSurah.verses[AppState.currentAyahIndex].id
       }`;
 
-      // Prevent memory leaks by cleaning up the old Blob URL
+      // CRITICAL FIX #2: Prevent memory leak - properly cleanup old Blob URL before replacing
       if (AppState.recordings[key]) {
         URL.revokeObjectURL(AppState.recordings[key]);
-        // Remove from tracking array if it exists elsewhere
-        AppState.recordingKeys = AppState.recordingKeys.filter(k => k !== key);
+        delete AppState.recordings[key];
+        // Remove key from tracking array (ensure no duplicates)
+        const idx = AppState.recordingKeys.indexOf(key);
+        if (idx > -1) {
+          AppState.recordingKeys.splice(idx, 1);
+        }
       }
 
-      AppState.recordings[key] = audioUrl;
+      // Store recording with duration metadata
+      const duration = Math.round((Date.now() - recordStartTime) / 1000);
+      AppState.recordings[key] = {
+        url: audioUrl,
+        duration: duration
+      };
       AppState.recordingKeys.push(key);
 
       // --- OPTIMIZATION: Limit memory usage for long sessions ---
       // We only keep the last 20 recordings in the "sliding window" to prevent memory exhaustion
-      if (AppState.recordingKeys.length > 20) {
+      while (AppState.recordingKeys.length > 20) {
         const oldestKey = AppState.recordingKeys.shift();
-        if (AppState.recordings[oldestKey] && oldestKey !== key) {
-           URL.revokeObjectURL(AppState.recordings[oldestKey]);
+        if (AppState.recordings[oldestKey]) {
+           URL.revokeObjectURL(AppState.recordings[oldestKey].url);
            delete AppState.recordings[oldestKey];
            console.log(`[Memory] Revoked oldest recording: ${oldestKey}`);
         }
@@ -78,7 +101,17 @@ window.startRecording = async function () {
 
       // Update User Player Source
       els.audioPlayback.src = audioUrl;
+      els.audioPlayback._customDuration = duration;
       els.audioPlayback.load();
+      
+      // Chrome Fix: Hint duration by seeking (sometimes helps)
+      els.audioPlayback.currentTime = 1e101;
+      const onSeeked = () => {
+        els.audioPlayback.currentTime = 0;
+        els.audioPlayback.removeEventListener('seeked', onSeeked);
+      };
+      els.audioPlayback.addEventListener('seeked', onSeeked);
+
       els.userAudioContainer.classList.remove("hidden");
       resetUserAudioUI();
 
@@ -235,11 +268,13 @@ window.resetAyahAudioUI = function () {
 
 window.updateUserAudioUI = function () {
   const audio = els.audioPlayback;
-  const progress = (audio.currentTime / audio.duration) * 100 || 0;
+  const duration = (audio.duration && isFinite(audio.duration)) 
+                   ? audio.duration 
+                   : (audio._customDuration || 0);
+
+  const progress = (audio.currentTime / duration) * 100 || 0;
   els.userAudioProgress.style.width = `${progress}%`;
-  els.userAudioTime.innerText = `${formatTime(audio.currentTime)} / ${formatTime(
-    audio.duration || 0,
-  )}`;
+  els.userAudioTime.innerText = `${formatTime(audio.currentTime)} / ${formatTime(duration)}`;
 };
 
 window.resetUserAudioUI = function () {
@@ -247,4 +282,24 @@ window.resetUserAudioUI = function () {
   els.userPauseIcon.classList.add("hidden");
   els.userAudioProgress.style.width = "0%";
   els.userAudioTime.innerText = `0:00 / 0:00`;
+};
+
+/**
+ * Completely clears all recording blobs from memory.
+ */
+window.clearAllRecordings = function() {
+  Object.values(AppState.recordings).forEach(rec => {
+    const url = rec.url || rec;
+    if (url && typeof url === "string" && url.startsWith("blob:")) {
+      URL.revokeObjectURL(url);
+    }
+  });
+  AppState.recordings = {};
+  AppState.recordingKeys = [];
+  if (els.userAudioContainer) els.userAudioContainer.classList.add("hidden");
+  if (els.audioPlayback) {
+    els.audioPlayback.pause();
+    els.audioPlayback.src = "";
+    els.audioPlayback.load();
+  }
 };

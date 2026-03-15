@@ -71,6 +71,10 @@ window.T = {
   tajweedLegendDesc: "Prikaži legendu ispod ajeta",
   showNotes: "Lične bilješke",
   showNotesDesc: "Prikaži polje za podsjetnike",
+  audioPlayer: "Audio plejer",
+  audioPlayerDesc: "Prikaži kontrolu zvuka",
+  disableWordAudio: "Isključi audio za riječi",
+  disableWordAudioDesc: "Onemogući zvuk pri kliku",
 
   // Data Transfer
   dataTransfer: "Backup",

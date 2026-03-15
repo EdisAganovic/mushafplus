@@ -100,19 +100,49 @@ window.getAyahAudioUrl = function (surahId, ayahId) {
 };
 
 /**
+ * Plays individual word audio from local assets.
+ * @param {number} surahId 
+ * @param {number} ayahId 
+ * @param {number} wordIdx - 0-based word index
+ */
+// Singleton for word audio to prevent overlapping
+let _activeWordAudio = null;
+
+window.playWordAudio = function(surahId, ayahId, wordIdx) {
+  if (AppState.settings.disableWordAudio) return;
+
+  const sStr = String(surahId).padStart(3, "0");
+  const aStr = String(ayahId).padStart(3, "0");
+  const wStr = String(wordIdx + 1).padStart(3, "0");
+  const url = `assets/audio/${sStr}/${sStr}_${aStr}_${wStr}.mp3`;
+
+  // Stop previous word audio if playing
+  if (_activeWordAudio) {
+    _activeWordAudio.pause();
+    _activeWordAudio.src = "";
+  }
+
+  // Optional: Pause main ayah recitation if it's playing
+  if (els.ayahAudio && !els.ayahAudio.paused) {
+      els.ayahAudio.pause();
+      if (typeof resetAyahAudioUI === "function") resetAyahAudioUI();
+  }
+
+  _activeWordAudio = new Audio(url);
+  _activeWordAudio.play().catch(e => console.warn(`Word audio failed: ${url}`, e));
+};
+
+/**
  * Advances to the next Ayah. Jumps to the next Surah if at the end of current.
  */
 window.nextAyah = function () {
   if (!AppState.currentSurah) return;
-  
+
   if (AppState.settings.spreadMode) {
     const currentAyah = AppState.currentSurah.verses[AppState.currentAyahIndex];
     const currentPage = getPageNumber(AppState.currentSurah.id, currentAyah.id);
-    // If on Page 1, next is 2/3. If on 2/3, next is 4/5.
-    const jump = (currentPage === 1) ? 1 : (currentPage % 2 === 0 ? 2 : 1);
-    // Actually, simpler: if on even page (L), jump 2. If on odd (R), jump 1 or 2.
-    // Let's just always go to the "next logical spread"
-    const nextP = (currentPage % 2 === 0) ? currentPage + 2 : currentPage + 1;
+    // Always jump +2 pages to next spread
+    const nextP = currentPage + 2;
     goToPage(Math.min(604, nextP));
     return;
   }
@@ -122,6 +152,7 @@ window.nextAyah = function () {
     AppState.currentAyahIndex++;
     localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
     renderAyah();
+    if (typeof renderAyahGrid === "function") renderAyahGrid();
   } else {
     const nextSurahId = AppState.currentSurah.id + 1;
     if (nextSurahId <= 114) {
@@ -137,8 +168,8 @@ window.prevAyah = function () {
   if (AppState.settings.spreadMode) {
     const currentAyah = AppState.currentSurah.verses[AppState.currentAyahIndex];
     const currentPage = getPageNumber(AppState.currentSurah.id, currentAyah.id);
-    // If on 2 or 3, prev is 1. If on 4 or 5, prev is 2/3.
-    const prevP = (currentPage % 2 === 0) ? currentPage - 1 : currentPage - 2;
+    // Always jump -2 pages to previous spread
+    const prevP = currentPage - 2;
     goToPage(Math.max(1, prevP));
     return;
   }
@@ -148,6 +179,7 @@ window.prevAyah = function () {
     AppState.currentAyahIndex--;
     localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
     renderAyah();
+    if (typeof renderAyahGrid === "function") renderAyahGrid();
   } else {
     const prevSurahId = AppState.currentSurah.id - 1;
     if (prevSurahId >= 1) {
@@ -156,7 +188,31 @@ window.prevAyah = function () {
       AppState.currentAyahIndex = AppState.currentSurah.verses.length - 1;
       localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
       renderAyah();
+      if (typeof renderAyahGrid === "function") renderAyahGrid();
     }
+  }
+};
+
+/**
+ * Applies spread mode UI state based on current setting.
+ * Centralized function to ensure consistent UI updates.
+ */
+window.applySpreadMode = function() {
+  // UI Feedback for the button
+  if (els.spreadToggle) {
+    els.spreadToggle.classList.toggle("text-emerald-500", AppState.settings.spreadMode);
+    els.spreadToggle.classList.toggle("bg-slate-800", AppState.settings.spreadMode);
+  }
+
+  // Handle Sidebar Visibility: hide sidebar in spread mode
+  if (AppState.settings.spreadMode) {
+    if (els.sidebar) els.sidebar.classList.add("md:hidden");
+    if (els.appContainer) els.appContainer.classList.replace("max-w-[1400px]", "max-w-full");
+    document.body.classList.add("spread-mode-active");
+  } else {
+    if (els.sidebar) els.sidebar.classList.remove("md:hidden");
+    if (els.appContainer) els.appContainer.classList.replace("max-w-full", "max-w-[1400px]");
+    document.body.classList.remove("spread-mode-active");
   }
 };
 
@@ -166,21 +222,9 @@ window.prevAyah = function () {
 window.toggleSpreadMode = function () {
     AppState.settings.spreadMode = !AppState.settings.spreadMode;
     localStorage.setItem("quran_spread_mode", AppState.settings.spreadMode);
-    
-    // UI Feedback for the button
-    if (els.spreadToggle) {
-        els.spreadToggle.classList.toggle("text-emerald-500", AppState.settings.spreadMode);
-        els.spreadToggle.classList.toggle("bg-slate-800", AppState.settings.spreadMode);
-    }
-    
-    // Handle Sidebar Visibility as requested: hide sidebar in spread mode
-    if (AppState.settings.spreadMode) {
-        if (els.sidebar) els.sidebar.classList.add("md:hidden");
-        if (els.appContainer) els.appContainer.classList.replace("max-w-[1400px]", "max-w-full");
-    } else {
-        if (els.sidebar) els.sidebar.classList.remove("md:hidden");
-        if (els.appContainer) els.appContainer.classList.replace("max-w-full", "max-w-[1400px]");
-    }
+
+    // Apply UI changes consistently
+    window.applySpreadMode();
 
     renderAyah();
     if (typeof renderAyahGrid === "function") renderAyahGrid();
@@ -285,6 +329,9 @@ window.importProgress = function (event) {
   reader.onload = (e) => {
     try {
       const parsed = JSON.parse(e.target.result);
+      
+      // Cleanup existing audio blobs before import
+      if (typeof window.clearAllRecordings === "function") window.clearAllRecordings();
 
       if (Array.isArray(parsed.checkedAyats)) {
         AppState.checkedAyats = new Set(parsed.checkedAyats);

@@ -12,12 +12,13 @@ function openSidebar() {
     if (typeof closeSettings === "function") closeSettings();
     if (typeof closeBookmarks === "function") closeBookmarks();
     if (typeof closeHifz === "function") closeHifz();
-    if (!els?.sidebarOverlay || !els?.sidebar) return;
-    els.sidebarOverlay.classList.remove("hidden");
-    setTimeout(() => {
-      els.sidebarOverlay.classList.remove("opacity-0");
-      els.sidebar.classList.remove("translate-x-full");
-    }, 10);
+    if (els.sidebarOverlay && els.sidebar) {
+      els.sidebarOverlay.classList.remove("hidden");
+      setTimeout(() => {
+        els.sidebarOverlay.classList.remove("opacity-0");
+        els.sidebar.classList.remove("translate-x-full");
+      }, 10);
+    }
   } catch (e) {
     console.error("[UI] Error opening sidebar:", e);
   }
@@ -28,10 +29,13 @@ function openSidebar() {
  */
 function closeSidebar() {
   try {
-    if (!els?.sidebarOverlay || !els?.sidebar) return;
-    els.sidebarOverlay.classList.add("opacity-0");
-    els.sidebar.classList.add("translate-x-full");
-    setTimeout(() => els.sidebarOverlay.classList.add("hidden"), 300);
+    if (els.sidebarOverlay && els.sidebar) {
+      els.sidebarOverlay.classList.add("opacity-0");
+      els.sidebar.classList.add("translate-x-full");
+      setTimeout(() => {
+        els.sidebarOverlay.classList.add("hidden");
+      }, 300);
+    }
   } catch (e) {
     console.error("[UI] Error closing sidebar:", e);
   }
@@ -45,12 +49,13 @@ function openSettings() {
     if (typeof closeSidebar === "function") closeSidebar();
     if (typeof closeBookmarks === "function") closeBookmarks();
     if (typeof closeHifz === "function") closeHifz();
-    if (!els?.settingsOverlay || !els?.settingsDrawer) return;
-    els.settingsOverlay.classList.remove("hidden");
-    setTimeout(() => {
-      els.settingsOverlay.classList.remove("opacity-0");
-      els.settingsDrawer.classList.remove("translate-x-full");
-    }, 10);
+    if (els.settingsOverlay && els.settingsDrawer) {
+      els.settingsOverlay.classList.remove("hidden");
+      setTimeout(() => {
+        els.settingsOverlay.classList.remove("opacity-0");
+        els.settingsDrawer.classList.remove("translate-x-full");
+      }, 10);
+    }
   } catch (e) {
     console.error("[UI] Error opening settings:", e);
   }
@@ -61,10 +66,13 @@ function openSettings() {
  */
 function closeSettings() {
   try {
-    if (!els?.settingsOverlay || !els?.settingsDrawer) return;
-    els.settingsOverlay.classList.add("opacity-0");
-    els.settingsDrawer.classList.add("translate-x-full");
-    setTimeout(() => els.settingsOverlay.classList.add("hidden"), 300);
+    if (els.settingsOverlay && els.settingsDrawer) {
+      els.settingsOverlay.classList.add("opacity-0");
+      els.settingsDrawer.classList.add("translate-x-full");
+      setTimeout(() => {
+        els.settingsOverlay.classList.add("hidden");
+      }, 300);
+    }
   } catch (e) {
     console.error("[UI] Error closing settings:", e);
   }
@@ -78,12 +86,13 @@ function openBookmarks() {
     if (typeof closeSidebar === "function") closeSidebar();
     if (typeof closeSettings === "function") closeSettings();
     if (typeof closeHifz === "function") closeHifz();
-    if (!els?.bookmarksOverlay || !els?.bookmarksDrawer) return;
-    els.bookmarksOverlay.classList.remove("hidden");
-    setTimeout(() => {
-      els.bookmarksOverlay.classList.remove("opacity-0");
-      els.bookmarksDrawer.classList.remove("translate-x-full");
-    }, 10);
+    if (els.bookmarksOverlay && els.bookmarksDrawer) {
+      els.bookmarksOverlay.classList.remove("hidden");
+      setTimeout(() => {
+        els.bookmarksOverlay.classList.remove("opacity-0");
+        els.bookmarksDrawer.classList.remove("translate-x-full");
+      }, 10);
+    }
   } catch (e) {
     console.error("[UI] Error opening bookmarks:", e);
   }
@@ -94,10 +103,13 @@ function openBookmarks() {
  */
 function closeBookmarks() {
   try {
-    if (!els?.bookmarksOverlay || !els?.bookmarksDrawer) return;
-    els.bookmarksOverlay.classList.add("opacity-0");
-    els.bookmarksDrawer.classList.add("translate-x-full");
-    setTimeout(() => els.bookmarksOverlay.classList.add("hidden"), 300);
+    if (els.bookmarksOverlay && els.bookmarksDrawer) {
+      els.bookmarksOverlay.classList.add("opacity-0");
+      els.bookmarksDrawer.classList.add("translate-x-full");
+      setTimeout(() => {
+        els.bookmarksOverlay.classList.add("hidden");
+      }, 300);
+    }
   } catch (e) {
     console.error("[UI] Error closing bookmarks:", e);
   }
@@ -111,12 +123,13 @@ function openHifz() {
     if (typeof closeSidebar === "function") closeSidebar();
     if (typeof closeSettings === "function") closeSettings();
     if (typeof closeBookmarks === "function") closeBookmarks();
-    if (!els?.hifzOverlay || !els?.hifzDrawer) return;
-    els.hifzOverlay.classList.remove("hidden");
-    setTimeout(() => {
-      els.hifzOverlay.classList.remove("opacity-0");
-      els.hifzDrawer.classList.remove("translate-x-full");
-    }, 10);
+    if (els.hifzOverlay && els.hifzDrawer) {
+      els.hifzOverlay.classList.remove("hidden");
+      setTimeout(() => {
+        els.hifzOverlay.classList.remove("opacity-0");
+        els.hifzDrawer.classList.remove("translate-x-full");
+      }, 10);
+    }
   } catch (e) {
     console.error("[UI] Error opening hifz:", e);
   }
@@ -127,10 +140,13 @@ function openHifz() {
  */
 function closeHifz() {
   try {
-    if (!els?.hifzOverlay || !els?.hifzDrawer) return;
-    els.hifzOverlay.classList.add("opacity-0");
-    els.hifzDrawer.classList.add("translate-x-full");
-    setTimeout(() => els.hifzOverlay.classList.add("hidden"), 300);
+    if (els.hifzOverlay && els.hifzDrawer) {
+      els.hifzOverlay.classList.add("opacity-0");
+      els.hifzDrawer.classList.add("translate-x-full");
+      setTimeout(() => {
+        els.hifzOverlay.classList.add("hidden");
+      }, 300);
+    }
   } catch (e) {
     console.error("[UI] Error closing hifz:", e);
   }
@@ -142,6 +158,12 @@ function closeHifz() {
 function openModal(id) {
   const modal = document.getElementById(id);
   if (modal) modal.classList.remove("hidden");
+  
+  // Hide main action toolbar for surah modal
+  if (id === "surah-hifz-modal") {
+    const toolbar = document.getElementById("main-action-toolbar");
+    if (toolbar) toolbar.style.display = "none";
+  }
 }
 
 /**
@@ -151,6 +173,17 @@ function closeModal(id) {
   const modal = document.getElementById(id);
   if (modal) modal.classList.add("hidden");
 }
+
+/**
+ * Centrally manages the visibility of the primary action toolbar.
+ * (Currently disabled based on user preference - toolbar stays visible)
+ */
+window.updateToolbarVisibility = function() {
+  const toolbar = document.getElementById("main-action-toolbar");
+  if (!toolbar) return;
+  // Toolbar stays visible per user request
+  toolbar.style.display = "flex";
+};
 
 /**
  * Closes all open menus and modals at once.
@@ -174,6 +207,8 @@ function closeAllMenusAndModals() {
     const searchModal = document.getElementById("search-modal");
     if (searchModal && !searchModal.classList.contains("hidden"))
       closeModal("search-modal");
+    
+    // Visibility is handled by the close* functions above via updateToolbarVisibility()
   } catch (e) {
     console.error("[UI] Error closing menus:", e);
   }

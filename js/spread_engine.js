@@ -118,7 +118,7 @@ function renderSpreadSkeleton(container) {
   if (!container) return;
   container.innerHTML = `
     <div class="flex-1 flex flex-col items-center justify-center min-w-0 h-full p-4">
-      <div class="w-full max-w-md aspect-[3:4] bg-slate-800/50 rounded-lg overflow-hidden animate-pulse">
+      <div class="w-full max-w-md aspect-[3:4] bg-slate-800/50 rounded-lg overflow-hidden">
         <div class="h-full w-full flex flex-col justify-between py-8 px-6">
           <div class="space-y-3">
             <div class="h-3 bg-slate-700/50 rounded w-3/4"></div>
@@ -159,7 +159,7 @@ function renderSpreadError(container, pageNum) {
  */
 async function renderPageColumn(pageNum, idx, isRight, progressBar) {
   const pageCol = document.createElement("div");
-  pageCol.className = "flex-1 flex flex-col items-center min-w-0 h-full scrollbar-hidden opacity-0 transition-opacity duration-300 ease-out";
+  pageCol.className = "flex-1 flex flex-col items-center min-w-0 h-full no-scrollbar opacity-0 transition-opacity duration-300 ease-out";
 
   // Start with skeleton loader
   renderSpreadSkeleton(pageCol);
@@ -171,7 +171,7 @@ async function renderPageColumn(pageNum, idx, isRight, progressBar) {
   }
 
   const pageCard = document.createElement("div");
-  pageCard.className = `w-full bg-transparent shadow-none flex flex-col h-full ${isRight ? 'quran-page-right' : 'quran-page-left'} quran-page-card`;
+  pageCard.className = `w-full bg-transparent shadow-none flex flex-col h-full`;
 
   const pageContent = document.createElement("div");
   pageContent.className = "flex-1 flex items-center justify-center quran-page-svg-container overflow-hidden";
@@ -262,7 +262,6 @@ function renderProgressBar() {
   const progressBar = document.createElement("div");
   progressBar.className = "h-full bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-500 w-0 transition-all duration-300 ease-out";
   progressBar.style.backgroundSize = "200% 100%";
-  progressBar.style.animation = "shimmer 1.5s infinite linear";
 
   progressContainer.appendChild(progressBar);
   return progressContainer;
@@ -329,8 +328,6 @@ window.renderSpread = async function () {
   if (spreadCard) {
     const isHidden = spreadCard.classList.contains("hidden");
     spreadCard.className = `w-full flex-col items-center animate-fade-in ${themeClass} ${isHidden ? "hidden" : "flex"}`;
-    spreadCard.style.backgroundColor = "var(--page-bg)";
-    spreadCard.style.transition = "background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1)";
   }
 
   // OPTIMIZATION: Render pages with priority (right page first for RTL)
