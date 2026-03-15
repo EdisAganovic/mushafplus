@@ -265,10 +265,44 @@ preslusavanje/
 - SVG page rendering from `assets/pages/`
 - Page theme toggles (Original, Sepia, Night, Green)
 - Critical page preloading for instant load
+- Integration with SVG layer detection system
+
+### 10. `svg-layer-detector.js` - SVG Layer Detection System
+
+**Purpose:** Universal detection and coloring of Quran SVG page elements by layer type.
+
+**Features:**
+- **Automatic Layer Detection:** Identifies 7 layer types based on path characteristics:
+  - Border & Frame: Page borders and ornamental frames (green paths with z≥2)
+  - Teardrop Shapes: Ornamental medallion backgrounds (green paths with z≤1, length 800-2500)
+  - Arabic Text: Main calligraphy (largest black path)
+  - Verse Numerals: Hindi-Arabic numerals in teardrops (black paths with z=0, len<2000)
+  - Surah/Juz Header: Calligraphic labels at page top (black paths with len 5000-20000, z≤4)
+  - Ornamental Marker: Decorative section markers (black paths with z>5, len>5000)
+  - Page Number: Bottom page numerals (remaining black paths)
+- **Theme Integration:** Applies different color schemes per theme:
+  - Original: Gold borders, teal teardrops, dark text, white numerals
+  - Sepia: Brown tones with muted colors
+  - Night: Light text on dark backgrounds
+  - Green: Emerald color scheme throughout
+- **Universal Algorithm:** Works on any Quran page SVG without hardcoded path IDs
+- **Dynamic Recoloring:** Updates colors when theme changes via `updateSVGLayerTheme()`
+- **Performance Optimized:** Runs detection once per SVG load with caching
+
+**Key Functions:**
+- `detectSVGLayers(svgEl, theme)` - Analyzes SVG and returns layer metadata
+- `applySVGLayerColors(layers, theme)` - Applies colors to detected elements
+- `processSVGLayers(svgEl, theme)` - Main entry point combining detection and coloring
+- `updateSVGLayerTheme(newTheme)` - Updates all loaded SVGs when theme changes
+
+**Integration Points:**
+- Called automatically when SVG pages load in spread mode
+- Responds to theme change events from `app.js`
+- Adds `data-layer-type` attributes for CSS targeting
 
 ---
 
-### 10. `quranMeta.js` - Metadata Tables
+### 11. `quranMeta.js` - Metadata Tables
 
 **Purpose:** Juz and Page boundary lookup tables.
 
@@ -454,6 +488,7 @@ app.js
   ├── render.js
   ├── actions.js
   ├── tajweed.js
+  ├── svg-layer-detector.js
   └── spread_engine.js
 ```
 

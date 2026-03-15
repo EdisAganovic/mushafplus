@@ -40,5 +40,32 @@ State: `AppState.settings.spreadMode`
 | **Standard** | `#ayah-card` | `js/render.js` | Focused study / repetition |
 | **Spread** | `#spread-card` | `js/spread_engine.js` | Reading flow (Side-by-side SVG) |
 
+## 6. SVG Layer Detection System
+The application now includes an automatic layer detection system that identifies and colors different elements in Quran SVG pages.
+
+### Layer Types & Visual Representation
+| Layer Name | Color (Original Theme) | Purpose | Detection Criteria |
+| :--- | :--- | :--- | :--- |
+| **Border & Frame** | `#C4922A` (Gold) | Page borders and ornamental frames | Green paths (`#bfe8c1`) with ≥2 subpaths |
+| **Teardrop Shapes** | `#1B7A6A` (Teal) | Ornamental medallion backgrounds | Green paths with ≤1 subpath, length 800-2500 |
+| **Arabic Text** | `#1e293b` (Dark) | Main calligraphy | Largest black path (`#231f20`) |
+| **Verse Numerals** | `#ffffff` (White) | Ayah numbers in teardrops | Black paths with 0 subpaths, length <2000 |
+| **Surah/Juz Header** | `#E8943A` (Orange) | Surah names and Juz labels | Black paths, length 5000-20000, ≤4 subpaths |
+| **Ornamental Marker** | `#9B6ED4` (Purple) | Decorative section markers | Black paths with >5 subpaths, length >5000 |
+| **Page Number** | `#4a90d9` (Blue) | Page numerals at bottom | Remaining black paths |
+
+### Theme Integration
+Each theme (Original, Sepia, Night, Green) has its own color palette for all 7 layers:
+- **Original**: Warm golds, teals, and dark text
+- **Sepia**: Earthy browns and muted tones
+- **Night**: Light text on dark backgrounds
+- **Green**: Emerald-based color scheme
+
+### Technical Implementation
+- Elements are tagged with `data-layer-type` attribute during detection
+- CSS rules apply theme-specific colors based on layer type and current theme
+- Detection runs automatically when SVG pages load in spread mode
+- Colors update dynamically when theme changes via `updateSVGLayerTheme()`
+
 ---
 *Last updated: 2026-03-15*

@@ -297,11 +297,24 @@
                 </div>
 
                 <!-- Quick Page Theme Toggle -->
-                <div id="cnt-page-theme-toggle" class="mt-8 mb-4">
-                    <button class="btn-theme-dot" data-theme="original" data-label="Standard" title="Standardna" style="background-color: #fcfaf0;"></button>
-                    <button class="btn-theme-dot" data-theme="sepia" data-label="Sepia" title="Sepia (Topla)" style="background-color: #f4ecd8;"></button>
-                    <button class="btn-theme-dot" data-theme="night" data-label="Noć" title="Tamna (Noć)" style="background-color: #1e293b;"></button>
-                    <button class="btn-theme-dot" data-theme="green" data-label="Zelena" title="Zelena (Klasik)" style="background-color: #064e3b;"></button>
+                <div id="cnt-page-theme-toggle" class="relative flex flex-col items-center">
+                    <div class="flex gap-20">
+                        <button class="btn-theme-dot" data-theme="original" data-label="Standard" style="background-color: #fcfaf0;"></button>
+                        <button class="btn-theme-dot" data-theme="sepia" data-label="Sepia" style="background-color: #f4ecd8;"></button>
+                        <button class="btn-theme-dot" data-theme="night" data-label="Noć" style="background-color: #1e293b;"></button>
+                        <button class="btn-theme-dot" data-theme="green" data-label="Zelena" style="background-color: #064e3b;"></button>
+                    </div>
+                    
+                    <!-- Theme Palette Preview (Hover) -->
+                    <div id="cnt-theme-preview" class="absolute bottom-full mb-16 bg-slate-900/95 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[200] min-w-[280px]">
+                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 border-b border-slate-800 pb-2 flex justify-between items-center">
+                            <span data-i18n="colorPalette">Paleta boja</span>
+                            <span id="dsp-preview-theme-name" class="text-emerald-400">Standard</span>
+                        </div>
+                        <div id="lst-theme-palette" class="grid grid-cols-2 gap-x-4 gap-y-2">
+                            <!-- Items injected via JS -->
+                        </div>
+                    </div>
                 </div>
 
 
@@ -309,7 +322,7 @@
 
 
             <!-- Spacer to prevent mobile bottom nav from covering content -->
-            <div class="h-40 sm:h-16 w-full shrink-0 sm:hidden"></div>
+            <div class="h-16 w-full shrink-0 sm:hidden"></div>
 
         </main>
 
@@ -524,7 +537,7 @@
                 </div>
 
                 <div class="pt-2">
-                    <label class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1">Učač</label>
+                    <label class="text-[10px] text-slate-400 uppercase tracking-wider block mb-1" data-i18n="reciterLabel">Učač</label>
                     <select id="inp-reciter"
                         class="w-full bg-slate-950/50 text-slate-300 rounded-xl p-2.5 text-sm border border-slate-800 outline-none focus:border-emerald-500 transition-colors cursor-pointer appearance-none">
                         <option value="Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net" class="bg-slate-900">Ahmed el-Adžemi</option>
@@ -553,6 +566,27 @@
                         <option value="purple" class="bg-slate-900" data-i18n="themePurple">Ljubičasta</option>
                         <option value="teal" class="bg-slate-900" data-i18n="themeTeal">Tirkizna</option>
                     </select>
+                </div>
+
+                <div class="pt-6 border-t border-slate-800/50 mt-4">
+                    <label class="text-[10px] text-slate-400 uppercase tracking-wider block mb-4" data-i18n="pageTheme">Tema stranice (Mushaf)</label>
+                    <div class="flex justify-around items-center bg-slate-950/30 p-4 rounded-xl border border-slate-800 relative gap-4">
+                        <button class="btn-theme-dot" data-theme="original" data-label="Standard" style="background-color: #fcfaf0;"></button>
+                        <button class="btn-theme-dot" data-theme="sepia" data-label="Sepia" style="background-color: #f4ecd8;"></button>
+                        <button class="btn-theme-dot" data-theme="night" data-label="Noć" style="background-color: #1e293b;"></button>
+                        <button class="btn-theme-dot" data-theme="green" data-label="Zelena" style="background-color: #064e3b;"></button>
+                        
+                        <!-- Settings Drawer Theme Preview -->
+                        <div id="cnt-theme-preview-settings" class="absolute right-full mr-4 top-0 bg-slate-900/95 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 shadow-2xl opacity-0 pointer-events-none transition-all duration-300 translate-x-2 z-[200] min-w-[240px] hidden md:block">
+                            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 border-b border-slate-800 pb-2 flex justify-between items-center">
+                                <span data-i18n="colorPalette">Paleta boja</span>
+                                <span class="dsp-preview-theme-name text-emerald-400">Standard</span>
+                            </div>
+                            <div class="lst-theme-palette grid grid-cols-1 gap-y-1.5">
+                                <!-- Items injected via JS -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
 
@@ -1075,6 +1109,7 @@
             "js/search-handler.js",
             "js/keyboard-shortcuts.js",
             "js/gesture-handler.js",
+            "js/svg-layer-detector.js",
             "js/app.js"
         ];
 

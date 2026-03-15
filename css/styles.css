@@ -1187,11 +1187,18 @@ body.hide-notes #cnt-notes {
 /* ===== Page Theme Toggle Buttons ===== */
 #cnt-page-theme-toggle {
   display: flex !important;
+  flex-direction: column !important;
   align-items: center;
   justify-content: center;
-  gap: 3rem;
-  padding: 2rem 0;
+  padding: 1.5rem 0 0.5rem;
   width: 100%;
+}
+
+#cnt-page-theme-toggle .flex.gap-20 {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 3rem !important;
+  /* Robust gap for easy clicking */
 }
 
 .btn-theme-dot[data-theme="original"] {
@@ -1212,6 +1219,17 @@ body.hide-notes #cnt-notes {
   position: relative;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
+  z-index: 10;
+}
+
+/* Expanded hit area for touch/mouse reliability */
+.btn-theme-dot::before {
+  content: "";
+  position: absolute;
+  inset: -15px;
+  /* Large invisible hit area */
+  border-radius: 50%;
+  z-index: 1;
 }
 
 .btn-theme-dot:hover {
@@ -1220,25 +1238,26 @@ body.hide-notes #cnt-notes {
 }
 
 .btn-theme-dot.active {
-  border: 3px solid rgb(var(--theme-500)) !important;
-  transform: scale(1.15);
-  box-shadow: 0 0 0 4px rgba(var(--theme-500), 0.25);
-  z-index: 5;
+  border: 4px solid rgb(var(--theme-500)) !important;
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px rgba(var(--theme-500), 0.2), 0 8px 16px rgba(0, 0, 0, 0.15);
+  z-index: 20;
 }
 
 .btn-theme-dot::after {
   content: attr(data-label);
   position: absolute;
-  bottom: -1.4rem;
+  top: calc(100% + 10px);
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.65rem;
-  font-weight: 700;
+  font-size: 0.7rem;
+  font-weight: 800;
   color: rgb(var(--slate-500));
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
   white-space: nowrap;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
+  pointer-events: none;
 }
 
 .btn-theme-dot.active::after {
@@ -1262,14 +1281,14 @@ body.hide-notes #cnt-notes {
 }
 
 .dark .quran-theme-original {
-  --page-bg: #0f172a;
+  --page-bg: #111827;
   --page-text: #f1f5f9;
   --page-border: #1e293b;
 }
 
 /* 2. Sepia */
 .quran-theme-sepia {
-  --page-bg: #fcfaf0;
+  --page-bg: #f8f1e4;
   --page-text: #5d4037;
   --page-border: #d7ccc8;
 }
@@ -1282,20 +1301,20 @@ body.hide-notes #cnt-notes {
 
 /* 3. Night (Noć) */
 .quran-theme-night {
-  --page-bg: #fcfaf0;
+  --page-bg: #f1f5f9;
   --page-text: #334155;
   --page-border: #cbd5e1;
 }
 
 .dark .quran-theme-night {
-  --page-bg: #020617;
+  --page-bg: #0f172a;
   --page-text: #cbd5e1;
-  --page-border: #0f172a;
+  --page-border: #1e293b;
 }
 
 /* 4. Green (Zelena) */
 .quran-theme-green {
-  --page-bg: #fcfaf0;
+  --page-bg: #f0fdf4;
   --page-text: #064e3b;
   --page-border: #a7f3d0;
 }
@@ -1324,85 +1343,40 @@ body.spread-mode-active header {
   backdrop-filter: none !important;
 }
 
-.quran-svg-text {
-  fill: var(--page-text) !important;
-  transition: fill 0.3s ease;
-}
-
-/* Border and Ayah Frame Colors */
-.quran-svg-border {
-  stroke: var(--page-text) !important;
-  opacity: 0.2;
-}
-
-.quran-svg-ayah-number {
-  fill: white !important;
-  transition: fill 0.3s ease;
-}
-
-/* Theme specific Ayah Markers */
-/* Original */
-.quran-theme-original .quran-svg-ayah-frame {
-  fill: #059669 !important;
-}
-
-.quran-theme-original .quran-svg-ayah-number {
-  fill: #ffffff !important;
-}
-
-.quran-theme-original .quran-svg-border {
-  stroke: #059669 !important;
-}
-
-/* Sepia */
-.quran-theme-sepia .quran-svg-ayah-frame {
-  fill: #8d6e63 !important;
-}
-
-.quran-theme-sepia .quran-svg-ayah-number {
-  fill: #ffffff !important;
-}
-
-.quran-theme-sepia .quran-svg-border {
-  stroke: #8d6e63 !important;
-}
-
-/* Night */
-.quran-theme-night .quran-svg-ayah-frame {
-  fill: #475569 !important;
-}
-
-.quran-theme-night .quran-svg-ayah-number {
-  fill: #ffffff !important;
-}
-
-.quran-theme-night .quran-svg-border {
-  stroke: #475569 !important;
-}
-
-/* Green */
-.quran-theme-green .quran-svg-ayah-frame {
-  fill: #10b981 !important;
-}
-
-.quran-theme-green .quran-svg-ayah-number {
-  fill: #ffffff !important;
-}
-
-.quran-theme-green .quran-svg-border {
-  stroke: #10b981 !important;
-}
+/* ── Cleanup: Old SVG Classes removed in favor of [data-layer-type] ── */
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  #cnt-page-theme-toggle .flex.gap-20 {
+    gap: 2rem !important;
+  }
+
   #cnt-page-theme-toggle {
-    gap: 0.75rem;
+    padding: 1rem 0 0.5rem;
   }
 
   .btn-theme-dot {
     width: 2.2rem;
     height: 2.2rem;
   }
+}
+
+/* Strict ignore for preview popups to prevent click blocking and ensure they are on top */
+#cnt-theme-preview,
+#cnt-theme-preview-settings {
+  pointer-events: none !important;
+  z-index: 9999 !important;
+  /* Extremely high to stay above everything */
+}
+
+#cnt-theme-preview {
+  bottom: 100% !important;
+  margin-bottom: 2rem !important;
+}
+
+#cnt-theme-preview *,
+#cnt-theme-preview-settings * {
+  pointer-events: none !important;
 }
 
 /* Sidebar page theme select styling */
@@ -1416,4 +1390,177 @@ body.spread-mode-active header {
 
 #page-theme-select:focus {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgb(var(--theme-500))'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SVG LAYER DETECTION SYSTEM - THEME COLORS
+   Each theme has specific colors for detected SVG layers:
+   - borderFrame: Page border and frame
+   - teardrop: Ornamental teardrop shapes
+   - arabicText: Main Arabic calligraphy
+   - verseNumerals: Ayah numbers in teardrops
+   - surahHeader: Surah and Juz headers
+   - ornamental: Decorative markers (Hizb, Rub, etc.)
+   - pageNumber: Page numbers
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── ORIGINAL THEME LAYER COLORS ── */
+.quran-theme-original svg [data-layer-type="borderFrame"] {
+  fill: #C4922A !important;
+}
+
+.quran-theme-original svg [data-layer-type="teardrop"] {
+  fill: #1B7A6A !important;
+}
+
+.quran-theme-original svg [data-layer-type="surahBand"] {
+  fill: #C4922A !important;
+}
+
+.quran-theme-original svg [data-layer-type="arabicText"] {
+  fill: #1e293b !important;
+}
+
+.quran-theme-original svg [data-layer-type="verseNumerals"] {
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
+  stroke-width: 0.5;
+  paint-order: stroke fill;
+}
+
+.quran-theme-original svg [data-layer-type="surahHeader"] {
+  fill: #E8943A !important;
+}
+
+.quran-theme-original svg [data-layer-type="teardropLabel"] {
+  fill: #ffffff !important;
+}
+
+.quran-theme-original svg [data-layer-type="pageNumber"] {
+  fill: #4a90d9 !important;
+}
+
+/* ── SEPIA THEME LAYER COLORS ── */
+.quran-theme-sepia svg [data-layer-type="borderFrame"] {
+  fill: #8B7355 !important;
+}
+
+.quran-theme-sepia svg [data-layer-type="teardrop"] {
+  fill: #6B8E7E !important;
+}
+
+.quran-theme-sepia svg [data-layer-type="surahBand"] {
+  fill: #8B7355 !important;
+}
+
+.quran-theme-sepia svg [data-layer-type="arabicText"] {
+  fill: #5d4037 !important;
+}
+
+.quran-theme-sepia svg [data-layer-type="verseNumerals"] {
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
+  stroke-width: 0.5;
+  paint-order: stroke fill;
+}
+
+.quran-theme-sepia svg [data-layer-type="surahHeader"] {
+  fill: #D48846 !important;
+}
+
+.quran-theme-sepia svg [data-layer-type="teardropLabel"] {
+  fill: #8B6BB8 !important;
+}
+
+.quran-theme-sepia svg [data-layer-type="pageNumber"] {
+  fill: #5A7FA8 !important;
+}
+
+/* ── NIGHT THEME LAYER COLORS ── */
+.quran-theme-night svg [data-layer-type="borderFrame"] {
+  fill: #94A3B8 !important;
+}
+
+.quran-theme-night svg [data-layer-type="teardrop"] {
+  fill: #64748B !important;
+}
+
+.quran-theme-night svg [data-layer-type="surahBand"] {
+  fill: #94A3B8 !important;
+}
+
+.quran-theme-night svg [data-layer-type="arabicText"] {
+  fill: #cbd5e1 !important;
+}
+
+.quran-theme-night svg [data-layer-type="verseNumerals"] {
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
+  stroke-width: 0.5;
+  paint-order: stroke fill;
+}
+
+.quran-theme-night svg [data-layer-type="surahHeader"] {
+  fill: #FBBF77 !important;
+}
+
+.quran-theme-night svg [data-layer-type="teardropLabel"] {
+  fill: #A78BDB !important;
+}
+
+.quran-theme-night svg [data-layer-type="pageNumber"] {
+  fill: #7FA8D4 !important;
+}
+
+/* ── GREEN THEME LAYER COLORS ── */
+.quran-theme-green svg [data-layer-type="borderFrame"] {
+  fill: #059669 !important;
+}
+
+.quran-theme-green svg [data-layer-type="teardrop"] {
+  fill: #10B981 !important;
+}
+
+.quran-theme-green svg [data-layer-type="surahBand"] {
+  fill: #059669 !important;
+}
+
+.quran-theme-green svg [data-layer-type="arabicText"] {
+  fill: #064e3b !important;
+}
+
+.quran-theme-green svg [data-layer-type="verseNumerals"] {
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
+  stroke-width: 0.5;
+  paint-order: stroke fill;
+}
+
+.quran-theme-green svg [data-layer-type="surahHeader"] {
+  fill: #F59E0B !important;
+}
+
+.quran-theme-green svg [data-layer-type="teardropLabel"] {
+  fill: #8B5CF6 !important;
+}
+
+.quran-theme-green svg [data-layer-type="pageNumber"] {
+  fill: #3B82F6 !important;
+}
+
+/* ── DARK MODE ADJUSTMENTS ── */
+.dark .quran-theme-original svg [data-layer-type="arabicText"] {
+  fill: #f1f5f9 !important;
+}
+
+.dark .quran-theme-sepia svg [data-layer-type="arabicText"] {
+  fill: #d4c3b3 !important;
+}
+
+.dark .quran-theme-night svg [data-layer-type="arabicText"] {
+  fill: #cbd5e1 !important;
+}
+
+.dark .quran-theme-green svg [data-layer-type="arabicText"] {
+  fill: #d1fae5 !important;
 }

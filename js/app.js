@@ -217,6 +217,7 @@ function setupEventListeners() {
     els.themeDots.forEach(btn => {
       btn.onclick = () => setPageTheme(btn.getAttribute("data-theme"));
     });
+    setupThemeHoverPreviews();
   }
 
   function setPageTheme(theme) {
@@ -227,9 +228,99 @@ function setupEventListeners() {
       if (cls.startsWith('quran-theme-')) document.body.classList.remove(cls);
     });
     document.body.classList.add(`quran-theme-${theme}`);
+    
+    // Update SVG layer colors for all loaded pages
+    if (typeof window.updateSVGLayerTheme === 'function') {
+      window.updateSVGLayerTheme(theme);
+    }
+    
     if (AppState.settings.spreadMode && typeof renderSpread === "function") {
       renderSpread();
     }
+  }
+
+  function setupThemeHoverPreviews() {
+    if (!els.themeDots) return;
+    
+    els.themeDots.forEach(btn => {
+      const theme = btn.getAttribute("data-theme");
+      const label = btn.getAttribute("data-label") || btn.getAttribute("title");
+      
+      btn.onmouseenter = () => showThemePreview(theme, label, btn);
+      btn.onmouseleave = () => hideThemePreview();
+    });
+  }
+
+  function showThemePreview(theme, label, dotEl) {
+    if (!window.LAYER_COLORS) return;
+    
+    const isSettingsDot = dotEl.closest('#dwr-settings') !== null;
+    const previewContainer = isSettingsDot 
+      ? document.getElementById('cnt-theme-preview-settings')
+      : els.themePreview;
+      
+    if (!previewContainer) return;
+
+    const paletteList = previewContainer.querySelector('.lst-theme-palette') || els.themePaletteList;
+    const themeNameLabel = previewContainer.querySelector('.dsp-preview-theme-name') || els.previewThemeName;
+    
+    const colors = window.LAYER_COLORS[theme];
+    if (!colors) return;
+    
+    if (themeNameLabel) themeNameLabel.textContent = label;
+    
+    const layerNames = {
+      'borderFrame': 'Okvir',
+      'teardrop': 'Marker ajeta',
+      'arabicText': 'Arapski tekst',
+      'verseNumerals': 'Brojevi',
+      'surahHeader': 'Naslov',
+      'ornamental': 'Ukrasi',
+      'pageNumber': 'Br. stranice'
+    };
+    
+    paletteList.innerHTML = '';
+    Object.entries(colors).forEach(([key, color]) => {
+      const name = layerNames[key] || key;
+      const item = document.createElement('div');
+      item.className = 'flex items-center gap-2 mb-1';
+      item.innerHTML = `
+        <div class="w-2.5 h-2.5 rounded-full border border-slate-700/50" style="background-color: ${color}"></div>
+        <span class="text-[9px] text-slate-400 font-medium whitespace-nowrap">${name}</span>
+      `;
+      paletteList.appendChild(item);
+    });
+    
+    // Position preview above the hovered dot (for main view only)
+    if (!isSettingsDot && els.pageThemeToggleContainer) {
+      const dotRect = dotEl.getBoundingClientRect();
+      const parentRect = els.pageThemeToggleContainer.getBoundingClientRect();
+      
+      // Calculate horizontal center of the dot relative to the parent
+      const leftPos = (dotRect.left - parentRect.left) + (dotRect.width / 2);
+      previewContainer.style.left = `${leftPos}px`;
+      previewContainer.style.transform = 'translateX(-50%)';
+    } else {
+      // For settings drawer, clear inline styles so CSS takes over
+      previewContainer.style.left = '';
+      previewContainer.style.transform = '';
+    }
+    
+    previewContainer.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2', 'translate-x-2');
+    previewContainer.classList.add('opacity-100', isSettingsDot ? 'translate-x-0' : 'translate-y-0');
+  }
+
+  function hideThemePreview() {
+    const p1 = document.getElementById('cnt-theme-preview');
+    const p2 = document.getElementById('cnt-theme-preview-settings');
+    [p1, p2].forEach(p => {
+      if (p) {
+        p.classList.add('opacity-0', 'pointer-events-none');
+        p.classList.remove('opacity-100', 'translate-y-0', 'translate-x-0');
+        if (p.id === 'cnt-theme-preview') p.classList.add('translate-y-2');
+        else p.classList.add('translate-x-2');
+      }
+    });
   }
 
   // --- NAVIGATION ---

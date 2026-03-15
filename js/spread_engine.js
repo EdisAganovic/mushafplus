@@ -17,40 +17,19 @@ const MIN_PAGE = 1;
 const SVG_PATH = "assets/optimized";
 
 /**
- * Pre-processes an SVG string to prevent ID collisions.
+ * Pre-processes an SVG string to prevent ID collisions and prepare for detection.
  * Optimized with single-pass regex replacements.
  */
 function preprocessSvg(svgText, pageNum) {
   const prefix = `p${pageNum}-`;
 
-  // 1. Basic cleanup and ID prefixing
+  // 1. Basic cleanup and ID prefixing (CRITICAL for PWA/Collisions)
   let processed = svgText
     .replace(/id="([^"]+)"/g, `id="${prefix}$1"`)
     .replace(/url\(#([^)]+)\)/g, `url(#${prefix}$1)`)
     .replace(/xlink:href="#([^"]+)"/g, `xlink:href="#${prefix}$1"`);
 
-  // 2. Map colors to classes
-  // Text color -> quran-svg-text
-  processed = processed.replace(/fill="#231f20"/gi, 'class="quran-svg-text"');
-  
-  // Frame/Border color -> quran-svg-border or quran-svg-ayah-frame (fill="#bfe8c1")
-  processed = processed.replace(
-    /<path([^>]+)fill="#bfe8c1"([^>]*)\/>/gi,
-    (match) => {
-      const className = match.length > 3000 ? "quran-svg-border" : "quran-svg-ayah-frame";
-      return match.replace(/fill="#bfe8c1"/i, `class="${className}"`);
-    }
-  );
-
-  // 3. SPECIAL LOGIC: Identify Ayah Numbers inside groups
-  // We look for groups <g> that contain a path with class="quran-svg-ayah-frame"
-  // and then find any other paths inside that same group (which are the numbers) and give them a specific class.
-  processed = processed.replace(/<g([^>]*)>([\s\S]*?)quran-svg-ayah-frame([\s\S]*?)<\/g>/gi, (groupMatch) => {
-      // Find any generic text class in this specific group and upgrade it to ayah-number
-      return groupMatch.replace(/class="quran-svg-text"/gi, 'class="quran-svg-ayah-number"');
-  });
-
-  // 4. Responsive SVG sizing
+  // 2. Responsive SVG sizing & Optimization
   processed = processed.replace(/<svg([^>]*)>/, (match, p1) => {
     const updated = p1.replace(/\s(width|height)="[^"]*"/g, '');
     return `<svg${updated} width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="shape-rendering:geometricPrecision;">`;
@@ -197,6 +176,15 @@ async function renderPageColumn(pageNum, idx, isRight, progressBar) {
     pageCol.innerHTML = '';
     pageCol.appendChild(pageCard);
     pageCard.appendChild(pageContent);
+    
+    // Apply SVG layer detection and coloring
+    if (typeof window.processSVGLayers === 'function') {
+      const svgEl = pageContent.querySelector('svg');
+      if (svgEl) {
+        const theme = AppState.settings.pageTheme || 'original';
+        window.processSVGLayers(svgEl, theme);
+      }
+    }
 
     // Update progress bar
     if (progressBar) {
@@ -237,6 +225,15 @@ async function renderPageColumn(pageNum, idx, isRight, progressBar) {
     pageCol.innerHTML = '';
     pageCol.appendChild(pageCard);
     pageCard.appendChild(pageContent);
+    
+    // Apply SVG layer detection and coloring
+    if (typeof window.processSVGLayers === 'function') {
+      const svgEl = pageContent.querySelector('svg');
+      if (svgEl) {
+        const theme = AppState.settings.pageTheme || 'original';
+        window.processSVGLayers(svgEl, theme);
+      }
+    }
 
     requestAnimationFrame(() => {
       pageCol.classList.remove("opacity-0");

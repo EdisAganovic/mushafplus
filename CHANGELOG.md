@@ -2,6 +2,29 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.1.2] - 2026-03-15
+
+### Added
+- **Detekcija SVG Slojeva**: Implementiran napredni sistem za automatsko prepoznavanje i bojenje slojeva u Quran SVG stranicama:
+  - **Okvir i Rubovi** (Border & Frame) - Zlatni okvir stranice sa ornamentalnim detaljima
+  - **Suze** (Teardrop Shapes) - Ornamentalni medallioni u obliku suze
+  - **Arapski Tekst** (Arabic Text) - Glavna kaligrafija ajeta
+  - **Brojevi Ajeta** (Verse Numerals) - Hindu-arapski brojevi unutar medalliona
+  - **Zaglavlja** (Surah/Juz Header) - Naslovi sura i džuzova na vrhu stranice
+  - **Ornamenti** (Ornamental Marker) - Dekorativni markeri (Hizb, Rubʿ, itd.)
+  - **Broj Stranice** (Page Number) - Broj stranice na dnu
+- **4 Teme sa Prilagođenim Bojama**: Svaka tema ima jedinstvenu paletu boja za svih 7 slojeva:
+  - **Original**: Zlatni okvir, tirkizne suze, tamni tekst, bijeli brojevi
+  - **Sepia**: Smeđi tonovi sa prigušenim bojama slojeva
+  - **Noć (Night)**: Slate boje sa svijetlim tekstom za noćno čitanje
+  - **Zelena (Green)**: Emeral boje kroz sve slojeve
+- **Automatsko Ažuriranje Tema**: Boje slojeva se automatski ažuriraju prilikom promjene teme stranice
+- **Univerzalna Detekcija**: Algoritam prepoznaje slojeve na osnovu karakteristika putanje (dužina, broj pod-putanja, boja fill-a) bez hardcoded ID-eva
+
+### Changed
+- **Bijeli Brojevi Ajeta**: Verse numerals sada koriste bijelu boju na svim svjetlim temama za bolju vidljivost
+- **Optimizirano Učitavanje**: SVG slojevi se procesuiraju odmah nakon učitavanja stranice u spread mode-u
+
 ## [0.1.1] - 2026-03-15
 
 ### Fixed

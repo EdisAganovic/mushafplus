@@ -13,7 +13,13 @@ function safeParseStorage(key, fallback) {
   try {
     const item = localStorage.getItem(key);
     if (item === null || item === "") return fallback;
-    return JSON.parse(item);
+    try {
+      return JSON.parse(item);
+    } catch (e) {
+      // If parsing fails, and the fallback is a string, assume it's a plain string
+      if (typeof fallback === "string") return item;
+      return fallback;
+    }
   } catch (e) {
     console.error(`[Storage] Failed to parse "${key}":`, e);
     return fallback;
@@ -249,4 +255,7 @@ window.els = {
   settingsPreviewAr: document.getElementById("prv-arabic"),
   settingsPreviewBs: document.getElementById("prv-translation"),
   pageThemeToggleContainer: document.getElementById("cnt-page-theme-toggle"),
+  themePreview: document.getElementById("cnt-theme-preview"),
+  themePaletteList: document.getElementById("lst-theme-palette"),
+  previewThemeName: document.getElementById("dsp-preview-theme-name"),
 };
