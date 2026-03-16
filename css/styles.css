@@ -1759,10 +1759,8 @@ body.spread-mode-active .btn-theme-dot::after {
 }
 
 .quran-theme-original svg [data-layer-type="verseNumerals"] {
-  fill: var(--page-bg) !important;
-  stroke: var(--page-bg) !important;
-  stroke-width: 0.5;
-  paint-order: stroke fill;
+  fill: #ffffff !important;
+  stroke: none !important;
 }
 
 .quran-theme-original svg [data-layer-type="surahHeader"] {
@@ -1771,7 +1769,7 @@ body.spread-mode-active .btn-theme-dot::after {
 
 .quran-theme-original svg [data-layer-type="teardropLabel"],
 .quran-theme-original svg [data-layer-type="surahBandText"] {
-  fill: var(--page-bg) !important;
+  fill: #ffffff !important;
 }
 
 .quran-theme-original svg [data-layer-type="pageNumber"] {
@@ -1790,7 +1788,7 @@ body.spread-mode-active .btn-theme-dot::after {
 }
 
 .quran-theme-sepia svg [data-layer-type="teardrop"] {
-  fill: #534938 !important
+  fill: #534938 !important;
 }
 
 .quran-theme-sepia svg [data-layer-type="surahBand"],
@@ -1803,10 +1801,8 @@ body.spread-mode-active .btn-theme-dot::after {
 }
 
 .quran-theme-sepia svg [data-layer-type="verseNumerals"] {
-  fill: var(--page-bg) !important;
-  stroke: var(--page-bg) !important;
-  stroke-width: 0.5;
-  paint-order: stroke fill;
+  fill: #a27a6e !important;
+  stroke: none !important;
 }
 
 .quran-theme-sepia svg [data-layer-type="surahHeader"] {
@@ -1815,7 +1811,7 @@ body.spread-mode-active .btn-theme-dot::after {
 
 .quran-theme-sepia svg [data-layer-type="teardropLabel"],
 .quran-theme-sepia svg [data-layer-type="surahBandText"] {
-  fill: var(--page-bg) !important;
+  fill: #ffffff !important;
 }
 
 .quran-theme-sepia svg [data-layer-type="pageNumber"] {
@@ -1847,10 +1843,8 @@ body.spread-mode-active .btn-theme-dot::after {
 }
 
 .quran-theme-night svg [data-layer-type="verseNumerals"] {
-  fill: var(--page-bg) !important;
-  stroke: var(--page-bg) !important;
-  stroke-width: 0.5;
-  paint-order: stroke fill;
+  fill: #0f172a !important;
+  stroke: none !important;
 }
 
 .quran-theme-night svg [data-layer-type="surahHeader"] {
@@ -1859,7 +1853,7 @@ body.spread-mode-active .btn-theme-dot::after {
 
 .quran-theme-night svg [data-layer-type="teardropLabel"],
 .quran-theme-night svg [data-layer-type="surahBandText"] {
-  fill: var(--page-bg) !important;
+  fill: #ffffff !important;
 }
 
 .quran-theme-night svg [data-layer-type="pageNumber"] {
@@ -1891,10 +1885,8 @@ body.spread-mode-active .btn-theme-dot::after {
 }
 
 .quran-theme-green svg [data-layer-type="verseNumerals"] {
-  fill: var(--page-bg) !important;
-  stroke: var(--page-bg) !important;
-  stroke-width: 0.5;
-  paint-order: stroke fill;
+  fill: #064e3b !important;
+  stroke: none !important;
 }
 
 .quran-theme-green svg [data-layer-type="surahHeader"] {
@@ -1903,7 +1895,7 @@ body.spread-mode-active .btn-theme-dot::after {
 
 .quran-theme-green svg [data-layer-type="teardropLabel"],
 .quran-theme-green svg [data-layer-type="surahBandText"] {
-  fill: var(--page-bg) !important;
+  fill: #ffffff !important;
 }
 
 .quran-theme-green svg [data-layer-type="pageNumber"] {
