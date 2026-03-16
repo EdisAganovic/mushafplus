@@ -305,41 +305,8 @@
                     <!-- Dynamic Quran Pages -->
                 </div>
 
-                <!-- Zoom Toolbar (Left Side) -->
-                <div id="tlb-zoom" class="hidden">
-                    <button id="btn-zoom-in" class="btn-zoom" title="Zoom In">
-                        <ion-icon name="add"></ion-icon>
-                    </button>
-                    <div id="dsp-zoom-val">100%</div>
-                    <button id="btn-zoom-reset" class="btn-zoom" title="Reset Zoom">
-                        <ion-icon name="sync"></ion-icon>
-                    </button>
-                    <button id="btn-zoom-out" class="btn-zoom" title="Zoom Out">
-                        <ion-icon name="remove"></ion-icon>
-                    </button>
-                </div>
 
-                <!-- Quick Page Theme Toggle -->
 
-                <div id="cnt-page-theme-toggle" class="relative flex flex-col items-center">
-                    <div class="flex gap-20">
-                        <button class="btn-theme-dot" data-theme="original" data-label="Standard" style="background-color: #fcfaf0;"></button>
-                        <button class="btn-theme-dot" data-theme="sepia" data-label="Sepia" style="background-color: #f4ecd8;"></button>
-                        <button class="btn-theme-dot" data-theme="night" data-label="Noć" style="background-color: #1e293b;"></button>
-                        <button class="btn-theme-dot" data-theme="green" data-label="Zelena" style="background-color: #064e3b;"></button>
-                    </div>
-                    
-                    <!-- Theme Palette Preview (Hover) -->
-                    <div id="cnt-theme-preview" class="absolute bottom-full mb-16 bg-slate-900/95 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[200] min-w-[280px]">
-                        <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 border-b border-slate-800 pb-2 flex justify-between items-center">
-                            <span data-i18n="colorPalette">Paleta boja</span>
-                            <span id="dsp-preview-theme-name" class="text-emerald-400">Standard</span>
-                        </div>
-                        <div id="lst-theme-palette" class="grid grid-cols-2 gap-x-4 gap-y-2">
-                            <!-- Items injected via JS -->
-                        </div>
-                    </div>
-                </div>
 
 
             </div>
@@ -1210,6 +1177,45 @@
             }
         }
     </script>
+
+    <!-- Spread Mode Toolbars (Moved outside scroll area for fixed position) -->
+    
+    <!-- Zoom Toolbar (Left Side) -->
+    <div id="tlb-zoom" class="hidden">
+        <button id="btn-zoom-in" class="btn-zoom" title="Zoom In">
+            <ion-icon name="add"></ion-icon>
+        </button>
+        <div id="dsp-zoom-val">100%</div>
+        <button id="btn-zoom-reset" class="btn-zoom" title="Reset Zoom">
+            <ion-icon name="sync"></ion-icon>
+        </button>
+        <button id="btn-zoom-out" class="btn-zoom" title="Zoom Out">
+            <ion-icon name="remove"></ion-icon>
+        </button>
+    </div>
+
+    <!-- Quick Page Theme Toggle (Right Side) -->
+    <div id="cnt-page-theme-toggle" class="hidden relative flex flex-col items-center">
+        <div class="flex gap-20">
+            <button class="btn-theme-dot" data-theme="original" data-label="Standard" style="background-color: #fcfaf0;"></button>
+            <button class="btn-theme-dot" data-theme="sepia" data-label="Sepia" style="background-color: #f4ecd8;"></button>
+            <button class="btn-theme-dot" data-theme="night" data-label="Noć" style="background-color: #1e293b;"></button>
+            <button class="btn-theme-dot" data-theme="green" data-label="Zelena" style="background-color: #064e3b;"></button>
+        </div>
+        
+        <!-- Theme Palette Preview (Hover) -->
+        <div id="cnt-theme-preview" class="absolute bottom-full mb-16 bg-slate-900/95 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 shadow-2xl opacity-0 pointer-events-none transition-all duration-300 z-[200] min-w-[280px]">
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 border-b border-slate-800 pb-2 flex justify-between items-center">
+                <span data-i18n="colorPalette">Paleta boja</span>
+                <span id="dsp-preview-theme-name" class="text-emerald-400">Standard</span>
+            </div>
+            <div id="lst-theme-palette" class="grid grid-cols-2 gap-x-4 gap-y-2">
+                <!-- Items injected via JS -->
+            </div>
+        </div>
+    </div>
+
 </body>
+
 
 </html>

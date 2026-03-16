@@ -239,11 +239,16 @@ window.applySpreadMode = function() {
     if (els.sidebar) els.sidebar.classList.add("md:hidden");
     if (els.appContainer) els.appContainer.classList.replace("max-w-[1400px]", "max-w-full");
     document.body.classList.add("spread-mode-active");
+    if (els.zoomToolbar) els.zoomToolbar.classList.remove("hidden");
+    if (els.pageThemeToggleContainer) els.pageThemeToggleContainer.classList.remove("hidden");
   } else {
     if (els.sidebar) els.sidebar.classList.remove("md:hidden");
     if (els.appContainer) els.appContainer.classList.replace("max-w-full", "max-w-[1400px]");
     document.body.classList.remove("spread-mode-active");
+    if (els.zoomToolbar) els.zoomToolbar.classList.add("hidden");
+    if (els.pageThemeToggleContainer) els.pageThemeToggleContainer.classList.add("hidden");
   }
+
 };
 
 /**

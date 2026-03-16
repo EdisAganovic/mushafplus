@@ -1493,7 +1493,10 @@ body.spread-mode-active #cnt-spread-view {
   max-width: none !important;
   overflow: visible !important;
   background-color: transparent !important;
+  transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  will-change: height;
 }
+
 
 
 
@@ -1554,9 +1557,11 @@ body.spread-mode-active .quran-page-svg-container {
   display: flex !important;
   justify-content: inherit !important; /* Pass spine alignment from column */
   align-items: flex-start !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
   overflow: visible !important;
+  will-change: height, transform;
 }
+
 
 
 
