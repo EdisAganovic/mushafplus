@@ -45,9 +45,20 @@ window.relocateToolbar = function () {
   if (!els.mainActionToolbar || !els.desktopToolbarPlaceholder) return;
 
   const isDesktop = window.innerWidth >= 768;
+  const isSpread = AppState.settings.spreadMode;
+
+  // CRITICAL: If spread mode is active, hide the toolbar
+  if (isSpread) {
+    els.mainActionToolbar.style.display = "none";
+    if (typeof updateToolbarVisibility === "function") updateToolbarVisibility();
+    return;
+  }
+
+
+
 
   if (isDesktop) {
-    // Desktop: Move inside the card placeholder
+    // Standard Mode (Desktop): Move inside the card placeholder
     if (!els.desktopToolbarPlaceholder.contains(els.mainActionToolbar)) {
       els.desktopToolbarPlaceholder.appendChild(els.mainActionToolbar);
       els.mainActionToolbar.style.position = "";
@@ -56,7 +67,9 @@ window.relocateToolbar = function () {
       els.mainActionToolbar.style.left = "";
       els.mainActionToolbar.style.right = "";
       els.mainActionToolbar.style.width = "";
+      els.mainActionToolbar.style.transform = "";
       els.mainActionToolbar.style.zIndex = "";
+      els.mainActionToolbar.style.minWidth = "";
     }
   } else {
     // Mobile: Move to the bottom of the body (before mobile nav)
@@ -68,7 +81,9 @@ window.relocateToolbar = function () {
     els.mainActionToolbar.style.left = "0.5rem";
     els.mainActionToolbar.style.right = "0.5rem";
     els.mainActionToolbar.style.width = "calc(100% - 1rem)";
+    els.mainActionToolbar.style.transform = "";
     els.mainActionToolbar.style.zIndex = "9999";
+    els.mainActionToolbar.style.minWidth = "";
 
     if (els.mobileBottomNav && els.mainActionToolbar.nextElementSibling !== els.mobileBottomNav) {
       document.body.insertBefore(els.mainActionToolbar, els.mobileBottomNav);

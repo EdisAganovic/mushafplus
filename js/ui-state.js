@@ -189,8 +189,12 @@ function closeModal(id) {
  */
 window.updateToolbarVisibility = function() {
   if (!els.mainActionToolbar) return;
-  // Toolbar stays visible per user request
-  els.mainActionToolbar.style.display = "flex";
+  
+  if (AppState.settings.spreadMode) {
+    els.mainActionToolbar.style.display = "none";
+  } else {
+    els.mainActionToolbar.style.display = "flex";
+  }
 };
 
 /**

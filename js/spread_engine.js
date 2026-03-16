@@ -150,7 +150,7 @@ function renderSpreadError(container, pageNum) {
  */
 async function renderPageColumn(pageNum, idx, isRight, progressBar) {
   const pageCol = document.createElement("div");
-  pageCol.className = "flex-1 flex flex-col items-center min-w-0 h-full no-scrollbar opacity-0 transition-opacity duration-300 ease-out";
+  pageCol.className = "flex flex-col min-w-0 h-full no-scrollbar opacity-0 transition-opacity duration-300 ease-out";
 
   // Start with skeleton loader
   renderSpreadSkeleton(pageCol);
@@ -165,7 +165,9 @@ async function renderPageColumn(pageNum, idx, isRight, progressBar) {
   pageCard.className = `w-full bg-transparent shadow-none flex flex-col h-full`;
 
   const pageContent = document.createElement("div");
-  pageContent.className = "flex-1 flex items-center justify-center quran-page-svg-container overflow-hidden";
+  pageContent.className = "flex-1 flex quran-page-svg-container overflow-visible";
+
+
 
   const paddedPage = String(pageNum).padStart(3, '0');
   const svgUrl = `${SVG_PATH}/${paddedPage}.svg`;

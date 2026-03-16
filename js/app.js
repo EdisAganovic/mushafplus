@@ -280,7 +280,11 @@ function setupEventListeners() {
       'verseNumerals': 'Brojevi',
       'surahHeader': 'Naslov',
       'ornamental': 'Ukrasi',
-      'pageNumber': 'Br. stranice'
+      'pageNumber': 'Br. stranice',
+      'teardropLabel': 'Oznaka ajeta',
+      'surahBand': 'Traka sure',
+      'surahBandText': 'Tekst sure',
+      'bigTeardrop': 'Glavni marker'
     };
     
     paletteList.innerHTML = '';
