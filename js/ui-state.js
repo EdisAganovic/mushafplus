@@ -234,3 +234,26 @@ function updateThemeDotsUI() {
     btn.classList.toggle("active", btn.getAttribute("data-theme") === current);
   });
 }
+
+/**
+ * Updates the zoom level for spread mode.
+ * @param {number} delta - Amount to change zoom by
+ * @param {boolean} reset - If true, resets to 100%
+ */
+window.updateSpreadZoom = function(delta = 0, reset = false) {
+  let target = reset ? 100 : (AppState.settings.spreadZoom || 100) + delta;
+  
+  // Clamp between 100% and 250%
+  target = Math.max(100, Math.min(250, target));
+  
+  AppState.settings.spreadZoom = target;
+  localStorage.setItem("quran_spread_zoom", target);
+  
+  // Apply to .h-full value
+  document.documentElement.style.setProperty('--h-full-value', `${target}%`);
+  
+  // Update Display
+  if (els.zoomValDisplay) {
+    els.zoomValDisplay.textContent = `${target}%`;
+  }
+};

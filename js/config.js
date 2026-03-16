@@ -84,7 +84,9 @@ window.AppState = {
       disableWordAudio: localStorage.getItem("quran_disable_word_audio") === "true",
       pageTheme: localStorage.getItem("quran_page_theme") || "original",
       autoplay: localStorage.getItem("quran_autoplay") !== "false",
+      spreadZoom: parseFloat(localStorage.getItem("quran_spread_zoom") || "100"),
     };
+
   })(),
 };
 
@@ -260,4 +262,12 @@ window.els = {
   themePreview: document.getElementById("cnt-theme-preview"),
   themePaletteList: document.getElementById("lst-theme-palette"),
   previewThemeName: document.getElementById("dsp-preview-theme-name"),
+  
+  // Zoom Control
+  zoomToolbar: document.getElementById("tlb-zoom"),
+  zoomInBtn: document.getElementById("btn-zoom-in"),
+  zoomOutBtn: document.getElementById("btn-zoom-out"),
+  zoomResetBtn: document.getElementById("btn-zoom-reset"),
+  zoomValDisplay: document.getElementById("dsp-zoom-val"),
 };
+

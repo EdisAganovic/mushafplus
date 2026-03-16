@@ -299,12 +299,28 @@
 
 
             <!-- Spread Card (Initially Hidden) -->
-            <div id="crd-spread" class="hidden w-full flex flex-col items-center animate-fade-in">
-                <div id="cnt-spread-view" class="w-full flex flex-col lg:flex-row-reverse gap-4 lg:gap-8 items-start justify-center">
+            <div id="crd-spread" class="hidden w-full h-full flex flex-col items-center animate-fade-in">
+                <div id="cnt-spread-view" class="w-full h-full flex flex-col lg:flex-row-reverse gap-4 lg:gap-8 items-start justify-center">
+
                     <!-- Dynamic Quran Pages -->
                 </div>
 
+                <!-- Zoom Toolbar (Left Side) -->
+                <div id="tlb-zoom" class="hidden">
+                    <button id="btn-zoom-in" class="btn-zoom" title="Zoom In">
+                        <ion-icon name="add"></ion-icon>
+                    </button>
+                    <div id="dsp-zoom-val">100%</div>
+                    <button id="btn-zoom-reset" class="btn-zoom" title="Reset Zoom">
+                        <ion-icon name="sync"></ion-icon>
+                    </button>
+                    <button id="btn-zoom-out" class="btn-zoom" title="Zoom Out">
+                        <ion-icon name="remove"></ion-icon>
+                    </button>
+                </div>
+
                 <!-- Quick Page Theme Toggle -->
+
                 <div id="cnt-page-theme-toggle" class="relative flex flex-col items-center">
                     <div class="flex gap-20">
                         <button class="btn-theme-dot" data-theme="original" data-label="Standard" style="background-color: #fcfaf0;"></button>

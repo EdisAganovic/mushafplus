@@ -84,10 +84,11 @@ async function init() {
       document.body.classList.add(`quran-theme-${AppState.settings.pageTheme}`);
     }
 
-    // Preload critical SVG pages for instant spread mode
-    if (typeof window.preloadCriticalPages === "function") {
-      window.preloadCriticalPages();
+    // Apply initial zoom
+    if (typeof updateSpreadZoom === "function") {
+      updateSpreadZoom(0);
     }
+
 
     // Set initial toggle states
     if (els.tajweedToggle) {
@@ -597,7 +598,11 @@ function setupEventListeners() {
   // --- MODAL SYSTEM ---
   setupModals();
 
+  // --- ZOOM CONTROLS ---
+  setupZoomControls();
+
   // --- RESPONSIVE RESIZE ---
+
   if (!window._resizeHandlerInitialized) {
     let resizeTimeout;
     window.addEventListener("resize", () => {
@@ -907,3 +912,18 @@ function updateReciterLabel() {
 
 // BOOT APPLICATION
 init();
+
+/**
+ * Sets up listeners for the spread mode zoom toolbar.
+ */
+function setupZoomControls() {
+  if (els.zoomInBtn) {
+    els.zoomInBtn.onclick = () => updateSpreadZoom(10);
+  }
+  if (els.zoomOutBtn) {
+    els.zoomOutBtn.onclick = () => updateSpreadZoom(-10);
+  }
+  if (els.zoomResetBtn) {
+    els.zoomResetBtn.onclick = () => updateSpreadZoom(0, true);
+  }
+}

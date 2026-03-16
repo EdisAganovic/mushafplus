@@ -32,7 +32,8 @@ function preprocessSvg(svgText, pageNum) {
   // 2. Responsive SVG sizing & Optimization
   processed = processed.replace(/<svg([^>]*)>/, (match, p1) => {
     const updated = p1.replace(/\s(width|height)="[^"]*"/g, '');
-    return `<svg${updated} width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="shape-rendering:geometricPrecision;">`;
+    return `<svg${updated} width="100%" height="100%" preserveAspectRatio="xMidYMin meet" style="shape-rendering:geometricPrecision;">`;
+
   });
 
   return processed;
@@ -150,7 +151,8 @@ function renderSpreadError(container, pageNum) {
  */
 async function renderPageColumn(pageNum, idx, isRight, progressBar) {
   const pageCol = document.createElement("div");
-  pageCol.className = "flex flex-col min-w-0 h-full no-scrollbar opacity-0 transition-opacity duration-300 ease-out";
+  pageCol.className = "flex flex-col h-full opacity-0 transition-opacity duration-300 ease-out";
+
 
   // Start with skeleton loader
   renderSpreadSkeleton(pageCol);
@@ -331,7 +333,8 @@ window.renderSpread = async function () {
   }, 10);
 
   // Update container
-  els.spreadView.className = "w-full flex-row-reverse-spread animate-fade-in";
+  els.spreadView.className = "w-full h-full flex flex-col lg:flex-row-reverse gap-4 lg:gap-8 items-start justify-center animate-fade-in";
+
 
   // Update parent container background
   const themeClass = `quran-theme-${AppState.settings.pageTheme || 'original'}`;

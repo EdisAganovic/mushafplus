@@ -1374,19 +1374,67 @@ body.hide-notes #cnt-notes {
 }
 
 /* Apply to elements */
+body.spread-mode-active .h-full {
+  height: var(--h-full-value, 100%) !important;
+}
+
 body.spread-mode-active {
   background-color: var(--page-bg) !important;
   transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden !important;
+}
+
+
+body.spread-mode-active #cnt-app {
+  max-width: none !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 10000 !important;
 }
 
 body.spread-mode-active #cnt-app,
-body.spread-mode-active #cnt-main-content,
-body.spread-mode-active header {
+body.spread-mode-active #cnt-main-content {
   background-color: transparent !important;
   box-shadow: none !important;
   border-color: transparent !important;
+  overflow-y: auto !important; /* Enable scrolling for zoom */
+  overflow-x: hidden !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
 }
+
+body.spread-mode-active #crd-spread {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  overflow: visible !important;
+  width: 100% !important;
+  height: auto !important; /* Allow it to grow with content */
+  min-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+
+
+
+header {
+  z-index: 10005 !important;
+}
+
 /* Floating Header in Spread Mode */
+
 body.spread-mode-active header {
   position: fixed !important;
   top: 1rem !important;
@@ -1394,7 +1442,8 @@ body.spread-mode-active header {
   transform: translateX(-50%) !important;
   width: auto !important;
   max-width: 90% !important;
-  z-index: 9999 !important;
+  z-index: 10010 !important;
+
   display: flex !important;
   background-color: rgba(var(--slate-900), 0.7) !important;
   backdrop-filter: blur(16px) !important;
@@ -1415,74 +1464,160 @@ body.spread-mode-active #tlb-actions {
 
 /* Maximize SVG View */
 body.spread-mode-active #crd-spread {
-  height: 100%;
-  justify-content: center;
+  justify-content: flex-start !important;
 }
+
 
 body.spread-mode-active #cnt-spread-view {
   width: 100% !important;
-  height: 100vh !important; /* Full height without header */
+  height: var(--h-full-value, 100%) !important;
   display: flex !important;
   flex-direction: row-reverse !important;
   justify-content: center !important;
-  align-items: center !important;
+  align-items: flex-start !important;
   gap: 0 !important;
-  padding: 0 !important;
+  padding: 0 !important; /* Margin on children instead */
   max-width: none !important;
-  overflow: hidden !important;
+  overflow: visible !important;
+  background-color: transparent !important;
 }
 
-body.spread-mode-active #cnt-spread-view>div {
-  flex: 0 0 auto !important;
-  width: 45vw !important;
+
+
+
+
+
+
+body.spread-mode-active #cnt-spread-view::-webkit-scrollbar {
+  display: none;
+}
+
+
+body.spread-mode-active #cnt-spread-view > div {
+  flex: 0 0 50% !important;
+  width: 50% !important;
   height: 100% !important;
   display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
   overflow: visible !important;
+  min-width: auto !important;
+  margin-top: 4.5rem !important; /* Shared baseline offset for both pages */
 }
 
-/* Right page: Align inner content to the left (center) */
-body.spread-mode-active #cnt-spread-view > div:nth-child(1),
-body.spread-mode-active #cnt-spread-view > div:nth-child(1) .quran-page-svg-container {
-  justify-content: flex-start !important;
+
+
+
+
+
+
+/* Horizontal Anchor: Force both pages to meet at the center (the spine) */
+
+/* RIGHT Page (nth-child 1) -> Align its content to the LEFT */
+body.spread-mode-active #cnt-spread-view > div:nth-child(1) {
   align-items: flex-start !important;
 }
+body.spread-mode-active #cnt-spread-view > div:nth-child(1) .quran-page-svg-container {
+  justify-content: flex-start !important;
+}
 
-/* Left page: Align inner content to the right (center) */
-body.spread-mode-active #cnt-spread-view > div:nth-child(2),
-body.spread-mode-active #cnt-spread-view > div:nth-child(2) .quran-page-svg-container {
-  justify-content: flex-end !important;
+/* LEFT Page (nth-child 2) -> Align its content to the RIGHT */
+body.spread-mode-active #cnt-spread-view > div:nth-child(2) {
   align-items: flex-end !important;
 }
-
-/* Specific SVG alignment within containers */
-body.spread-mode-active #cnt-spread-view > div:nth-child(1) svg {
-  margin-right: auto;
-  margin-left: 0;
+body.spread-mode-active #cnt-spread-view > div:nth-child(2) .quran-page-svg-container {
+  justify-content: flex-end !important;
 }
 
-body.spread-mode-active #cnt-spread-view > div:nth-child(2) svg {
-  margin-left: auto;
-  margin-right: 0;
-}
+
+
+
+/* SVG Container and Image scaling */
 
 body.spread-mode-active .quran-page-svg-container {
   height: 100% !important;
   width: 100% !important;
   display: flex !important;
-  align-items: center !important;
+  justify-content: inherit !important; /* Pass spine alignment from column */
+  align-items: flex-start !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible !important;
 }
+
+
 
 body.spread-mode-active .quran-page-svg-container svg {
   height: 100% !important;
   width: auto !important;
-  max-width: 100% !important;
-  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.2));
-  transform-origin: center;
+  max-width: none !important; /* Allow width to grow beyond column for zoom */
+  filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.35)) !important;
+  transform-origin: top !important; /* Zoom grows downwards */
   transition: transform 0.3s ease;
-  display: block;
+  display: block !important;
+  margin: 0 !important;
+  align-self: flex-start !important;
 }
 
+
+
+
+/* Zoom Toolbar (Left Side) */
+body.spread-mode-active #tlb-zoom {
+  position: fixed !important;
+  left: 1.5rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 1.2rem !important;
+  z-index: 10002 !important;
+  background-color: rgba(var(--slate-900), 0.75) !important;
+  backdrop-filter: blur(20px) !important;
+  padding: 1.5rem 0.8rem !important;
+  border-radius: 99px !important;
+  border: 1px solid rgba(var(--slate-700), 0.5) !important;
+  box-shadow: 10px 10px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+.btn-zoom {
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--slate-800), 0.6);
+  color: white;
+  border: 1px solid rgba(var(--slate-600), 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.2rem;
+}
+
+.btn-zoom:hover {
+  background: rgb(var(--theme-500));
+  transform: scale(1.1);
+  border-color: transparent;
+}
+
+.btn-zoom:active {
+  transform: scale(0.95);
+}
+
+#dsp-zoom-val {
+  font-size: 11px;
+  font-weight: 900;
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.05em;
+  opacity: 0.9;
+}
+
+
 /* Vertical Floating Theme Toolbar on the Right Side */
+
 body.spread-mode-active #cnt-page-theme-toggle {
   position: fixed !important;
   top: 50% !important;
