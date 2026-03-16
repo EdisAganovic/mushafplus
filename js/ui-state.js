@@ -208,7 +208,7 @@ function closeAllMenusAndModals() {
     if (els?.hifzOverlay && !els.hifzOverlay.classList.contains("hidden"))
       closeHifz();
 
-    if (els.surahHifzModal && !els.surahHifzModal.classList.contains("hidden"))
+    if (els.surahModal && !els.surahModal.classList.contains("hidden"))
       closeModal("mdl-surah");
 
     if (els.searchModal && !els.searchModal.classList.contains("hidden"))

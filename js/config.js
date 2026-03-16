@@ -223,7 +223,7 @@ window.els = {
   navSearchBtn: document.getElementById("btn-nav-search"),
   navBookmarksBtn: document.getElementById("btn-nav-bookmarks"),
   navSettingsBtn: document.getElementById("btn-nav-settings"),
-  surahHifzModal: document.getElementById("mdl-surah"),
+  surahModal: document.getElementById("mdl-surah"),
   modalSurahList: document.getElementById("lst-surah-modal"),
 
   // Search Modal (Mobile)
