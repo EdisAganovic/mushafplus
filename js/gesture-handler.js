@@ -58,6 +58,14 @@ function handleTouchStart(e) {
     ptrStartY = e.changedTouches[0].screenY;
     isPTRActive = true;
     pullDistance = 0;
+    
+    // Reset indicator state
+    const indicator = document.getElementById("ptr-indicator");
+    if (indicator) {
+      indicator.style.transition = "";
+      indicator.style.transform = "translateY(-100%)";
+      indicator.style.opacity = "0";
+    }
   } else {
     isPTRActive = false;
   }
@@ -85,7 +93,9 @@ function handleTouchMove(e) {
     // Use logarithmic-ish resistance
     pullDistance = Math.min(diffY * 0.5, PTR_MAX_PULL);
     
-    indicator.style.marginTop = `${pullDistance - 64}px`; // 64 is h-16
+    // Move from -100% to 0 and beyond
+    // -64px is the height. So 0 pull = -64px. 
+    indicator.style.transform = `translateY(${pullDistance - 64}px)`;
     indicator.style.opacity = Math.min(pullDistance / 60, 1);
     
     // Rotate icon based on pull
@@ -95,7 +105,7 @@ function handleTouchMove(e) {
   } else {
     // Pulling up above start
     pullDistance = 0;
-    indicator.style.marginTop = "-64px";
+    indicator.style.transform = "translateY(-100%)";
     indicator.style.opacity = "0";
   }
 }
@@ -122,8 +132,8 @@ function handleTouchEnd(e) {
 
   // Reset PTR visuals if not triggered
   if (indicator) {
-    indicator.style.transition = "all 0.3s ease";
-    indicator.style.marginTop = "-64px";
+    indicator.style.transition = "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+    indicator.style.transform = "translateY(-100%)";
     indicator.style.opacity = "0";
     setTimeout(() => {
       indicator.style.transition = "";
