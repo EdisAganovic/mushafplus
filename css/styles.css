@@ -948,6 +948,9 @@ h6 {
   margin-bottom: 1.5rem;
 }
 
+
+
+
 .about-credits {
   display: flex;
   flex-direction: column;
@@ -1451,7 +1454,17 @@ body.spread-mode-active header {
   border-radius: 99px !important;
   padding: 0.5rem 1.5rem !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
+
+body.spread-mode-active header.header-hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translate(-50%, -200%) !important;
+}
+
+
+
 
 body.spread-mode-active header * {
   border-color: transparent !important;
@@ -1579,7 +1592,9 @@ body.spread-mode-active #tlb-zoom {
   border-radius: 99px !important;
   border: 1px solid rgba(var(--slate-700), 0.5) !important;
   box-shadow: 10px 10px 40px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
+
 
 .btn-zoom {
   width: 2.2rem;
@@ -1643,7 +1658,9 @@ body.spread-mode-active #cnt-page-theme-toggle .flex.gap-20 {
   flex-direction: column !important;
   gap: 1.25rem !important;
   align-items: center !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
+
 
 /* Side-Tooltips behavior */
 body.spread-mode-active .btn-theme-dot::after {

@@ -229,6 +229,11 @@ window.applySpreadMode = function() {
     els.spreadToggle.classList.toggle("bg-slate-800", AppState.settings.spreadMode);
   }
 
+  // Always show header when toggling
+  const header = document.querySelector('header');
+  if (header) header.classList.remove('header-hidden');
+
+
   // Handle Sidebar Visibility: hide sidebar in spread mode
   if (AppState.settings.spreadMode) {
     if (els.sidebar) els.sidebar.classList.add("md:hidden");

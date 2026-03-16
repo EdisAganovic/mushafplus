@@ -601,6 +601,22 @@ function setupEventListeners() {
   // --- ZOOM CONTROLS ---
   setupZoomControls();
 
+  // --- SPREAD MODE AUTO-HIDE UI (Header Only) ---
+  if (els.mainContent) {
+    els.mainContent.addEventListener("scroll", () => {
+      if (!AppState.settings.spreadMode) return;
+      
+      const scrollTop = els.mainContent.scrollTop;
+      const header = document.querySelector('header');
+
+      if (scrollTop > 50) {
+        if (header) header.classList.add('header-hidden');
+      } else {
+        if (header) header.classList.remove('header-hidden');
+      }
+    });
+  }
+
   // --- RESPONSIVE RESIZE ---
 
   if (!window._resizeHandlerInitialized) {
