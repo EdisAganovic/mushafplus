@@ -2,6 +2,20 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.1.4] - 2026-03-16
+
+### Added
+- **Pull-to-refresh**: Globalna gesta za osvježavanje aplikacije povlačenjem prema dolje. Uveden je novi plutajući indikator sa staklenim efektom i rotacijskom animacijom.
+
+### Fixed
+- **Navigacija swajpom**: Popravljen problem gdje horizontalni swajp nije radio na mobilnim uređajima. Vraćena je ispravna detekcija i povećana tolerancija na vertikalne pokrete (80px) za ugodnije korištenje.
+
+### Improved
+- **Mobilni UX**: 
+  - Onemogućen automatski fokus na pretragu u sura selektoru na mobitelima kako bi se spriječilo neželjeno iskačenje tastature.
+  - Povećan prostor na dnu stranice (padding-bottom) kako bi bilješke i ostali elementi bili potpuno vidljivi iznad donje navigacije.
+- **Search Modal**: Smanjena veličina teksta u mobilnom pretraživaču za ljepši i kompaktniji izgled.
+
 ## [0.1.3] - 2026-03-15
 
 ### Improved

@@ -16,7 +16,7 @@
     <!-- Global App Configuration -->
     <script>
         // IMPORTANT: Change this version to force cache refresh for all users
-        const APP_VERSION = "0.1.3"; 
+        const APP_VERSION = "0.1.4"; 
     </script>
 
     <!-- UI Styles and Favicon (Dynamic versioning) -->
@@ -811,7 +811,7 @@
                     <div class="relative w-full">
                         <input type="text" id="inp-search-modal" data-i18n-placeholder="searchPlaceholder"
                             placeholder="Pretraži tekst ili ajet (2:255)..."
-                            class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-full text-[0.875rem] placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
+                            class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] pl-[2.25rem] pr-[1rem] rounded-lg outline-none focus:border-emerald-500 transition-all w-full text-xs placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20">
                         <ion-icon name="search-outline"
                             class="absolute left-[0.75rem] top-1/2 -translate-y-1/2 text-slate-500"></ion-icon>
                     </div>
@@ -881,6 +881,28 @@
                 </button>
             </div>
             <div class="modal-body modal-body-scroll">
+                <!-- v0.1.4 -->
+                <div class="changelog-entry">
+                    <div class="changelog-header">
+                        <span class="changelog-version-pill">0.1.4</span>
+                        <h4 class="changelog-title">Geste i UX</h4>
+                        <span class="changelog-date">16. mart 2026.</span>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-new">Novo</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Pull-to-refresh</strong> — Globalna gesta za osvježavanje stranice s novim indikatorom.</li>
+                             <li class="changelog-item"><strong>Navigacija swajpom</strong> — Popravljene geste za kretanje kroz ajete i povećana tolerancija na greške.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-improved">Poboljšano</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Mobilni UI</strong> — Poboljšan scroll na dnu stranice i onemogućen automatski fokus na pretragu sura na mobitelima.</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- v0.1.3 -->
                 <div class="changelog-entry">
                     <div class="changelog-header">
@@ -908,22 +930,6 @@
                         <ul class="changelog-list">
                              <li class="changelog-item"><strong>Sistem slojeva</strong> — Automatsko bojenje okvira, teksta i ornamentalnih elemenata u SVG stranicama.</li>
                              <li class="changelog-item"><strong>Teme Mushafa</strong> — 4 nove palete boja (Standard, Sepia, Noć, Zelena) koje se primjenjuju na sve elemente stranice.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- v0.1.1 -->
-                <div class="changelog-entry">
-                    <div class="changelog-header">
-                        <span class="changelog-version-pill">0.1.1</span>
-                        <h4 class="changelog-title">Nova verzija</h4>
-                        <span class="changelog-date">15. mart 2026.</span>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-fixed">Popravke</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Tema aplikacije</strong> — Dodan event listener za promjenu teme.</li>
-                             <li class="changelog-item"><strong>Tema stranice</strong> — Poboljšana funkcionalnost za promjenu teme Mushaf stranice.</li>
                         </ul>
                     </div>
                 </div>
