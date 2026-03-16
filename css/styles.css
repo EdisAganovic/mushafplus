@@ -139,6 +139,15 @@ h6 {
   border-bottom: none;
 }
 
+.animate-spin-slow {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .changelog-header {
   display: flex;
   align-items: center;
@@ -1100,7 +1109,7 @@ body.hide-notes #cnt-notes {
 /* Mobile padding for bottom nav */
 @media (max-width: 767px) {
   main {
-    padding-bottom: 5.5rem !important;
+    padding-bottom: 14rem !important;
   }
 }
 

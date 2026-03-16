@@ -335,7 +335,9 @@ function setupEventListeners() {
         els.surahModalFilter.value = "";
         const items = document.querySelectorAll(".modal-surah-item");
         items.forEach(item => item.classList.remove("hidden"));
-        setTimeout(() => els.surahModalFilter.focus(), 100);
+        if (window.innerWidth >= 1024) {
+          setTimeout(() => els.surahModalFilter.focus(), 100);
+        }
       }
     };
   }
@@ -664,7 +666,9 @@ function setupMobileNavHandlers() {
           els.surahModalFilter.value = "";
           const items = document.querySelectorAll(".modal-surah-item");
           items.forEach(item => item.classList.remove("hidden"));
-          setTimeout(() => els.surahModalFilter.focus(), 100);
+          if (window.innerWidth >= 1024) {
+             setTimeout(() => els.surahModalFilter.focus(), 100);
+          }
         }
       }
     };

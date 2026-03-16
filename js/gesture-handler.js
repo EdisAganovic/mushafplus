@@ -9,19 +9,29 @@ let touchStartX = 0;
 let touchStartY = 0;
 let swipeActive = false;
 const SWIPE_THRESHOLD = 60;
+// Pull to refresh state
+let ptrStartY = 0;
+let pullDistance = 0;
+const PTR_THRESHOLD = 120; // Distance to trigger refresh
+const PTR_MAX_PULL = 180; // Max visual pull
+let isPTRActive = false;
 
 /**
- * Checks if touch target should ignore swipe gestures
+ * Checks if touch target should ignore swipe gestures (for horizontal navigation)
  */
 function shouldIgnoreSwipe(target) {
   return (
     target.closest("#sidebar") ||
-    target.closest("#settings-drawer") ||
-    target.closest("#search-results-container") ||
-    target.closest("#search-results-container-mobile") ||
+    target.closest("#dwr-sidebar") ||
+    target.closest("#dwr-settings") ||
+    target.closest("#dwr-hifz") ||
+    target.closest("#dwr-bookmarks") ||
+    target.closest("#cnt-search-results") ||
+    target.closest("#cnt-search-results-mobile") ||
     target.tagName === "INPUT" ||
     target.tagName === "TEXTAREA" ||
-    target.tagName === "SELECT"
+    target.tagName === "SELECT" ||
+    target.closest(".modal-container")
   );
 }
 
@@ -29,23 +39,100 @@ function shouldIgnoreSwipe(target) {
  * Handles touchstart event
  */
 function handleTouchStart(e) {
+  if (!e.changedTouches || !e.changedTouches[0]) return;
   const target = e.target;
+  const content = document.getElementById("cnt-main-content");
   
-  if (shouldIgnoreSwipe(target)) {
-    swipeActive = false;
-    return;
-  }
+  // Horizontal swipe triggers (next/prev ayah) are more restrictive
+  swipeActive = !shouldIgnoreSwipe(target);
   
   touchStartX = e.changedTouches[0].screenX;
   touchStartY = e.changedTouches[0].screenY;
-  swipeActive = true;
+
+  // PTR detection - more global
+  // Allow PTR even on ignored swipe elements (like header) IF main content is at top
+  const isInput = target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT";
+  const inModal = target.closest(".modal-container");
+
+  if (!isInput && !inModal && content && content.scrollTop === 0) {
+    ptrStartY = e.changedTouches[0].screenY;
+    isPTRActive = true;
+    pullDistance = 0;
+  } else {
+    isPTRActive = false;
+  }
 }
 
 /**
- * Handles touchend event and triggers navigation
+ * Handles touchmove event for pull-to-refresh visuals
+ */
+function handleTouchMove(e) {
+  if (!isPTRActive || !e.changedTouches || !e.changedTouches[0]) return;
+
+  const currentY = e.changedTouches[0].screenY;
+  const diffY = currentY - ptrStartY;
+
+  const indicator = document.getElementById("ptr-indicator");
+  if (!indicator) {
+    isPTRActive = false;
+    return;
+  }
+
+  const icon = document.getElementById("ptr-icon");
+
+  if (diffY > 0) {
+    // We are pulling down
+    // Use logarithmic-ish resistance
+    pullDistance = Math.min(diffY * 0.5, PTR_MAX_PULL);
+    
+    indicator.style.marginTop = `${pullDistance - 64}px`; // 64 is h-16
+    indicator.style.opacity = Math.min(pullDistance / 60, 1);
+    
+    // Rotate icon based on pull
+    if (icon) {
+      icon.style.transform = `rotate(${pullDistance * 2}deg)`;
+    }
+  } else {
+    // Pulling up above start
+    pullDistance = 0;
+    indicator.style.marginTop = "-64px";
+    indicator.style.opacity = "0";
+  }
+}
+
+/**
+ * Handles touchend event and triggers navigation or refresh
  */
 function handleTouchEnd(e) {
-  if (!swipeActive) return;
+  const indicator = document.getElementById("ptr-indicator");
+  const icon = document.getElementById("ptr-icon");
+  if (isPTRActive && pullDistance > PTR_THRESHOLD) {
+    // Trigger Refresh
+    if (indicator) {
+      if (icon) icon.classList.add("animate-spin-slow");
+      
+      // Keep it visible for a moment before reload
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    }
+    isPTRActive = false;
+    return;
+  }
+
+  // Reset PTR visuals if not triggered
+  if (indicator) {
+    indicator.style.transition = "all 0.3s ease";
+    indicator.style.marginTop = "-64px";
+    indicator.style.opacity = "0";
+    setTimeout(() => {
+      indicator.style.transition = "";
+    }, 300);
+  }
+
+  isPTRActive = false;
+
+  if (!swipeActive || !e.changedTouches || !e.changedTouches[0]) return;
   swipeActive = false;
 
   const touchEndX = e.changedTouches[0].screenX;
@@ -53,16 +140,16 @@ function handleTouchEnd(e) {
   const diffX = Math.abs(touchEndX - touchStartX);
   const diffY = Math.abs(touchEndY - touchStartY);
 
-  // Detect horizontal swipe with minimal vertical movement
-  if (diffX > diffY && diffX > SWIPE_THRESHOLD && diffY < 50) {
+  // Detect horizontal swipe with more generous vertical tolerance (80px instead of 50px)
+  if (diffX > diffY && diffX > SWIPE_THRESHOLD && diffY < 80) {
     if (touchEndX < touchStartX) {
       // Swipe left - next ayah
       AppState.swipeDirection = "left";
-      if (typeof nextAyah === "function") nextAyah();
+      if (typeof window.nextAyah === "function") window.nextAyah();
     } else {
       // Swipe right - previous ayah
       AppState.swipeDirection = "right";
-      if (typeof prevAyah === "function") prevAyah();
+      if (typeof window.prevAyah === "function") window.prevAyah();
     }
   }
 }
@@ -74,6 +161,7 @@ window.initSwipeHandlers = function() {
   if (window._swipeHandlerInitialized) return;
 
   document.addEventListener("touchstart", handleTouchStart, { passive: true });
+  document.addEventListener("touchmove", handleTouchMove, { passive: true });
   document.addEventListener("touchend", handleTouchEnd, { passive: true });
   
   window._swipeHandlerInitialized = true;
