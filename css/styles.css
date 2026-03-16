@@ -1405,7 +1405,8 @@ body.spread-mode-active #cnt-main-content {
   background-color: transparent !important;
   box-shadow: none !important;
   border-color: transparent !important;
-  overflow-y: auto !important; /* Enable scrolling for zoom */
+  overflow-y: auto !important;
+  /* Enable scrolling for zoom */
   overflow-x: hidden !important;
   width: 100% !important;
   height: 100% !important;
@@ -1421,7 +1422,8 @@ body.spread-mode-active #crd-spread {
   border-color: transparent !important;
   overflow: visible !important;
   width: 100% !important;
-  height: auto !important; /* Allow it to grow with content */
+  height: auto !important;
+  /* Allow it to grow with content */
   min-height: 100% !important;
   display: flex !important;
   flex-direction: column !important;
@@ -1489,7 +1491,8 @@ body.spread-mode-active #cnt-spread-view {
   justify-content: center !important;
   align-items: flex-start !important;
   gap: 0 !important;
-  padding: 0 !important; /* Margin on children instead */
+  padding: 0 !important;
+  /* Margin on children instead */
   max-width: none !important;
   overflow: visible !important;
   background-color: transparent !important;
@@ -1509,7 +1512,7 @@ body.spread-mode-active #cnt-spread-view::-webkit-scrollbar {
 }
 
 
-body.spread-mode-active #cnt-spread-view > div {
+body.spread-mode-active #cnt-spread-view>div {
   flex: 0 0 50% !important;
   width: 50% !important;
   height: 100% !important;
@@ -1519,7 +1522,8 @@ body.spread-mode-active #cnt-spread-view > div {
   justify-content: flex-start !important;
   overflow: visible !important;
   min-width: auto !important;
-  margin-top: 4.5rem !important; /* Shared baseline offset for both pages */
+  margin-top: 4.5rem !important;
+  /* Shared baseline offset for both pages */
 }
 
 
@@ -1531,18 +1535,20 @@ body.spread-mode-active #cnt-spread-view > div {
 /* Horizontal Anchor: Force both pages to meet at the center (the spine) */
 
 /* RIGHT Page (nth-child 1) -> Align its content to the LEFT */
-body.spread-mode-active #cnt-spread-view > div:nth-child(1) {
+body.spread-mode-active #cnt-spread-view>div:nth-child(1) {
   align-items: flex-start !important;
 }
-body.spread-mode-active #cnt-spread-view > div:nth-child(1) .quran-page-svg-container {
+
+body.spread-mode-active #cnt-spread-view>div:nth-child(1) .quran-page-svg-container {
   justify-content: flex-start !important;
 }
 
 /* LEFT Page (nth-child 2) -> Align its content to the RIGHT */
-body.spread-mode-active #cnt-spread-view > div:nth-child(2) {
+body.spread-mode-active #cnt-spread-view>div:nth-child(2) {
   align-items: flex-end !important;
 }
-body.spread-mode-active #cnt-spread-view > div:nth-child(2) .quran-page-svg-container {
+
+body.spread-mode-active #cnt-spread-view>div:nth-child(2) .quran-page-svg-container {
   justify-content: flex-end !important;
 }
 
@@ -1555,7 +1561,8 @@ body.spread-mode-active .quran-page-svg-container {
   height: 100% !important;
   width: 100% !important;
   display: flex !important;
-  justify-content: inherit !important; /* Pass spine alignment from column */
+  justify-content: inherit !important;
+  /* Pass spine alignment from column */
   align-items: flex-start !important;
   transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
   overflow: visible !important;
@@ -1568,9 +1575,10 @@ body.spread-mode-active .quran-page-svg-container {
 body.spread-mode-active .quran-page-svg-container svg {
   height: 100% !important;
   width: auto !important;
-  max-width: none !important; /* Allow width to grow beyond column for zoom */
-  filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.35)) !important;
-  transform-origin: top !important; /* Zoom grows downwards */
+  max-width: none !important;
+  /* Allow width to grow beyond column for zoom */
+  transform-origin: top !important;
+  /* Zoom grows downwards */
   transition: transform 0.3s ease;
   display: block !important;
   margin: 0 !important;
@@ -1598,6 +1606,33 @@ body.spread-mode-active #tlb-zoom {
   border: 1px solid rgba(var(--slate-700), 0.5) !important;
   box-shadow: 10px 10px 40px rgba(0, 0, 0, 0.4) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Ensure palette preview is above other elements and consistently styled in spread mode */
+body.spread-mode-active #cnt-theme-preview {
+  margin-bottom: 0 !important;
+  z-index: 10015 !important;
+  /* Higher than toggle container */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  width: 300px !important;
+  /* Force fixed width - Širina palete */
+  min-width: 250px !important;
+}
+
+#cnt-theme-preview .text-\[10px\] {
+  font-size: 13px !important;
+  /* Make header bigger */
+}
+
+#cnt-theme-preview .text-\[9px\] {
+  font-size: 12px !important;
+  /* Make item labels bigger */
+}
+
+#cnt-theme-preview .w-2\.5 {
+  width: 14px !important;
+  /* Make color dots bigger */
+  height: 14px !important;
 }
 
 
@@ -1668,33 +1703,9 @@ body.spread-mode-active #cnt-page-theme-toggle .flex.gap-20 {
 
 
 /* Side-Tooltips behavior */
+/* Redundant tooltips removed in favor of the palette preview */
 body.spread-mode-active .btn-theme-dot::after {
-  content: attr(data-label) !important;
-  position: absolute !important;
-  right: calc(100% + 20px) !important;
-  left: auto !important;
-  top: 50% !important;
-  transform: translateY(-50%) translateX(10px) !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  transition: all 0.2s ease !important;
-  background: rgba(var(--slate-800), 0.95) !important;
-  border: 1px solid rgba(var(--slate-600), 0.5) !important;
-  padding: 0.5rem 1.2rem !important;
-  border-radius: 10px !important;
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  color: white !important;
-  white-space: nowrap !important;
-  pointer-events: none !important;
-  min-width: 100px !important;
-  text-align: center !important;
-}
-
-body.spread-mode-active .btn-theme-dot:hover::after {
-  opacity: 1 !important;
-  visibility: visible !important;
-  transform: translateY(-50%) translateX(0) !important;
+  display: none !important;
 }
 
 
@@ -1729,7 +1740,6 @@ body.spread-mode-active .btn-theme-dot:hover::after {
   fill: #C4922A !important;
 }
 
-.quran-theme-original svg [data-layer-type="teardrop"],
 .quran-theme-original svg [data-layer-type="surahBand"],
 .quran-theme-original svg [data-layer-type="bigTeardrop"] {
   fill-rule: nonzero !important;
@@ -1765,7 +1775,7 @@ body.spread-mode-active .btn-theme-dot:hover::after {
 }
 
 .quran-theme-original svg [data-layer-type="pageNumber"] {
-  fill: #4a90d9 !important;
+  fill: #ffffff !important;
 }
 
 /* ── SEPIA THEME LAYER COLORS ── */
@@ -1780,7 +1790,7 @@ body.spread-mode-active .btn-theme-dot:hover::after {
 }
 
 .quran-theme-sepia svg [data-layer-type="teardrop"] {
-  fill: #6B8E7E !important;
+  fill: #534938 !important
 }
 
 .quran-theme-sepia svg [data-layer-type="surahBand"],
@@ -1809,7 +1819,7 @@ body.spread-mode-active .btn-theme-dot:hover::after {
 }
 
 .quran-theme-sepia svg [data-layer-type="pageNumber"] {
-  fill: #5A7FA8 !important;
+  fill: #ffffff !important;
 }
 
 /* ── NIGHT THEME LAYER COLORS ── */
@@ -1853,7 +1863,7 @@ body.spread-mode-active .btn-theme-dot:hover::after {
 }
 
 .quran-theme-night svg [data-layer-type="pageNumber"] {
-  fill: #7FA8D4 !important;
+  fill: #ffffff !important;
 }
 
 /* ── GREEN THEME LAYER COLORS ── */

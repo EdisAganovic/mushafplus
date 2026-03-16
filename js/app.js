@@ -300,23 +300,52 @@ function setupEventListeners() {
       paletteList.appendChild(item);
     });
     
-    // Position preview above the hovered dot (for main view only)
-    if (!isSettingsDot && els.pageThemeToggleContainer) {
+    // Position preview relative to the hovered dot
+    if (AppState.settings.spreadMode && !isSettingsDot && els.pageThemeToggleContainer) {
+      const dotRect = dotEl.getBoundingClientRect();
+      const parentRect = els.pageThemeToggleContainer.getBoundingClientRect();
+      
+      // Position to the left of the vertical dot column
+      // Reduced offset to 25px since we removed the redundant CSS tooltip
+      previewContainer.style.left = 'auto';
+      previewContainer.style.right = 'calc(100% + 25px)';
+      previewContainer.style.bottom = 'auto';
+      
+      // Vertically center with the dot
+      const topPos = (dotRect.top - parentRect.top) + (dotRect.height / 2);
+      previewContainer.style.top = `${topPos}px`;
+      previewContainer.style.transform = 'translateY(-50%)';
+    } else if (!isSettingsDot && els.pageThemeToggleContainer) {
       const dotRect = dotEl.getBoundingClientRect();
       const parentRect = els.pageThemeToggleContainer.getBoundingClientRect();
       
       // Calculate horizontal center of the dot relative to the parent
       const leftPos = (dotRect.left - parentRect.left) + (dotRect.width / 2);
       previewContainer.style.left = `${leftPos}px`;
+      previewContainer.style.right = 'auto';
+      previewContainer.style.top = 'auto';
+      previewContainer.style.bottom = ''; // Reset for CSS
       previewContainer.style.transform = 'translateX(-50%)';
     } else {
       // For settings drawer, clear inline styles so CSS takes over
       previewContainer.style.left = '';
+      previewContainer.style.right = '';
+      previewContainer.style.top = '';
+      previewContainer.style.bottom = '';
       previewContainer.style.transform = '';
     }
     
-    previewContainer.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2', 'translate-x-2');
-    previewContainer.classList.add('opacity-100', isSettingsDot ? 'translate-x-0' : 'translate-y-0');
+    previewContainer.classList.remove('opacity-0', 'pointer-events-none');
+    previewContainer.classList.add('opacity-100');
+    
+    // Add specific animation classes based on layout
+    if (AppState.settings.spreadMode && !isSettingsDot) {
+      previewContainer.classList.remove('translate-y-2');
+      previewContainer.classList.add('translate-x-0'); // Using transform override above though
+    } else if (!isSettingsDot) {
+      previewContainer.classList.remove('translate-x-2');
+      previewContainer.classList.add('translate-y-0');
+    }
   }
 
   function hideThemePreview() {
