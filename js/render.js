@@ -148,6 +148,7 @@ window.syncNavigationInputs = function() {
     if (els.juzInput) els.juzInput.value = juzNum;
     if (els.pageInput) els.pageInput.value = pageNum;
     if (els.headerPageInput) els.headerPageInput.value = pageNum;
+    if (els.surahSelect) els.surahSelect.value = AppState.currentSurah.id;
   }
 };
 

@@ -158,6 +158,13 @@ function closeHifz() {
 function openModal(id) {
   const modal = document.getElementById(id);
   if (modal) modal.classList.remove("hidden");
+  
+  // Explicitly hide sidebar for Surah selector as requested
+  if (id === "mdl-surah" && els.sidebar) {
+    els.sidebar.classList.add("md:hidden");
+    if (typeof closeSidebar === "function") closeSidebar();
+  }
+  
   updateToolbarVisibility();
 }
 
@@ -167,6 +174,12 @@ function openModal(id) {
 function closeModal(id) {
   const modal = document.getElementById(id);
   if (modal) modal.classList.add("hidden");
+
+  // Restore sidebar visibility when closing Surah selector
+  if (id === "mdl-surah" && els.sidebar) {
+    els.sidebar.classList.remove("md:hidden");
+  }
+
   updateToolbarVisibility();
 }
 

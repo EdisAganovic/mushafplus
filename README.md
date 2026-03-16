@@ -32,6 +32,10 @@ Built entirely with modern Web Technologies, this app operates entirely locally 
 - **Icons**: [Ionicons](https://ionic.io/ionicons)
 - **Data**: Static JavaScript arrays containing the Quranic text and references (`quran_data.js`).
 - **Localization**: Specialized `i18n.js` for dynamic string management.
+- **SVG Processing**: `svg-layer-detector.js` for universal detection and coloring of Quran SVG page elements.
+- **Search**: Web Workers (`searchWorker.js`) for background processing of full-text search.
+- **Audio**: MediaRecorder API for user recording and playback controls.
+- **Tajweed**: CSS Custom Highlight API for text highlighting without breaking Arabic ligatures.
 
 ## 🚀 Getting Started
 
@@ -56,21 +60,52 @@ Microphone access requires a secure context (HTTPS or localhost). If running loc
 ## 🗂 Project Structure
 
 ```text
-├── index.html        # Main standard UI markup
+├── index.html              # Main UI - Header, Ayah Card, Sidebar, Modals
+├── manifest.json           # PWA configuration
+├── service-worker.js       # Offline caching & auto-update logic
+├── package.json            # NPM dependencies (Tailwind CSS)
+├── tailwind.config.js      # Tailwind CSS configuration
+├── build-css.bat           # Script to rebuild Tailwind CSS
+├── run_server.bat          # Local development server
+│
 ├── css/
-│   ├── styles.css            # Centralized custom typography and theme logic
-│   ├── input.css             # Tailwind input file
-│   └── tailwind-output.css   # Main production CSS build
+│   ├── input.css           # Tailwind source directives
+│   ├── styles.css          # Custom CSS (typography, themes, animations)
+│   └── tailwind-output.css # Production CSS build (generated)
+│
 ├── js/
-│   ├── app.js        # Initializer and global search logic
-│   ├── i18n.js       # Bosnian translation engine & string definitions
-│   ├── actions.js    # Logic for Bookmarks, Notes, and Progress Tracking
-│   ├── audio.js      # MediaRecorder and audio engine
-│   ├── render.js     # Dynamic DOM manipulation & Ayah Grid logic
-│   ├── config.js     # State management and DOM references
-│   └── utils.js      # Tajweed formatting and helper utilities
-├── quran_data.js     # Quranic text dataset (Arabic & Translation)
-└── mp3/              # (User provided) Audio recitation files
+│   ├── app.js              # ⭐ ORCHESTRATOR - Entry point
+│   ├── config.js           # ⭐ AppState & DOM references (els)
+│   ├── i18n.js             # Bosnian translation engine
+│   ├── quranMeta.js        # Juz/Page boundary metadata
+│   │
+│   ├── ui-state.js         # Sidebar/drawer state management
+│   ├── audio.js            # MediaRecorder & audio playback engine
+│   ├── render.js           # Dynamic DOM rendering (Ayah Grid, UI)
+│   ├── actions.js          # Bookmarks, Notes, Progress tracking
+│   │
+│   ├── search-handler.js   # Search UI logic
+│   ├── searchWorker.js     # Web Worker for background search
+│   ├── keyboard-shortcuts.js # Global keyboard handlers
+│   ├── gesture-handler.js  # Touch/swipe gesture handling
+│   │
+│   ├── tajweed.js          # Tajweed rule definitions & colors
+│   ├── tajweed_engine.js   # CSS Highlight API for text highlighting
+│   │
+│   ├── spread_engine.js    # Two-page spread view rendering
+│   ├── svg-layer-detector.js # SVG layer detection and coloring system
+│   ├── effects.js          # UI animations & visual effects
+│   └── utils.js            # Helper functions (Tajweed formatting, UI helpers)
+│
+├── data/
+│   └── quran_data.js       # ⭐ DATA - 6200+ Ayahs (Arabic + Bosnian)
+│
+├── assets/                 # Additional media assets
+├── fonts/                  # Custom fonts (if any)
+├── icons/                  # PWA icons (192x192, 512x512)
+│
+└── mp3/                    # User-provided audio files (optional)
+    └── [Surah][Ayah].mp3   # Format: 11.mp3, 12.mp3, 21.mp3...
 ```
 
 ## ⌨️ Keyboard Shortcuts

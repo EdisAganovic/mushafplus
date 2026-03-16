@@ -82,12 +82,13 @@
                         class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] w-14 px-2 rounded-lg outline-none focus:border-emerald-500 transition-colors text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                 </div>
 
-                <!-- Surah Select -->
-                <select id="inp-surah"
-                    class="bg-slate-950 border border-slate-700 text-slate-100 h-[2.5rem] px-[0.5rem] rounded-lg outline-none focus:border-emerald-500 transition-colors cursor-pointer text-[0.875rem] min-w-0 flex-1 max-w-[220px]">
-                    <option value="" disabled selected class="bg-slate-900" data-i18n="selectSurah">Izaberi suru...
-                    </option>
-                </select>
+                <!-- Surah Select Button -->
+                <button id="btn-surah-trigger"
+                    class="bg-emerald-600 hover:bg-emerald-500 text-white h-7 p-2 py-0 px-5 rounded-lg flex items-center gap-2.5 transition-all active:scale-95 shadow-md hover:shadow-emerald-500/20 whitespace-nowrap border border-transparent">
+                    <span class="font-bold text-sm tracking-tight leading-none">&nbsp;Izaberi suru</span>
+                </button>
+                <!-- Hidden native select for state persistence -->
+                <select id="inp-surah" class="hidden"></select>
 
                 <!-- Action Buttons -->
                 <div class="flex items-center gap-2 shrink-0">
@@ -163,7 +164,7 @@
                     </div>
 
                     <!-- Page Badge -->
-                    <div class="text-[10px] sm:text-sm font-mono text-blue-400 bg-blue-500/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-blue-500/20 flex items-center shadow-md shrink-0">
+                    <div class="text-[10px] sm:text-sm font-mono text-blue-400 bg-blue-500/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-blue-500/20 flex items-center gap-3 sm:gap-1 shadow-md shrink-0">
                         <label for="inp-page" data-i18n="pageLabel" class="opacity-90 cursor-pointer mr-0.5">Str.</label>
                         <input type="number" id="inp-page" min="1" max="604" placeholder="0"
                             class="bg-transparent border-none text-blue-300 font-bold w-6 sm:w-10 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
@@ -175,7 +176,7 @@
                 </div>
                 <div id="dsp-bismillah"
                     class="w-full mb-3 sm:mb-6 hidden select-none text-center transition-all duration-300">
-                    <div class="font-quran quran-text text-2xl sm:text-3xl text-emerald-500/80 leading-relaxed" dir="rtl">
+                    <div class="font-quran quran-text text-2xl pt-2 sm:text-3xl text-emerald-500/80 leading-relaxed" dir="rtl">
                         بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
                     </div>
                     <div class="text-xs sm:text-sm font-medium text-slate-400 mt-1 italic">
@@ -925,7 +926,7 @@
 
     <!-- ===== Surah & Hifz Modal ===== -->
     <div id="mdl-surah" class="modal-overlay hidden animate-modal-fade-in">
-        <div class="modal-container max-h-[85vh] flex flex-col animate-modal-slide-up shadow-modal">
+        <div class="modal-container modal-container-xl max-h-[85vh] flex flex-col animate-modal-slide-up shadow-modal">
             <div class="modal-header shrink-0">
                 <h2 class="modal-title">
                     <ion-icon name="book-outline" class="text-emerald-400"></ion-icon>
@@ -937,10 +938,15 @@
             </div>
             <div class="modal-body modal-body-scroll space-y-6">
 
-                <!-- Hifz Mode has been moved to Mobile Drawer -->                <!-- Surah List -->
-                <div>
-                    <h3 class="text-slate-200 font-bold mb-4 text-sm uppercase tracking-wider">Izaberi suru</h3>
-                    <div id="lst-surah-modal" class="flex flex-col gap-1 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700 pr-1">
+                <!-- Hifz Mode has been moved to Mobile Drawer -->
+                <!-- Surah List -->
+                <div class="flex flex-col mb-8">
+                    <div class="w-full group">
+                        <input type="text" id="inp-surah-modal-filter" placeholder="Pretraži po nazivu, broju ili prevodu..." 
+                            class="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl p-4 px-6 h-14 text-lg outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all placeholder:text-slate-600 font-medium tracking-tight">
+                    </div>
+                </div>
+                    <div id="lst-surah-modal" class="surah-modal-grid max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700 pr-1">
                         <!-- Populated by JS -->
                     </div>
                 </div>

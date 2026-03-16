@@ -160,20 +160,24 @@ async function init() {
 function populateSurahSelect() {
   if (!els.surahSelect) return;
   AppState.data.forEach((surah) => {
+    // 1. Maintain hidden select for state persistence
     const option = document.createElement("option");
     option.value = surah.id;
     option.textContent = `${surah.id}. ${surah.trans} (${surah.name})`;
-    option.className = "bg-slate-900";
     els.surahSelect.appendChild(option);
 
+    // 2. Populate unified Surah modal list (Shared by Desktop & Mobile)
     if (els.modalSurahList) {
       const modalBtn = document.createElement("button");
-      modalBtn.className = "text-left w-full p-3 rounded-xl bg-slate-950/50 hover:bg-slate-800 border border-slate-800/60 transition-colors flex justify-between items-center";
-      modalBtn.innerHTML = `<span class="text-sm font-semibold text-slate-200">${surah.id}. ${surah.trans}</span><span class="text-[14px] text-slate-400 font-quran">${surah.name}</span>`;
+      modalBtn.className = "modal-surah-item text-left w-full px-3 py-2 rounded-xl bg-slate-950/50 hover:bg-slate-800 border border-slate-800/60 transition-colors flex justify-between items-center group/item";
+      modalBtn.dataset.search = `${surah.id} ${surah.trans} ${surah.name}`.toLowerCase();
+      modalBtn.innerHTML = `
+        <span class="text-[13px] font-semibold text-slate-200 group-hover/item:text-emerald-400 truncate pr-2">${surah.id}. ${surah.trans}</span>
+        <span class="text-[14px] text-slate-400 font-quran shrink-0">${surah.name}</span>
+      `;
       modalBtn.onclick = () => {
-        els.surahSelect.value = surah.id;
         loadSurah(surah.id);
-        closeModal("surah-hifz-modal");
+        closeModal("mdl-surah");
       };
       els.modalSurahList.appendChild(modalBtn);
     }
@@ -323,9 +327,28 @@ function setupEventListeners() {
     });
   }
 
-  // --- NAVIGATION ---
-  if (els.surahSelect) {
-    els.surahSelect.onchange = (e) => loadSurah(parseInt(e.target.value));
+  // --- SURAH SELECTION (MODAL TRIGGER) ---
+  if (els.surahTrigger) {
+    els.surahTrigger.onclick = () => {
+      openModal("mdl-surah");
+      if (els.surahModalFilter) {
+        els.surahModalFilter.value = "";
+        const items = document.querySelectorAll(".modal-surah-item");
+        items.forEach(item => item.classList.remove("hidden"));
+        setTimeout(() => els.surahModalFilter.focus(), 100);
+      }
+    };
+  }
+
+  if (els.surahModalFilter) {
+    els.surahModalFilter.oninput = (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      const items = document.querySelectorAll(".modal-surah-item");
+      items.forEach(item => {
+        const text = item.dataset.search || "";
+        item.classList.toggle("hidden", query && !text.includes(query));
+      });
+    };
   }
   if (els.nextBtn) els.nextBtn.onclick = nextAyah;
   if (els.prevBtn) els.prevBtn.onclick = prevAyah;
@@ -634,7 +657,15 @@ function setupMobileNavHandlers() {
         closeModal("mdl-surah");
       } else {
         closeAllMenusAndModals();
-        openModal("surah-hifz-modal");
+        openModal("mdl-surah");
+        
+        // Reset filter and focus
+        if (els.surahModalFilter) {
+          els.surahModalFilter.value = "";
+          const items = document.querySelectorAll(".modal-surah-item");
+          items.forEach(item => item.classList.remove("hidden"));
+          setTimeout(() => els.surahModalFilter.focus(), 100);
+        }
       }
     };
   }

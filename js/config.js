@@ -90,7 +90,9 @@ window.AppState = {
 
 window.els = {
   // Navigation & Header
-  surahSelect: document.getElementById("inp-surah"),
+  surahTrigger: document.getElementById("btn-surah-trigger"),
+  surahSelect: document.getElementById("inp-surah"), 
+  surahModalFilter: document.getElementById("inp-surah-modal-filter"),
   searchInput: document.getElementById("inp-search"),
   searchResultsContainer: document.getElementById("cnt-search-results"),
   searchResultsList: document.getElementById("lst-search-results"),
