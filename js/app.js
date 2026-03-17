@@ -1017,7 +1017,7 @@ function setupHifzMode() {
       if (els.hifzRangeTextMobile) els.hifzRangeTextMobile.innerText = "Klikni na ajet za opseg";
       localStorage.setItem("quran_hifzRange", JSON.stringify(AppState.hifzRange));
     }
-    renderAyahGrid();
+    renderAyahGrid(true); // skips autoscroll to keep user at their current view
     if (typeof updateToolbarVisibility === "function") updateToolbarVisibility();
   };
 
