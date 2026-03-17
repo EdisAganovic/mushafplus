@@ -295,6 +295,10 @@ h6 {
   color: #1e293b !important;
 }
 
+#dsp-translation {
+  padding-top: 1.5rem;
+}
+
 .light #dsp-translation {
   color: #334155 !important;
 }

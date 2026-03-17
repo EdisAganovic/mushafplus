@@ -714,6 +714,8 @@ function setupEventListeners() {
       AppState.settings.translationBelow = e.target.checked;
       localStorage.setItem("quran_translation_below", e.target.checked);
       applyTranslationPosition();
+      // Re-render to ensure tajweed highlighting is preserved after DOM reordering
+      if (typeof renderAyah === "function") renderAyah();
     });
   }
 
