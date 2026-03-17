@@ -16,7 +16,7 @@
     <!-- Global App Configuration -->
     <script>
         // IMPORTANT: Change this version to force cache refresh for all users
-        const APP_VERSION = "0.1.5"; 
+        const APP_VERSION = "0.1.6"; 
     </script>
 
     <!-- UI Styles and Favicon (Dynamic versioning) -->
@@ -175,12 +175,12 @@
                     </div>
 
                     <!-- Page Badge -->
-                    <div class="text-[10px] sm:text-sm font-mono text-blue-400 bg-blue-500/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-blue-500/20 flex items-center gap-3 sm:gap-1 shadow-md shrink-0">
-                        <label for="inp-page" data-i18n="pageLabel" class="opacity-90 cursor-pointer mr-0.5">Str.</label>
+                    <div class="text-[10px] sm:text-sm font-mono text-blue-400 bg-blue-500/10 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-blue-500/20 flex items-center gap-1 shadow-md shrink-0">
+                        <label for="inp-page" data-i18n="pageLabel" class="opacity-90 cursor-pointer">Str.</label>
                         <input type="number" id="inp-page" min="1" max="604" placeholder="0"
                             class="bg-transparent border-none text-blue-300 font-bold w-6 sm:w-10 text-center outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
-                        <div id="cnt-page-progress" class="hidden flex items-center ml-1 pl-1">
-                            <label for="dsp-page-progress" class="opacity-90 cursor-pointer mr-0.5">Ajet&nbsp;</label>
+                        <div id="cnt-page-progress" class="hidden flex items-center ml-0.5 pl-0.5">
+                            <label for="dsp-page-progress" class="opacity-90 cursor-pointer">Ajet&nbsp;</label>
                             <span id="dsp-page-progress" class="text-blue-300 font-bold whitespace-nowrap"></span>
                         </div>
                     </div>
@@ -878,7 +878,7 @@
                     </div>
                     <div class="about-info-box">
                         <span class="about-info-label">Verzija</span>
-                        <span class="about-info-value">0.1.5</span>
+                        <span class="about-info-value">0.1.6</span>
                     </div>
                 </div>
             </div>
@@ -898,6 +898,35 @@
                 </button>
             </div>
             <div class="modal-body modal-body-scroll">
+                <!-- v0.1.6 -->
+                <div class="changelog-entry">
+                    <div class="changelog-header">
+                        <span class="changelog-version-pill">0.1.6</span>
+                        <h4 class="changelog-title">Nove Opcije i Ispravke</h4>
+                        <span class="changelog-date">17. mart 2026.</span>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-new">Novo</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Pozicija prijevoda</strong> — Dodana postavka za izbor prikaza prijevoda iznad ili ispod arapskog teksta.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-improved">Poboljšano</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Spread Mode Layout</strong> — Poboljšano pozicioniranje tooltipova za izbor tema u režimu dvolisnice.</li>
+                             <li class="changelog-item"><strong>Pull-to-refresh</strong> — Rafiniran vizuelni indikator za osvježavanje stranice.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-fixed">Popravljeno</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Hifz mod</strong> — Spriječeno nepotrebno ponovno skrolovanje na trenutni ajet pri aktivaciji hifz moda.</li>
+                             <li class="changelog-item"><strong>Spread Mode Meni</strong> — Ispravljen problem sa vidljivošću stranica nakon zatvaranja izbornika sura.</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- v0.1.5 -->
                 <div class="changelog-entry">
                     <div class="changelog-header">
@@ -938,21 +967,6 @@
                         <span class="changelog-badge badge-improved">Poboljšano</span>
                         <ul class="changelog-list">
                              <li class="changelog-item"><strong>Mobilni UI</strong> — Poboljšan scroll na dnu stranice i onemogućen automatski fokus na pretragu sura na mobitelima.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- v0.1.3 -->
-                <div class="changelog-entry">
-                    <div class="changelog-header">
-                        <span class="changelog-version-pill">0.1.3</span>
-                        <h4 class="changelog-title">SVG Optimizacija</h4>
-                        <span class="changelog-date">15. mart 2026.</span>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-improved">Poboljšano</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Detekcija SVG slojeva</strong> — Unapređen algoritam za precizniju identifikaciju naslova džuza i sura na vrhu stranice.</li>
                         </ul>
                     </div>
                 </div>
