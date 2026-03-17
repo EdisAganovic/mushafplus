@@ -2,6 +2,15 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.1.5] - 2026-03-17
+
+### Improved
+- **UI Arhitektura**: Standardizirano imenovanje svih HTML elemenata i kontejnera širom aplikacije radi lakšeg održavanja koda i pretrage.
+- **Navigacija swajpom**: Dodan tečan "Smooth Scroll" povratak na početak stranice prilikom prelaska na drugi ajet putem geste povlačenja na mobilnim uređajima, kako bi sljedeći ajet odmah bio u fokusu.
+
+### Fixed
+- **Spread Mode**: Riješen vizualni problem neispravne vidljivosti sidebara i elemenata nakon otvaranja menija za odabir sure i menija za boju tema. Sada se elementi uredno skrivaju kako priliči iskustvu čitanja pune stranice.
+
 ## [0.1.4] - 2026-03-16
 
 ### Added

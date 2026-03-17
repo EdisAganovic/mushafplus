@@ -94,6 +94,8 @@ window.T = {
 
   // Alerts
   micError: "Mikrofon nije dostupan ili pristup odbijen.",
+  copy: "Kopiraj",
+  copied: "Kopirano",
 };
 
 /**

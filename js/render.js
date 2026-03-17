@@ -670,6 +670,9 @@ window.renderAyah = function () {
     if (typeof window.playSwipeEffect === "function") {
       window.playSwipeEffect(AppState.swipeDirection);
     }
+    
+    // Smooth scroll to top of the page
+    window.scrollTo({ top: 0, behavior: "smooth" });
 
     AppState.swipeDirection = null;
   }

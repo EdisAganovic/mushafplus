@@ -117,6 +117,8 @@ window.els = {
   bismillahDisplay: document.getElementById("dsp-bismillah"),
   arabicDisplay: document.getElementById("dsp-arabic"),
   translationDisplay: document.getElementById("dsp-translation"),
+  copyTranslationBtn: document.getElementById("btn-copy-translation"),
+  copyTranslationBtnMobile: document.getElementById("btn-copy-translation-mobile"),
   totalAyahsNum: document.getElementById("dsp-total-ayahs"),
   ayahNotes: document.getElementById("inp-notes"),
   ayahNotesContainer: document.getElementById("cnt-notes"),
@@ -128,6 +130,7 @@ window.els = {
   spreadCard: document.getElementById("crd-spread"),
   spreadView: document.getElementById("cnt-spread-view"),
   spreadToggle: document.getElementById("btn-spread-toggle"),
+  spreadLightToggle: document.getElementById("btn-spread-lightmode-toggle"),
 
   // Sidebar controls
   ayahGrid: document.getElementById("cnt-ayah-grid"),

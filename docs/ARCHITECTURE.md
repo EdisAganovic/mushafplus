@@ -77,7 +77,8 @@ preslusavanje/
 │
 ├── css/
 │   ├── input.css           # Tailwind source directives
-│   ├── styles.css          # Custom CSS (typography, themes, animations)
+│   ├── themes.css          # Theme-related variables & SVG layer palettes
+│   ├── styles.css          # Custom CSS (typography, layout, animations)
 │   └── tailwind-output.css # Production CSS build (generated)
 │
 ├── js/

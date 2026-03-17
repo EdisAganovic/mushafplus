@@ -57,6 +57,7 @@ async function init() {
     // 2. Setup Base UI
     populateSurahSelect();
     setupEventListeners();
+    setupZoomControls();
 
     // 3. Restore Session
     const lastSurah = localStorage.getItem("last_surah") || "1";
@@ -244,6 +245,9 @@ function setupEventListeners() {
     }
   }
 
+  let themePreviewTimeout = null;
+  let isEditingThemeColor = false;
+
   function setupThemeHoverPreviews() {
     if (!els.themeDots) return;
     
@@ -251,8 +255,29 @@ function setupEventListeners() {
       const theme = btn.getAttribute("data-theme");
       const label = btn.getAttribute("data-label") || btn.getAttribute("title");
       
-      btn.onmouseenter = () => showThemePreview(theme, label, btn);
-      btn.onmouseleave = () => hideThemePreview();
+      btn.onmouseenter = () => {
+        if (themePreviewTimeout) clearTimeout(themePreviewTimeout);
+        showThemePreview(theme, label, btn);
+      };
+      btn.onmouseleave = () => {
+        themePreviewTimeout = setTimeout(() => {
+          if (!isEditingThemeColor) hideThemePreview();
+        }, 100);
+      };
+    });
+
+    // Add listeners to pre-existing containers if they exist
+    [document.getElementById('cnt-theme-preview'), document.getElementById('cnt-theme-preview-settings')].forEach(p => {
+      if (p) {
+        p.onmouseenter = () => {
+          if (themePreviewTimeout) clearTimeout(themePreviewTimeout);
+        };
+        p.onmouseleave = () => {
+          themePreviewTimeout = setTimeout(() => {
+            if (!isEditingThemeColor) hideThemePreview();
+          }, 100);
+        };
+      }
     });
   }
 
@@ -292,13 +317,61 @@ function setupEventListeners() {
     Object.entries(colors).forEach(([key, color]) => {
       const name = layerNames[key] || key;
       const item = document.createElement('div');
-      item.className = 'flex items-center gap-2 mb-1';
+      item.className = 'flex items-center gap-3 mb-1.5 group cursor-pointer';
+      
+      // Convert hex to standard format for input
+      let hexColor = color;
+      if (color.startsWith('var')) {
+         // Fallback for variables, might need actual value if debugging
+         hexColor = '#ffffff'; 
+      }
+
       item.innerHTML = `
-        <div class="w-2.5 h-2.5 rounded-full border border-slate-700/50" style="background-color: ${color}"></div>
-        <span class="text-[9px] text-slate-400 font-medium whitespace-nowrap">${name}</span>
+        <div class="relative w-5 h-5 flex-shrink-0">
+          <div class="color-dot-display w-full h-full rounded-full border border-slate-700/50 shadow-sm transition-transform group-hover:scale-110" style="background-color: ${color}"></div>
+          <input type="color" class="absolute inset-0 opacity-0 cursor-pointer color-picker-trigger scale-150" value="${hexColor}" data-layer="${key}">
+        </div>
+        <span class="text-[11px] text-slate-300 font-bold whitespace-nowrap tracking-tight group-hover:text-emerald-400 transition-colors">${name}</span>
       `;
+
+      const picker = item.querySelector('.color-picker-trigger');
+      const dotDisplay = item.querySelector('.color-dot-display');
+
+      picker.oninput = (e) => {
+        isEditingThemeColor = true;
+        const newColor = e.target.value;
+        dotDisplay.style.backgroundColor = newColor;
+        
+        // Apply to all SVGs on page in real-time
+        const layers = document.querySelectorAll(`svg [data-layer-type="${key}"]`);
+        layers.forEach(l => {
+          l.style.setProperty('fill', newColor, 'important');
+          // Handle specific stroke logic if needed
+          if (key === 'verseNumerals') l.style.setProperty('stroke', 'none', 'important');
+        });
+      };
+
+      // Lock preview while picker is active
+      picker.onfocus = () => { isEditingThemeColor = true; };
+      picker.onblur = () => { 
+        isEditingThemeColor = false; 
+        themePreviewTimeout = setTimeout(() => hideThemePreview(), 300);
+      };
+      picker.onclick = (e) => {
+        e.stopPropagation(); // Avoid closing modals/drawers if applicable
+        isEditingThemeColor = true;
+      };
+
       paletteList.appendChild(item);
     });
+    
+    // Also add hover listeners to the container itself if not already there
+    previewContainer.onmouseenter = () => { if (themePreviewTimeout) clearTimeout(themePreviewTimeout); };
+    previewContainer.onmouseleave = () => {
+      themePreviewTimeout = setTimeout(() => {
+        if (!isEditingThemeColor) hideThemePreview();
+      }, 100);
+    };
     
     // Position preview relative to the hovered dot
     if (AppState.settings.spreadMode && !isSettingsDot && els.pageThemeToggleContainer) {
@@ -349,6 +422,7 @@ function setupEventListeners() {
   }
 
   function hideThemePreview() {
+    if (isEditingThemeColor) return;
     const p1 = document.getElementById('cnt-theme-preview');
     const p2 = document.getElementById('cnt-theme-preview-settings');
     [p1, p2].forEach(p => {
@@ -454,12 +528,10 @@ function setupEventListeners() {
       resetAyahAudioUI();
       // Auto-advance to next ayah if enabled
       if (AppState.settings.autoplay && typeof nextAyah === "function") {
-        console.log("[Audio] Ayah ended, auto-advancing...");
         nextAyah();
         // Crucial: Start playback of the new ayah
         setTimeout(() => {
           if (els.ayahAudio) {
-            console.log("[Audio] Autoplay starting next track...");
             els.ayahAudio.play().catch(e => {
                 console.warn("[Autoplay] Playback blocked or failed:", e);
                 resetAyahAudioUI();
@@ -600,6 +672,26 @@ function setupEventListeners() {
         document.documentElement.classList.remove("light");
       }
     });
+  }
+
+  // --- SPREAD MODE LIGHT TOGGLE ---
+  if (els.spreadLightToggle) {
+    els.spreadLightToggle.onclick = () => {
+      const newState = !AppState.settings.lightMode;
+      AppState.settings.lightMode = newState;
+      localStorage.setItem("quran_lightmode", newState);
+      
+      // Update checkbox in settings for sync
+      if (els.lightmodeToggle) els.lightmodeToggle.checked = newState;
+
+      if (newState) {
+        document.documentElement.classList.remove("dark");
+        document.documentElement.classList.add("light");
+      } else {
+        document.documentElement.classList.add("dark");
+        document.documentElement.classList.remove("light");
+      }
+    };
   }
 
   // --- WORD AUDIO TOGGLE ---
@@ -813,6 +905,32 @@ function setupMobileNavHandlers() {
   }
   if (els.settingsClose) els.settingsClose.onclick = closeAllMenusAndModals;
   if (els.settingsOverlay) els.settingsOverlay.onclick = closeAllMenusAndModals;
+
+  // Copy translation
+  const handleCopyTranslation = () => {
+    if (!els.translationDisplay) return;
+    const text = els.translationDisplay.innerText;
+    if (!text) return;
+
+    navigator.clipboard.writeText(text).then(() => {
+      const originalIcon = '<ion-icon name="copy-outline"></ion-icon>';
+      const successIcon = '<ion-icon name="checkmark-outline" class="text-emerald-500"></ion-icon>';
+
+      if (els.copyTranslationBtn) {
+        els.copyTranslationBtn.innerHTML = successIcon;
+        setTimeout(() => { if (els.copyTranslationBtn) els.copyTranslationBtn.innerHTML = originalIcon; }, 2000);
+      }
+
+      if (els.copyTranslationBtnMobile) {
+        const originalMobile = els.copyTranslationBtnMobile.innerHTML;
+        els.copyTranslationBtnMobile.innerHTML = `<ion-icon name="checkmark-outline" class="text-emerald-500"></ion-icon><span class="text-emerald-500" data-i18n="copied">Kopirano</span>`;
+        setTimeout(() => { if (els.copyTranslationBtnMobile) els.copyTranslationBtnMobile.innerHTML = originalMobile; }, 2000);
+      }
+    });
+  };
+
+  if (els.copyTranslationBtn) els.copyTranslationBtn.onclick = handleCopyTranslation;
+  if (els.copyTranslationBtnMobile) els.copyTranslationBtnMobile.onclick = handleCopyTranslation;
 }
 
 /**

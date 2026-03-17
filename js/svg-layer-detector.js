@@ -7,52 +7,112 @@
 // ══ LAYER COLORS BY THEME ══
 window.LAYER_COLORS = {
   original: {
-    'borderFrame': '#C4922A',      // Gold border
-    'teardrop': '#1B7A6A',         // Teal teardrop shapes
-    'arabicText': '#1e293b',       // Dark text
-    'verseNumerals': 'var(--page-bg)', // Cutout effect matching background
-    'surahHeader': '#E8943A',      // Orange headers
-    'teardropLabel': 'var(--page-bg)', // Cutout effect
-    'surahBand': '#C4922A',        // Gold horizontal band
-    'surahBandText': 'var(--page-bg)', // Cutout effect inside band
-    'bigTeardrop': '#C4922A',      // Gold background for Juz/Hizb marker
-    'pageNumber': '#4a90d9'        // Blue page numbers
+    'borderFrame': '#C4922A',
+    'teardrop': '#1B7A6A',
+    'arabicText': '#1e293b',
+    'verseNumerals': '#ffffff',
+    'surahHeader': '#E8943A',
+    'teardropLabel': '#ffffff',
+    'surahBand': '#C4922A',
+    'surahBandText': '#ffffff',
+    'bigTeardrop': '#C4922A',
+    'pageNumber': '#ffffff'
+  },
+  maroon: {
+    'borderFrame': '#6b2126',
+    'teardrop': '#8c2a32',
+    'arabicText': '#fdf6e3',
+    'verseNumerals': '#fdf6e3',
+    'surahHeader': '#d4af37',
+    'teardropLabel': '#ffffff',
+    'surahBand': '#5a1a20',
+    'surahBandText': '#fdf6e3',
+    'bigTeardrop': '#5a1a20',
+    'pageNumber': '#eab308'
   },
   sepia: {
-    'borderFrame': '#8B7355',      // Brown border
-    'teardrop': '#6B8E7E',         // Muted teal
-    'arabicText': '#5d4037',       // Brown text
-    'verseNumerals': 'var(--page-bg)',
-    'surahHeader': '#D48846',      // Muted orange
-    'teardropLabel': 'var(--page-bg)',
-    'surahBand': '#8B7355',        // Muted brown
-    'surahBandText': 'var(--page-bg)',
-    'bigTeardrop': '#8B7355',      // Muted brown side marker
-    'pageNumber': '#5A7FA8'        // Muted blue
+    'borderFrame': '#d2b48c',
+    'teardrop': '#c19a6b',
+    'arabicText': '#2c1e16',
+    'verseNumerals': '#2c1e16',
+    'surahHeader': '#b8860b',
+    'teardropLabel': '#fdf6e3',
+    'surahBand': '#8b5a2b',
+    'surahBandText': '#fdf6e3',
+    'bigTeardrop': '#8b5a2b',
+    'pageNumber': '#6b4423'
+  },
+  slate: {
+    'borderFrame': '#334155',
+    'teardrop': '#475569',
+    'arabicText': '#e2e8f0',
+    'verseNumerals': '#e2e8f0',
+    'surahHeader': '#94a3b8',
+    'teardropLabel': '#ffffff',
+    'surahBand': '#1e293b',
+    'surahBandText': '#e2e8f0',
+    'bigTeardrop': '#1e293b',
+    'pageNumber': '#60a5fa'
   },
   night: {
-    'borderFrame': '#94A3B8',      // Slate gold
-    'teardrop': '#64748B',         // Slate teal
-    'arabicText': '#cbd5e1',       // Light text
-    'verseNumerals': 'var(--page-bg)',
-    'surahHeader': '#FBBF77',      // Light orange
-    'teardropLabel': 'var(--page-bg)',
-    'surahBand': '#94A3B8',        // Slate gold
-    'surahBandText': 'var(--page-bg)',
-    'bigTeardrop': '#94A3B8',      // Slate gold side marker
-    'pageNumber': '#7FA8D4'        // Light blue
+    'borderFrame': '#94A3B8',
+    'teardrop': '#64748B',
+    'arabicText': '#cbd5e1',
+    'verseNumerals': '#0f172a',
+    'surahHeader': '#FBBF77',
+    'teardropLabel': '#ffffff',
+    'surahBand': '#94A3B8',
+    'surahBandText': '#ffffff',
+    'bigTeardrop': '#94A3B8',
+    'pageNumber': '#ffffff'
   },
   green: {
-    'borderFrame': '#059669',      // Emerald gold
-    'teardrop': '#10B981',         // Emerald
-    'arabicText': '#064e3b',       // Dark green text
-    'verseNumerals': 'var(--page-bg)',
-    'surahHeader': '#F59E0B',      // Amber
-    'teardropLabel': 'var(--page-bg)',
-    'surahBand': '#059669',        // Emerald gold
-    'surahBandText': 'var(--page-bg)',
-    'bigTeardrop': '#059669',      // Emerald gold side marker
-    'pageNumber': '#3B82F6'        // Blue
+    'borderFrame': '#059669',
+    'teardrop': '#10B981',
+    'arabicText': '#064e3b',
+    'verseNumerals': '#064e3b',
+    'surahHeader': '#F59E0B',
+    'teardropLabel': '#ffffff',
+    'surahBand': '#059669',
+    'surahBandText': '#ffffff',
+    'bigTeardrop': '#059669',
+    'pageNumber': '#3B82F6'
+  },
+  pine: {
+    'borderFrame': '#1F382A',
+    'teardrop': '#2A4B3A',
+    'arabicText': '#D9E2DC',
+    'verseNumerals': '#D9E2DC',
+    'surahHeader': '#BDB76B',
+    'teardropLabel': '#ffffff',
+    'surahBand': '#14241B',
+    'surahBandText': '#D9E2DC',
+    'bigTeardrop': '#14241B',
+    'pageNumber': '#8FBC8F'
+  },
+  mocha: {
+    'borderFrame': '#4A352D',
+    'teardrop': '#63473D',
+    'arabicText': '#EADDD7',
+    'verseNumerals': '#EADDD7',
+    'surahHeader': '#C89F7E',
+    'teardropLabel': '#ffffff',
+    'surahBand': '#33241F',
+    'surahBandText': '#EADDD7',
+    'bigTeardrop': '#33241F',
+    'pageNumber': '#C89F7E'
+  },
+  plum: {
+    'borderFrame': '#4A2C40',
+    'teardrop': '#683B5A',
+    'arabicText': '#E8D8E4',
+    'verseNumerals': '#E8D8E4',
+    'surahHeader': '#D4A373',
+    'teardropLabel': '#ffffff',
+    'surahBand': '#311A2B',
+    'surahBandText': '#E8D8E4',
+    'bigTeardrop': '#311A2B',
+    'pageNumber': '#D4A373'
   }
 };
 

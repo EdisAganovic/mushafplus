@@ -1,0 +1,503 @@
+/**
+ * @file themes.css
+ * @description Theme-related variables and overrides (extracted from styles.css)
+ */
+
+/* ===== Theme Variables ===== */
+:root {
+  --theme-400: 52 211 153;
+  --theme-500: 16 185 129;
+  --theme-600: 5 150 105;
+  --theme-700: 4 120 87;
+  --theme-800: 6 95 70;
+  --theme-900: 6 78 59;
+  --theme-950: 2 44 34;
+
+  --slate-50: 248 250 252;
+  --slate-100: 241 245 249;
+  --slate-200: 226 232 240;
+  --slate-300: 203 213 225;
+  --slate-400: 148 163 184;
+  --slate-500: 100 116 139;
+  --slate-600: 71 85 105;
+  --slate-700: 51 65 85;
+  --slate-800: 30 41 59;
+  --slate-900: 15 23 42;
+  --slate-950: 2 6 23;
+}
+
+/* ===== Light Mode ===== */
+.light {
+  --slate-950: 248 250 252;
+  --slate-900: 241 245 249;
+  --slate-800: 226 232 240;
+  --slate-700: 203 213 225;
+  --slate-600: 148 163 184;
+  --slate-500: 100 116 139;
+  --slate-400: 71 85 105;
+  --slate-300: 51 65 85;
+  --slate-200: 30 41 59;
+  --slate-100: 15 23 42;
+  --slate-50: 2 6 23;
+}
+
+/* --- Light mode: force white text on emerald buttons --- */
+.light button#btn-record,
+.light button#btn-next,
+.light button#btn-ayah-play,
+.light button#btn-user-play {
+  color: #ffffff !important;
+}
+
+/* --- Light mode: force readable text on slate buttons --- */
+.light button#btn-valid,
+.light button#btn-bookmark,
+.light button#btn-prev,
+.light button#btn-ayah-speed,
+.light button#btn-ayah-loop,
+.light button#btn-close-sidebar,
+.light button#btn-close-settings,
+.light button#btn-settings-toggle,
+.light button#btn-menu-toggle {
+  color: #1e293b !important;
+}
+
+/* --- Light mode: Ayah grid cells — clean white look --- */
+.light .ayah-cell {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.light .ayah-cell:hover {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+.light .ayah-cell.bg-emerald-600 {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+}
+
+.light .active-ayah-cell {
+  background-color: #f0fdf4 !important;
+  border: 2px solid #10b981 !important;
+  color: #065f46 !important;
+  z-index: 10;
+}
+
+.light .active-ayah-cell.bg-emerald-600 {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+}
+
+/* Container adjustment */
+.light #cnt-ayah-grid,
+.light #cnt-ayah-grid-mobile {
+  background-color: transparent !important;
+}
+
+.light div:has(> #cnt-ayah-grid) {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* --- Light mode: notes textarea --- */
+.light #ayah-notes {
+  background-color: #ffffff !important;
+  border-color: #94a3b8 !important;
+  color: #1e293b !important;
+}
+
+.light #ayah-notes::placeholder {
+  color: #94a3b8 !important;
+}
+
+
+/* ===== Page Theme Variables & Logic ===== */
+:root {
+  --page-bg: #fcfaf0;
+  --page-text: #1e293b;
+  --page-border: #e2e8f0;
+}
+
+/* Theme Classes applied to BODY */
+
+/* 1. Original (Standard) */
+.quran-theme-original {
+  --page-bg: #fcfaf0;
+  --page-text: #1e293b;
+  --page-border: #e2e8f0;
+}
+
+.dark .quran-theme-original {
+  --page-bg: #111827;
+  --page-text: #f1f5f9;
+  --page-border: #1e293b;
+}
+
+/* 2. Maroon (Rich Maroon & Gold) */
+.quran-theme-maroon {
+  --page-bg: #fff5f5;
+  --page-text: #4a1212;
+  --page-border: #9b2c2c;
+}
+
+.dark .quran-theme-maroon {
+  --page-bg: #2b1114;
+  --page-text: #fdf6e3;
+  --page-border: #6b2126;
+}
+
+/* 3. Sepia (Warm Light Mode) */
+.quran-theme-sepia {
+  --page-bg: #fdf6e3;
+  --page-text: #2c1e16;
+  --page-border: #d2b48c;
+}
+
+.dark .quran-theme-sepia {
+  --page-bg: #2d241e;
+  --page-text: #d4c3b3;
+  --page-border: #3d322a;
+}
+
+/* 4. Slate (Modern Dark Mode) */
+.quran-theme-slate {
+  --page-bg: #f8fafc;
+  --page-text: #0f172a;
+  --page-border: #475569;
+}
+
+.dark .quran-theme-slate {
+  --page-bg: #0f172a;
+  --page-text: #e2e8f0;
+  --page-border: #334155;
+}
+
+/* 5. Night (Noć) */
+.quran-theme-night {
+  --page-bg: #f1f5f9;
+  --page-text: #334155;
+  --page-border: #cbd5e1;
+}
+
+.dark .quran-theme-night {
+  --page-bg: #0f172a;
+  --page-text: #cbd5e1;
+  --page-border: #1e293b;
+}
+
+/* 6. Green (Zelena) */
+.quran-theme-green {
+  --page-bg: #f0fdf4;
+  --page-text: #064e3b;
+  --page-border: #a7f3d0;
+}
+
+.dark .quran-theme-green {
+  --page-bg: #022c22;
+  --page-text: #d1fae5;
+  --page-border: #064e3b;
+}
+
+/* 7. Deep Pine (Tamni bor) */
+.quran-theme-pine {
+  --page-bg: #f0fff4;
+  --page-text: #1c4532;
+  --page-border: #276749;
+}
+
+.dark .quran-theme-pine {
+  --page-bg: #0D1510;
+  --page-text: #D9E2DC;
+  --page-border: #1F382A;
+}
+
+/* 8. Dark Mocha (Tamna moka) */
+.quran-theme-mocha {
+  --page-bg: #fdfaf6;
+  --page-text: #3b2314;
+  --page-border: #744210;
+}
+
+.dark .quran-theme-mocha {
+  --page-bg: #1A1311;
+  --page-text: #EADDD7;
+  --page-border: #4A352D;
+}
+
+/* 9. Midnight Plum (Ponoćna šljiva) */
+.quran-theme-plum {
+  --page-bg: #faf5ff;
+  --page-text: #44337a;
+  --page-border: #6b46c1;
+}
+
+.dark .quran-theme-plum {
+  --page-bg: #120A14;
+  --page-text: #E8D8E4;
+  --page-border: #4A2C40;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SVG LAYER DETECTION SYSTEM - THEME COLORS
+   Each theme has specific colors for detected SVG layers:
+   - borderFrame: Page border and frame
+   - teardrop: Ornamental teardrop shapes
+   - arabicText: Main Arabic calligraphy
+   - verseNumerals: Ayah numbers in teardrops
+   - surahHeader: Surah and Juz headers
+   - ornamental: Decorative markers (Hizb, Rub, etc.)
+   - pageNumber: Page numbers
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── ORIGINAL THEME (Standard) ── */
+.quran-theme-original {
+  --border-frame: #C4922A;
+  --teardrop: #1B7A6A;
+  --surah-band: #C4922A;
+  --big-teardrop: #C4922A;
+  --arabic-text: #1e293b;
+  --verse-numerals: #ffffff;
+  --surah-header: #E8943A;
+  --teardrop-label: #ffffff;
+  --surah-band-text: #ffffff;
+  --page-number: #ffffff;
+}
+
+/* ── MAROON THEME (Rich Maroon & Gold) ── */
+.quran-theme-maroon {
+  --border-frame: #9b2c2c;
+  --teardrop: #e53e3e;
+  --surah-band: #9b2c2c;
+  --big-teardrop: #9b2c2c;
+  --arabic-text: #4a1212;
+  --verse-numerals: #4a1212;
+  --surah-header: #805e49;
+  --teardrop-label: #ffffff;
+  --surah-band-text: #ffffff;
+  --page-number: #9b2c2c;
+}
+
+.dark .quran-theme-maroon {
+  --border-frame: #6b2126;
+  --teardrop: #8c2a32;
+  --surah-band: #5a1a20;
+  --big-teardrop: #5a1a20;
+  --arabic-text: #fdf6e3;
+  --verse-numerals: #fdf6e3;
+  --surah-header: #d4af37;
+  --teardrop-label: #ffffff;
+  --surah-band-text: #fdf6e3;
+  --page-number: #eab308;
+}
+
+/* ── SEPIA THEME (Warm Light Mode) ── */
+.quran-theme-sepia {
+  --border-frame: #d2b48c;
+  --teardrop: #c19a6b;
+  --surah-band: #8b5a2b;
+  --big-teardrop: #8b5a2b;
+  --arabic-text: #2c1e16;
+  --verse-numerals: #2c1e16;
+  --surah-header: #b8860b;
+  --teardrop-label: #fdf6e3;
+  --surah-band-text: #fdf6e3;
+  --page-number: #6b4423;
+}
+
+/* ── SLATE THEME (Modern Dark Mode) ── */
+.quran-theme-slate {
+  --border-frame: #475569;
+  --teardrop: #64748b;
+  --surah-band: #334155;
+  --big-teardrop: #334155;
+  --arabic-text: #0f172a;
+  --verse-numerals: #0f172a;
+  --surah-header: #64748b;
+  --teardrop-label: #ffffff;
+  --surah-band-text: #ffffff;
+  --page-number: #3b82f6;
+}
+
+.dark .quran-theme-slate {
+  --border-frame: #334155;
+  --teardrop: #475569;
+  --surah-band: #1e293b;
+  --big-teardrop: #1e293b;
+  --arabic-text: #e2e8f0;
+  --verse-numerals: #e2e8f0;
+  --surah-header: #94a3b8;
+  --teardrop-label: #ffffff;
+  --surah-band-text: #e2e8f0;
+  --page-number: #60a5fa;
+}
+
+/* ── NIGHT THEME ── */
+.quran-theme-night {
+  --border-frame: #94A3B8;
+  --teardrop: #64748B;
+  --surah-band: #94A3B8;
+  --big-teardrop: #94A3B8;
+  --arabic-text: #cbd5e1;
+  --verse-numerals: #0f172a;
+  --surah-header: #FBBF77;
+  --teardrop-label: #ffffff;
+  --surah-band-text: #ffffff;
+  --page-number: #ffffff;
+}
+
+/* ── GREEN THEME ── */
+.quran-theme-green {
+  --border-frame: #059669;
+  --teardrop: #10B981;
+  --surah-band: #059669;
+  --big-teardrop: #059669;
+  --arabic-text: #064e3b;
+  --verse-numerals: #064e3b;
+  --surah-header: #F59E0B;
+  --teardrop-label: #ffffff;
+  --surah-band-text: #ffffff;
+  --page-number: #3B82F6;
+}
+
+/* ── DEEP PINE THEME (Tamni bor) ── */
+.quran-theme-pine {
+  --border-frame: #276749;
+  --teardrop: #38a169;
+  --surah-band: #276749;
+  --big-teardrop: #276749;
+  --arabic-text: #1c4532;
+  --verse-numerals: #1c4532;
+  --surah-header: #718096;
+  --teardrop-label: #ffffff;
+  --surah-band-text: #ffffff;
+  --page-number: #276749;
+}
+
+.dark .quran-theme-pine {
+  --border-frame: #1F382A;
+  --teardrop: #2A4B3A;
+  --surah-band: #14241B;
+  --big-teardrop: #14241B;
+  --arabic-text: #D9E2DC;
+  --verse-numerals: #D9E2DC;
+  --surah-header: #BDB76B;
+  --teardrop-label: #ffffff;
+  --surah-band-text: #D9E2DC;
+  --page-number: #8FBC8F;
+}
+
+/* ── DARK MOCHA THEME (Tamna moka) ── */
+.quran-theme-mocha {
+  --border-frame: #744210;
+  --teardrop: #d69e2e;
+  --surah-band: #744210;
+  --big-teardrop: #744210;
+  --arabic-text: #3b2314;
+  --verse-numerals: #3b2314;
+  --surah-header: #8a5e3c;
+  --teardrop-label: #ffffff;
+  --surah-band-text: #ffffff;
+  --page-number: #744210;
+}
+
+.dark .quran-theme-mocha {
+  --border-frame: #4A352D;
+  --teardrop: #63473D;
+  --surah-band: #33241F;
+  --big-teardrop: #33241F;
+  --arabic-text: #EADDD7;
+  --verse-numerals: #EADDD7;
+  --surah-header: #C89F7E;
+  --teardrop-label: #ffffff;
+  --surah-band-text: #EADDD7;
+  --page-number: #C89F7E;
+}
+
+/* ── MIDNIGHT PLUM THEME (Ponoćna šljiva) ── */
+.quran-theme-plum {
+  --border-frame: #6b46c1;
+  --teardrop: #9f7aea;
+  --surah-band: #6b46c1;
+  --big-teardrop: #6b46c1;
+  --arabic-text: #44337a;
+  --verse-numerals: #44337a;
+  --surah-header: #8a5e3c;
+  --teardrop-label: #ffffff;
+  --surah-band-text: #ffffff;
+  --page-number: #6b46c1;
+}
+
+.dark .quran-theme-plum {
+  --border-frame: #4A2C40;
+  --teardrop: #683B5A;
+  --surah-band: #311A2B;
+  --big-teardrop: #311A2B;
+  --arabic-text: #E8D8E4;
+  --verse-numerals: #E8D8E4;
+  --surah-header: #D4A373;
+  --teardrop-label: #ffffff;
+  --surah-band-text: #E8D8E4;
+  --page-number: #D4A373;
+}
+
+/* ===== SVG LAYER ASSIGNMENTS ===== */
+/* Primjenjuju se automatski koristeći varijable definisane iznad */
+
+svg [data-layer-type="borderFrame"] {
+  fill: var(--border-frame) !important;
+}
+
+svg [data-layer-type="teardrop"] {
+  fill: var(--teardrop) !important;
+}
+
+svg [data-layer-type="surahBand"],
+svg [data-layer-type="bigTeardrop"] {
+  fill: var(--surah-band) !important;
+  fill-rule: nonzero !important;
+}
+
+svg [data-layer-type="arabicText"] {
+  fill: var(--arabic-text) !important;
+}
+
+svg [data-layer-type="verseNumerals"] {
+  fill: var(--verse-numerals) !important;
+  stroke: none !important;
+}
+
+svg [data-layer-type="surahHeader"] {
+  fill: var(--surah-header) !important;
+}
+
+svg [data-layer-type="teardropLabel"],
+svg [data-layer-type="surahBandText"] {
+  fill: var(--teardrop-label) !important;
+}
+
+svg [data-layer-type="pageNumber"] {
+  fill: var(--page-number) !important;
+}
+
+/* ── DARK MODE ADJUSTMENTS ── */
+.dark .quran-theme-original svg [data-layer-type="arabicText"] {
+  fill: #f1f5f9 !important;
+}
+
+.dark .quran-theme-sepia svg [data-layer-type="arabicText"] {
+  fill: #d4c3b3 !important;
+}
+
+.dark .quran-theme-night svg [data-layer-type="arabicText"] {
+  fill: #cbd5e1 !important;
+}
+
+.dark .quran-theme-green svg [data-layer-type="arabicText"] {
+  fill: #d1fae5 !important;
+}

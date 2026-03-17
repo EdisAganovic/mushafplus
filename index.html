@@ -16,13 +16,14 @@
     <!-- Global App Configuration -->
     <script>
         // IMPORTANT: Change this version to force cache refresh for all users
-        const APP_VERSION = "0.1.4"; 
+        const APP_VERSION = "0.1.5"; 
     </script>
 
     <!-- UI Styles and Favicon (Dynamic versioning) -->
     <script>
         document.write(`<link rel="icon" type="image/png" href="favicon.png?v=${APP_VERSION}">`);
         document.write(`<link rel="stylesheet" href="css/tailwind-output.css?v=${APP_VERSION}">`);
+        document.write(`<link rel="stylesheet" href="css/themes.css?v=${APP_VERSION}">`);
         document.write(`<link rel="stylesheet" href="css/styles.css?v=${APP_VERSION}">`);
     </script>
 
@@ -202,8 +203,21 @@
                     class="mt-4 sm:mt-6 sm:mb-3 w-full mb-4 max-w-2xl hidden flex-wrap gap-1.5 justify-center">
                     <div id="dsp-tajweed-legend" class="flex flex-wrap gap-1.5 justify-center w-full"></div>
                 </div>
-                <div id="dsp-translation"
-                    class="text-sm sm:text-lg md:text-xl text-slate-400 text-left max-w-2xl w-full">
+                <div class="relative group w-full max-w-2xl">
+                    <div id="dsp-translation"
+                        class="text-sm sm:text-lg md:text-xl text-slate-400 text-left w-full">
+                    </div>
+                    <button id="btn-copy-translation" 
+                        class="absolute -right-10 top-0 p-2 text-slate-500 hover:text-emerald-500 transition-all opacity-0 group-hover:opacity-100 hidden sm:flex items-center justify-center rounded-lg hover:bg-slate-800/50"
+                        title="Kopiraj prijevod">
+                        <ion-icon name="copy-outline"></ion-icon>
+                    </button>
+                    <button id="btn-copy-translation-mobile" 
+                        class="sm:hidden mt-2 flex items-center gap-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-800/40 px-3 py-1.5 rounded-full border border-slate-700/50"
+                        title="Kopiraj prijevod">
+                        <ion-icon name="copy-outline"></ion-icon>
+                        <span data-i18n="copy">Kopiraj</span>
+                    </button>
                 </div>
                 
                 
@@ -853,7 +867,7 @@
                     </div>
                     <div class="about-info-box">
                         <span class="about-info-label">Verzija</span>
-                        <span class="about-info-value">0.1.3</span>
+                        <span class="about-info-value">0.1.5</span>
                     </div>
                 </div>
             </div>
@@ -873,6 +887,28 @@
                 </button>
             </div>
             <div class="modal-body modal-body-scroll">
+                <!-- v0.1.5 -->
+                <div class="changelog-entry">
+                    <div class="changelog-header">
+                        <span class="changelog-version-pill">0.1.5</span>
+                        <h4 class="changelog-title">UI & UX Standardizacija</h4>
+                        <span class="changelog-date">17. mart 2026.</span>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-improved">Poboljšano</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>UI Arhitektura</strong> — Standardizirano imenovanje svih HTML elemenata radi lakšeg održavanja i stabilnijeg koda.</li>
+                             <li class="changelog-item"><strong>Navigacija Swajpom</strong> — Dodan tečan "Smooth Scroll" povratak na početak stranice prilikom prelaksa na drugi ajet putem geste.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-fixed">Popravljeno</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Spread Mode Prikaz</strong> — Popravljen vizualni bag sa vidljivošću menija nakon izbora sure iz liste, te popravljeno skrivanje navigacije izbornika tema.</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- v0.1.4 -->
                 <div class="changelog-entry">
                     <div class="changelog-header">
@@ -906,22 +942,6 @@
                         <span class="changelog-badge badge-improved">Poboljšano</span>
                         <ul class="changelog-list">
                              <li class="changelog-item"><strong>Detekcija SVG slojeva</strong> — Unapređen algoritam za precizniju identifikaciju naslova džuza i sura na vrhu stranice.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- v0.1.2 -->
-                <div class="changelog-entry">
-                    <div class="changelog-header">
-                        <span class="changelog-version-pill">0.1.2</span>
-                        <h4 class="changelog-title">SVG Slojevi</h4>
-                        <span class="changelog-date">15. mart 2026.</span>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-new">Novo</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Sistem slojeva</strong> — Automatsko bojenje okvira, teksta i ornamentalnih elemenata u SVG stranicama.</li>
-                             <li class="changelog-item"><strong>Teme Mushafa</strong> — 4 nove palete boja (Standard, Sepia, Noć, Zelena) koje se primjenjuju na sve elemente stranice.</li>
                         </ul>
                     </div>
                 </div>
@@ -1057,10 +1077,20 @@
     <!-- Quick Page Theme Toggle (Right Side) -->
     <div id="cnt-page-theme-toggle" class="hidden relative flex flex-col items-center">
         <div class="flex gap-20">
+            <button id="btn-spread-lightmode-toggle" class="btn-theme-toggle-main" title="Toggle Light/Dark Mode">
+                <ion-icon name="moon-outline" id="icon-spread-night"></ion-icon>
+                <ion-icon name="sunny-outline" id="icon-spread-day" class="hidden"></ion-icon>
+            </button>
+            <div class="w-[1px] h-6 bg-slate-700/50 self-center mx-1"></div>
             <button class="btn-theme-dot" data-theme="original" data-label="Standard" style="background-color: #fcfaf0;"></button>
             <button class="btn-theme-dot" data-theme="sepia" data-label="Sepia" style="background-color: #f4ecd8;"></button>
+            <button class="btn-theme-dot" data-theme="maroon" data-label="Bordo" style="background-color: #6b2126;"></button>
             <button class="btn-theme-dot" data-theme="night" data-label="Noć" style="background-color: #1e293b;"></button>
+            <button class="btn-theme-dot" data-theme="slate" data-label="Škriljevac" style="background-color: #334155;"></button>
             <button class="btn-theme-dot" data-theme="green" data-label="Zelena" style="background-color: #064e3b;"></button>
+            <button class="btn-theme-dot" data-theme="pine" data-label="Bor" style="background-color: #1F382A;"></button>
+            <button class="btn-theme-dot" data-theme="mocha" data-label="Moka" style="background-color: #4A352D;"></button>
+            <button class="btn-theme-dot" data-theme="plum" data-label="Šljiva" style="background-color: #4A2C40;"></button>
         </div>
         
         <!-- Theme Palette Preview (Hover) -->

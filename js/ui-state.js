@@ -175,8 +175,8 @@ function closeModal(id) {
   const modal = document.getElementById(id);
   if (modal) modal.classList.add("hidden");
 
-  // Restore sidebar visibility when closing Surah selector
-  if (id === "mdl-surah" && els.sidebar) {
+  // Restore sidebar visibility when closing Surah selector (only if not in spread mode)
+  if (id === "mdl-surah" && els.sidebar && !AppState.settings.spreadMode) {
     els.sidebar.classList.remove("md:hidden");
   }
 
@@ -243,8 +243,8 @@ function updateThemeDotsUI() {
 window.updateSpreadZoom = function(delta = 0, reset = false) {
   let target = reset ? 100 : (AppState.settings.spreadZoom || 100) + delta;
   
-  // Clamp between 100% and 250%
-  target = Math.max(100, Math.min(250, target));
+  // Clamp between 70% and 250%
+  target = Math.max(70, Math.min(250, target));
   
   AppState.settings.spreadZoom = target;
   localStorage.setItem("quran_spread_zoom", target);

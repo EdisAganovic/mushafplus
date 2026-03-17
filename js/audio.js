@@ -51,7 +51,6 @@ window.startRecording = async function () {
 
     const mimeType = getSupportedMimeType();
     AppState.recordingMimeType = mimeType || "audio/webm";
-    console.log(`[Recording] Start: ${AppState.recordingMimeType}`);
     const options = mimeType ? { mimeType } : {};
     AppState.mediaRecorder = new MediaRecorder(AppState.audioStream, options);
     AppState.audioChunks = [];
@@ -95,7 +94,6 @@ window.startRecording = async function () {
         if (AppState.recordings[oldestKey]) {
            URL.revokeObjectURL(AppState.recordings[oldestKey].url);
            delete AppState.recordings[oldestKey];
-           console.log(`[Memory] Revoked oldest recording: ${oldestKey}`);
         }
       }
 
