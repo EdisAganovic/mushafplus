@@ -87,6 +87,7 @@ window.AppState = {
     autoplay: localStorage.getItem("quran_autoplay") !== "false",
     spreadZoom: parseFloat(localStorage.getItem("quran_spread_zoom") || "100"),
     translationBelow: localStorage.getItem("quran_translation_below") === "true",
+    showActionsToolbar: localStorage.getItem("quran_show_actions") !== "false",
   },
 
   // ==========================================
@@ -314,6 +315,7 @@ window.els = {
   audioToggle: document.getElementById("chk-audio"),
   wordAudioToggle: document.getElementById("chk-word-audio"),
   translationPositionToggle: document.getElementById("chk-translation-below"),
+  actionsToolbarToggle: document.getElementById("chk-actions-toolbar"),
 
   // Swipe UX Elements
   swipeToast: document.getElementById("toast-swipe"),

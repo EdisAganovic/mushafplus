@@ -81,8 +81,10 @@ window.T = {
   audioPlayerDesc: "Prikaži kontrolu zvuka",
   disableWordAudio: "Isključi audio za riječi",
   disableWordAudioDesc: "Onemogući zvuk pri kliku",
-  translationPosition: "Prijevod ispod",
-  translationPositionDesc: "Prikaži prijevod nakon arapskog teksta",
+  translationPositionLabel: "Pozicija prijevoda",
+  translationPositionDesc: "Prikaži prijevod iznad ili ispod arapskog teksta",
+  showActionsToolbar: "Traka sa akcijama",
+  showActionsToolbarDesc: "Prikaži dugmad (Snimi, Označi...)",
 
   // Data Transfer
   dataTransfer: "Backup",

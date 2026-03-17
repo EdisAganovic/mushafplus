@@ -70,10 +70,21 @@ h6 {
   margin-bottom: 1.25rem;
 }
 
+.hifz-range-active {
+  background-color: rgba(244, 63, 94, 0.25) !important;
+  border: 1.5px dashed rgba(244, 63, 94, 0.6) !important;
+  color: #fb7185 !important;
+}
+
 .active-ayah-cell {
-  border: 1px solid #10b981 !important;
-  z-index: 10;
+  border: 2px solid #10b981 !important;
+  z-index: 20;
   color: white !important;
+}
+
+.active-ayah-cell.hifz-range-active {
+  /* When both active and in hifz range, keep hifz background but green border */
+  background-color: rgba(244, 63, 94, 0.35) !important;
 }
 
 .surah-dropdown-item {

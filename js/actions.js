@@ -15,7 +15,6 @@ window.loadSurah = function (id, retainAyahIndex = false) {
     return;
   }
 
-  AppState.currentSurah = surah;
   if (!retainAyahIndex) {
     AppState.currentAyahIndex = 0;
     localStorage.setItem("last_ayah_index", 0);
@@ -28,6 +27,19 @@ window.loadSurah = function (id, retainAyahIndex = false) {
       localStorage.setItem("last_ayah_index", 0);
     }
   }
+
+  const isNewSurah = AppState.currentSurah && AppState.currentSurah.id !== id;
+  if (isNewSurah) {
+    // Reset Hifz range when changing surahs to avoid confusing cross-surah state
+    AppState.hifzRange = { start: null, end: null };
+    localStorage.setItem("quran_hifzRange", JSON.stringify(AppState.hifzRange));
+    
+    const text = "Klikni ajet za opseg";
+    if (els.hifzRangeText) els.hifzRangeText.innerText = text;
+    if (els.hifzRangeTextMobile) els.hifzRangeTextMobile.innerText = text;
+  }
+  
+  AppState.currentSurah = surah;
   localStorage.setItem("last_surah", id);
 
   renderAyah();
@@ -171,10 +183,10 @@ window.nextAyah = function () {
     const min = Math.min(AppState.hifzRange.start, AppState.hifzRange.end);
     const max = Math.max(AppState.hifzRange.start, AppState.hifzRange.end);
     
-    if (AppState.currentAyahIndex < max) {
+    if (AppState.currentAyahIndex >= min && AppState.currentAyahIndex < max) {
       AppState.currentAyahIndex++;
     } else {
-      AppState.currentAyahIndex = min; // Loop back to start of Hifz range
+      AppState.currentAyahIndex = min; // Jump to start if outside or at the end
     }
     
     localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
@@ -211,6 +223,24 @@ window.prevAyah = function () {
   }
 
   if (!AppState.swipeDirection) AppState.swipeDirection = "right";
+  
+  // --- HIFZ RANGE NAVIGATION ---
+  if (AppState.hifzEnabled && AppState.hifzRange.start !== null && AppState.hifzRange.end !== null) {
+    const min = Math.min(AppState.hifzRange.start, AppState.hifzRange.end);
+    const max = Math.max(AppState.hifzRange.start, AppState.hifzRange.end);
+    
+    if (AppState.currentAyahIndex > min && AppState.currentAyahIndex <= max) {
+      AppState.currentAyahIndex--;
+    } else {
+      AppState.currentAyahIndex = max; // Loop back to end of Hifz range
+    }
+    
+    localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
+    renderAyah();
+    if (typeof renderAyahGrid === "function") renderAyahGrid();
+    return;
+  }
+
   if (AppState.currentAyahIndex > 0) {
     AppState.currentAyahIndex--;
     localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);

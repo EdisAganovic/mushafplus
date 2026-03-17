@@ -128,15 +128,18 @@ class VirtualGrid {
       let pageStart = hasMetadata ? window.getPageStartAt(surahId, verse.id) : null;
       const dots = [];
 
+      if (isActive) {
+        dots.push('<div class="w-1.5 h-1.5 bg-emerald-400 rounded-full shadow-[0_0_4px_rgba(52,211,153,0.5)]"></div>');
+      }
       if (isHifzRange && hifzActive) {
-        dots.push('<div class="w-2 h-2 bg-rose-400 rounded-full"></div>');
+        dots.push('<div class="w-1.5 h-1.5 bg-rose-400 rounded-full shadow-[0_0_4px_rgba(251,113,133,0.5)]"></div>');
       }
       if (juzStart !== null) {
-        dots.push('<div class="w-2 h-2 bg-amber-500 rounded-full"></div>');
+        dots.push('<div class="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>');
         cell.title = `Džuz ${juzStart}`;
       }
       if (pageStart !== null) {
-        dots.push('<div class="w-2 h-2 bg-blue-400 rounded-full"></div>');
+        dots.push('<div class="w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_4px_rgba(96,165,250,0.5)]"></div>');
         cell.title = (cell.title ? cell.title + " · " : "") + `Str. ${pageStart}`;
       }
 
@@ -151,16 +154,13 @@ class VirtualGrid {
       if (isChecked) {
         cell.classList.add("bg-emerald-600", "text-white");
       } else if (isHifzRange) {
-        cell.classList.add("bg-rose-500/10", "border", "border-dashed", "border-rose-500/30", "text-rose-300");
+        cell.classList.add("hifz-range-active");
       } else {
         cell.classList.add("bg-slate-800", "text-slate-300", "border", "border-slate-700", "hover:bg-slate-600");
       }
 
       if (isActive) {
         cell.classList.add("active-ayah-cell");
-        if (!isChecked) {
-          cell.classList.add("bg-slate-800");
-        }
       }
 
       if (hasNotes) cell.style.borderBottom = "2px solid #f59e0b";
@@ -379,7 +379,18 @@ window.renderAyah = function () {
   syncNavigationInputs();
 
   if (els.currentSurahName) {
-    els.currentSurahName.textContent = `${AppState.currentSurah.id}. ${AppState.currentSurah.trans}`;
+    let nameText = `${AppState.currentSurah.id}. ${AppState.currentSurah.trans}`;
+    if (AppState.hifzEnabled && AppState.hifzRange.start !== null && AppState.hifzRange.end !== null) {
+      const min = Math.min(AppState.hifzRange.start, AppState.hifzRange.end) + 1;
+      const max = Math.max(AppState.hifzRange.start, AppState.hifzRange.end) + 1;
+      nameText += ` <span class="text-[10px] ml-2 px-2 py-0.5 bg-rose-500/20 text-rose-400 rounded-full border border-rose-500/30 uppercase tracking-tighter">Hifz: ${min}-${max}</span>`;
+      els.currentSurahName.innerHTML = nameText;
+    } else if (AppState.hifzEnabled && AppState.hifzRange.start !== null) {
+        nameText += ` <span class="text-[10px] ml-2 px-2 py-0.5 bg-rose-500/20 text-rose-400 rounded-full border border-rose-500/30 uppercase tracking-tighter">Hifz: ${AppState.hifzRange.start + 1}...</span>`;
+        els.currentSurahName.innerHTML = nameText;
+    } else {
+      els.currentSurahName.textContent = nameText;
+    }
   }
 
   // Relocate toolbar based on current device constraints
@@ -924,16 +935,11 @@ window.updateGridCellState = function (idx) {
   const hasNotes = !!AppState.notes[key];
 
   const hifzActive = AppState.hifzEnabled;
-  const hifzHasRange =
-    hifzActive &&
-    AppState.hifzRange.start !== null &&
-    AppState.hifzRange.end !== null;
-  const hifzMin = hifzHasRange
-    ? Math.min(AppState.hifzRange.start, AppState.hifzRange.end)
-    : null;
-  const hifzMax = hifzHasRange
-    ? Math.max(AppState.hifzRange.start, AppState.hifzRange.end)
-    : null;
+  const start = AppState.hifzRange.start;
+  const end = AppState.hifzRange.end;
+  const hifzMin = hifzActive && start !== null ? (end !== null ? Math.min(start, end) : start) : null;
+  const hifzMax = hifzActive && start !== null ? (end !== null ? Math.max(start, end) : start) : null;
+
   const isHifzRange = hifzMin !== null && idx >= hifzMin && idx <= hifzMax;
 
   cellsToUpdate.forEach((cell) => {
@@ -954,24 +960,21 @@ window.updateGridCellState = function (idx) {
       "text-slate-300",
       "border-slate-700",
       "border-2",
+      "hifz-range-active",
       "active-ayah-cell"
-    );
-
-    // Apply new state classes
+    );    // Apply new state classes
     if (isChecked) {
        cell.classList.add("bg-emerald-600", "text-white");
     } else if (isHifzRange) {
-       cell.classList.add("bg-rose-500/10", "border", "border-dashed", "border-rose-500/30", "text-rose-300", "hover:bg-rose-500/20");
+       cell.classList.add("hifz-range-active");
     } else {
        cell.classList.add("bg-slate-800", "text-slate-300", "border", "border-slate-700", "hover:bg-slate-600");
     }
-
+ 
     // Active state adds border and shadow on top of background
     if (isActive) {
       cell.classList.add("active-ayah-cell");
-      if (!isChecked) {
-        cell.classList.add("bg-slate-800");
-      }
+      // Don't re-add bg-slate-800 here as it will override everything else
     }
 
     if (hasNotes) {
@@ -1055,6 +1058,10 @@ window.renderAyahGrid = function (skipScroll = false) {
     if (els.ayahGridMobile) els.ayahGridMobile.onclick = delegateClick;
     window._gridClickInitialized = true;
   }
+
+  // Force immediate refresh of currently visible grid cells to reflect state changes (Hifz mode, checks, etc.)
+  if (window.ayahGridDesktop) window.ayahGridDesktop.render();
+  if (window.ayahGridMobile) window.ayahGridMobile.render();
 
   // Auto-scroll active ayah into view (both desktop and mobile grids)
   if (skipScroll) return;

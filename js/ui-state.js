@@ -293,11 +293,8 @@ function closeModal(id) {
 window.updateToolbarVisibility = function() {
   if (!els.mainActionToolbar) return;
   
-  if (AppState.settings.spreadMode) {
-    els.mainActionToolbar.style.display = "none";
-  } else {
-    els.mainActionToolbar.style.display = "flex";
-  }
+  const showToolbar = AppState.settings.showActionsToolbar && !AppState.settings.spreadMode;
+  els.mainActionToolbar.style.display = showToolbar ? "flex" : "none";
 };
 
 /**

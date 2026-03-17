@@ -586,6 +586,20 @@
                 <div
                     class="pt-2 flex items-center justify-between bg-slate-950/30 p-3 rounded-xl border border-slate-800 mt-2">
                     <div class="flex flex-col">
+                        <span class="text-sm font-bold text-slate-300" data-i18n="showActionsToolbar">Traka sa akcijama</span>
+                        <span class="text-[10px] text-slate-500" data-i18n="showActionsToolbarDesc">Prikaži dugmad (Snimi, Označi...)</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="chk-actions-toolbar" class="sr-only peer">
+                        <div
+                            class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
+                        </div>
+                    </label>
+                </div>
+
+                <div
+                    class="pt-2 flex items-center justify-between bg-slate-950/30 p-3 rounded-xl border border-slate-800 mt-2">
+                    <div class="flex flex-col">
                         <span class="text-sm font-bold text-slate-300" data-i18n="lightMode">Svijetli mod</span>
                         <span class="text-[10px] text-slate-500" data-i18n="lightModeDesc">Čistiji prikaz za
                             čitanje</span>
@@ -993,7 +1007,7 @@
                 <div class="flex flex-col mb-8">
                     <div class="w-full group">
                         <input type="text" id="inp-surah-modal-filter" placeholder="Pretraži po nazivu, broju ili prevodu..." 
-                            class="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl p-4 px-6 h-14 text-lg outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all placeholder:text-slate-600 font-medium tracking-tight">
+                            class="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl p-4 px-6 h-14 text-base outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all placeholder:text-slate-600 font-medium tracking-tight">
                     </div>
                 </div>
                 <div id="lst-surah-modal" class="surah-modal-grid max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700 pr-1">

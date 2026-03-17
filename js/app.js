@@ -123,6 +123,13 @@ async function init() {
       els.translationPositionToggle.checked = AppState.settings.translationBelow;
     }
 
+    if (els.actionsToolbarToggle) {
+      els.actionsToolbarToggle.checked = AppState.settings.showActionsToolbar;
+      if (typeof updateToolbarVisibility === "function") {
+        updateToolbarVisibility();
+      }
+    }
+
     // Apply spread mode using centralized function
     if (typeof window.applySpreadMode === "function") {
       window.applySpreadMode();
@@ -719,6 +726,17 @@ function setupEventListeners() {
     });
   }
 
+  // --- ACTIONS TOOLBAR TOGGLE ---
+  if (els.actionsToolbarToggle) {
+    els.actionsToolbarToggle.addEventListener("change", (e) => {
+      AppState.settings.showActionsToolbar = e.target.checked;
+      localStorage.setItem("quran_show_actions", e.target.checked);
+      if (typeof updateToolbarVisibility === "function") {
+        updateToolbarVisibility();
+      }
+    });
+  }
+
   // --- KEYBOARD SHORTCUTS (extracted) ---
   if (typeof window.initKeyboardShortcuts === "function") {
     window.initKeyboardShortcuts();
@@ -1106,6 +1124,7 @@ function setupHifzMode() {
       if (els.hifzRangeTextMobile) els.hifzRangeTextMobile.innerText = "Klikni na ajet za opseg";
       localStorage.setItem("quran_hifzRange", JSON.stringify(AppState.hifzRange));
     }
+    renderAyah();
     renderAyahGrid(true); // skips autoscroll to keep user at their current view
     if (typeof updateToolbarVisibility === "function") updateToolbarVisibility();
   };
