@@ -128,6 +128,10 @@ function openHifz() {
       setTimeout(() => {
         els.hifzOverlay.classList.remove("opacity-0");
         els.hifzDrawer.classList.remove("translate-x-full");
+        // Force re-render of the grid to ensure hifz highlighting is visible
+        if (typeof window.renderAyahGrid === "function") {
+          window.renderAyahGrid(true);
+        }
       }, 10);
     }
   } catch (e) {

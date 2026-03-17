@@ -100,9 +100,9 @@ class VirtualGrid {
     const frag = document.createDocumentFragment();
     const hasMetadata = typeof window.getJuzStartAt === "function";
 
-    const hifzActive = AppState.runtime.hifzEnabled;
-    const start = AppState.runtime.hifzRange.start;
-    const end = AppState.runtime.hifzRange.end;
+    const hifzActive = AppState.hifzEnabled;
+    const start = AppState.hifzRange.start;
+    const end = AppState.hifzRange.end;
     const hasBoth = hifzActive && start !== null && end !== null;
     const hasOnlyStart = hifzActive && start !== null && end === null;
 
