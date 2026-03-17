@@ -2,6 +2,20 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.1.6] - 2026-03-17
+
+### Added
+- **Pozicija prijevoda**: Dodana nova postavka u izborniku koja korisnicima omogućava da izaberu da li će se prijevod prikazivati iznad ili ispod arapskog teksta, prilagođavajući aplikaciju različitim stilovima učenja.
+
+### Improved
+- **Spread Mode**: 
+  - Poboljšano pozicioniranje tooltipova za izbor tema koji su se ranije preklapali sa drugim UI elementima na desnoj strani ekrana.
+  - Rafiniran vizuelni indikator za **Pull-to-refresh** (uklonjen tekst, istaknuta ikona) za čistiji i moderniji izgled.
+
+### Fixed
+- **Hifz mod**: Ispravljen problem gdje je aktivacija Hifz moda uzrokovala nepotrebno skrolovanje do ajeta čak i ako je korisnik već bio pozicioniran na njemu.
+- **Navigacija**: Riješen bag u Spread Mode režimu gdje se stranice Mushafa nisu ispravno re-renderovale nakon zatvaranja selektora sura.
+
 ## [0.1.5] - 2026-03-17
 
 ### Improved

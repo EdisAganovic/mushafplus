@@ -296,7 +296,7 @@ h6 {
 }
 
 #dsp-translation {
-  padding-top: 1.5rem;
+  padding-top: 1.0rem;
 }
 
 .light #dsp-translation {
@@ -1590,14 +1590,29 @@ body.spread-mode-active #cnt-page-theme-toggle .flex.gap-20 {
 }
 
 /* Hide/Show icons based on mode */
-.light #icon-spread-day { display: none !important; }
-.light #icon-spread-night { display: block !important; }
+.light #icon-spread-day {
+  display: none !important;
+}
 
-#icon-spread-day { color: #fbbf24; }
-#icon-spread-night { color: #94a3b8; }
+.light #icon-spread-night {
+  display: block !important;
+}
 
-.dark #icon-spread-day { display: block !important; }
-.dark #icon-spread-night { display: none !important; }
+#icon-spread-day {
+  color: #fbbf24;
+}
+
+#icon-spread-night {
+  color: #94a3b8;
+}
+
+.dark #icon-spread-day {
+  display: block !important;
+}
+
+.dark #icon-spread-night {
+  display: none !important;
+}
 
 
 /* Side-Tooltips behavior */
