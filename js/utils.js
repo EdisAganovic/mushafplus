@@ -50,7 +50,7 @@ window.applySettings = function () {
     els.wordAudioToggle.checked = AppState.settings.disableWordAudio;
   }
   if (els.ayahAudioContainer) {
-    els.ayahAudioContainer.classList.toggle("hidden-player", !AppState.settings.showAudioPlayer);
+    els.ayahAudioContainer.classList.toggle("hidden", !AppState.settings.showAudioPlayer);
   }
 };
 

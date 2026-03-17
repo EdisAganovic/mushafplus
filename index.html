@@ -182,6 +182,12 @@
                         </div>
                     </div>
                 </div>
+                <div class="relative group w-full max-w-2xl">
+                    <div id="dsp-translation"
+                        class="text-sm sm:text-lg md:text-xl text-slate-400 text-left w-full">
+                    </div>
+
+                </div>
                 <div id="dsp-bismillah"
                     class="w-full pt-6 mb-3 sm:mb-6 hidden select-none text-center transition-all duration-300">
                     <div class="font-quran quran-text text-2xl pt-2 sm:text-3xl text-emerald-500/80 leading-relaxed" dir="rtl">
@@ -195,37 +201,22 @@
                     </div>
                 </div>
                 <div id="dsp-arabic"
-                    class="font-quran quran-text text-[2rem] mt-4 sm:text-4xl md:text-5xl text-right w-full text-slate-100 selection:bg-emerald-800 transition-all duration-300">
+                    class="font-quran quran-text text-[2rem] mt-4 sm:text-4xl md:text-5xl max-w-2xl text-right w-full text-slate-100 selection:bg-emerald-800 transition-all duration-300">
                 </div>
 
                 <!-- Tajweed Legend -->
                 <div id="cnt-tajweed-legend"
-                    class="mt-4 sm:mt-6 sm:mb-3 w-full mb-4 max-w-2xl hidden flex-wrap gap-1.5 justify-center">
+                    class="mt-4 sm:mt-6 sm:mb-3 w-full mb-2 max-w-2xl hidden flex-wrap gap-1.5 justify-center">
                     <div id="dsp-tajweed-legend" class="flex flex-wrap gap-1.5 justify-center w-full"></div>
                 </div>
-                <div class="relative group w-full max-w-2xl">
-                    <div id="dsp-translation"
-                        class="text-sm sm:text-lg md:text-xl text-slate-400 text-left w-full">
-                    </div>
-                    <button id="btn-copy-translation" 
-                        class="absolute -right-10 top-0 p-2 text-slate-500 hover:text-emerald-500 transition-all opacity-0 group-hover:opacity-100 hidden sm:flex items-center justify-center rounded-lg hover:bg-slate-800/50"
-                        title="Kopiraj prijevod">
-                        <ion-icon name="copy-outline"></ion-icon>
-                    </button>
-                    <button id="btn-copy-translation-mobile" 
-                        class="sm:hidden mt-2 flex items-center gap-1.5 text-[10px] font-bold text-slate-500 uppercase tracking-widest bg-slate-800/40 px-3 py-1.5 rounded-full border border-slate-700/50"
-                        title="Kopiraj prijevod">
-                        <ion-icon name="copy-outline"></ion-icon>
-                        <span data-i18n="copy">Kopiraj</span>
-                    </button>
-                </div>
+                
                 
                 
 
 
                 <!-- Navigation Controls -->
                 <div id="cnt-ayah-audio"
-                    class="mt-4 sm:mt-8 hidden w-full max-w-lg flex flex-col items-center gap-2">
+                    class="mt-2 sm:mt-2 hidden w-full max-w-lg mb-2 flex flex-col items-center gap-2">
                     <div
                         class="flex items-center gap-2 sm:gap-4 w-full bg-slate-800/40 p-2 sm:p-3 rounded-2xl border border-slate-700/50 backdrop-blur-sm shadow-inner">
                         <button id="btn-ayah-play"

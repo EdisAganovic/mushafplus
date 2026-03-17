@@ -575,7 +575,11 @@ window.renderAyah = function () {
     els.ayahAudio.load();
     resetAyahAudioUI();
   }
-  els.ayahAudioContainer.classList.remove("hidden");
+  if (AppState.settings.showAudioPlayer !== false) {
+    els.ayahAudioContainer.classList.remove("hidden");
+  } else {
+    els.ayahAudioContainer.classList.add("hidden");
+  }
 
   // Zero-Latency Audio Preloading for the next Ayah
   const nextIdx = AppState.currentAyahIndex + 1;
