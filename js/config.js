@@ -4,7 +4,11 @@
  * This file initializes the AppState (persistence and runtime data) and the 'els' object (DOM references).
  *
  * LLM CONTEXT:
- * - AppState: Centralized data store. Loaded from localStorage on init.
+ * - AppState: Centralized data store with separated concerns:
+ *   - current: Navigation state (current surah, ayah index)
+ *   - user: User data (checked ayahs, bookmarks, notes, highlights) - persisted
+ *   - settings: App preferences - persisted
+ *   - runtime: Runtime-only state (audio context, mediaRecorder, etc.) - never persisted
  * - els: Mapping of every interactive HTML element by ID.
  */
 
@@ -41,54 +45,147 @@ function migrateSizeValue(key, fallback) {
 }
 
 window.AppState = {
+  // ==========================================
+  // NAVIGATION STATE (Current position)
+  // ==========================================
   data: [], // Full Quran data (Arabic + Translation)
-  currentSurah: null, // Currently selected Surah object
-  currentAyahIndex: 0, // 0-based index of current Ayah within surah.verses
-  mediaRecorder: null, // Active MediaRecorder instance
-  audioStream: null, // Persistent microphone stream (to avoid repeated prompts)
-  audioContext: null, // Web Audio API context for mic-level analysis
-  analyser: null, // AnalyserNode for volume detection
-  animationId: null, // RequestAnimationFrame ID for UI sync
-  audioChunks: [], // Temporary buffer for recording data
-  recordings: {}, // Map of ayah keys to blob URLs
-  recordingKeys: [], // Order of recordings to manage memory (LRU)
-  recordingMimeType: "audio/webm", // Selected mime type for current device
+  current: {
+    surah: null, // Currently selected Surah object
+    ayahIndex: 0, // 0-based index of current Ayah within surah.verses
+  },
 
-  // NEW RUNTIME STATE
-  hifzEnabled: safeParseStorage("quran_hifzEnabled", false),
-  hifzRange: safeParseStorage("quran_hifzRange", { start: null, end: null }),
-  currentReciter:
-    safeParseStorage("quran_reciter", "Muhammad_Ayyoub_128kbps"),
+  // ==========================================
+  // USER DATA (Persisted)
+  // ==========================================
+  user: {
+    checkedAyats: new Set(
+      safeParseStorage("quran_checked", [])
+    ),
+    bookmarks: new Set(
+      safeParseStorage("quran_bookmarks", [])
+    ),
+    notes: safeParseStorage("quran_notes", {}),
+    highlights: safeParseStorage("quran_highlights", {}),
+  },
 
-  // PERSISTENT DATA (Loaded from localStorage with error handling)
-  checkedAyats: new Set(
-    safeParseStorage("quran_checked", [])
-  ),
-  bookmarks: new Set(
-    safeParseStorage("quran_bookmarks", [])
-  ),
-  notes: safeParseStorage("quran_notes", {}),
-  highlights: safeParseStorage("quran_highlights", {}),
-  settings: (() => {
-    return {
-      layouts: {}, // Cache for page-by-page word positions
-      arSize: migrateSizeValue("quran_ar_size", "200"),
-      bsSize: migrateSizeValue("quran_bs_size", "100"),
-      arLineHeight: parseFloat(localStorage.getItem("quran_ar_lh") || "1.6"),
-      tajweed: localStorage.getItem("quran_tajweed") !== "false",
-      tajweedLegend: localStorage.getItem("quran_tajweed_legend") !== "false",
-      lightMode: localStorage.getItem("quran_lightmode") === "true",
-      showNotes: localStorage.getItem("quran_show_notes") !== "false",
-      spreadMode: localStorage.getItem("quran_spread_mode") === "true",
-      showAudioPlayer: localStorage.getItem("quran_show_audio") !== "false",
-      disableWordAudio: localStorage.getItem("quran_disable_word_audio") === "true",
-      pageTheme: localStorage.getItem("quran_page_theme") || "original",
-      autoplay: localStorage.getItem("quran_autoplay") !== "false",
-      spreadZoom: parseFloat(localStorage.getItem("quran_spread_zoom") || "100"),
-    };
+  // ==========================================
+  // SETTINGS (Persisted preferences)
+  // ==========================================
+  settings: {
+    layouts: {}, // Cache for page-by-page word positions
+    arSize: migrateSizeValue("quran_ar_size", "200"),
+    bsSize: migrateSizeValue("quran_bs_size", "100"),
+    arLineHeight: parseFloat(localStorage.getItem("quran_ar_lh") || "1.6"),
+    tajweed: localStorage.getItem("quran_tajweed") !== "false",
+    tajweedLegend: localStorage.getItem("quran_tajweed_legend") !== "false",
+    lightMode: localStorage.getItem("quran_lightmode") === "true",
+    showNotes: localStorage.getItem("quran_show_notes") !== "false",
+    spreadMode: localStorage.getItem("quran_spread_mode") === "true",
+    showAudioPlayer: localStorage.getItem("quran_show_audio") !== "false",
+    disableWordAudio: localStorage.getItem("quran_disable_word_audio") === "true",
+    pageTheme: localStorage.getItem("quran_page_theme") || "original",
+    autoplay: localStorage.getItem("quran_autoplay") !== "false",
+    spreadZoom: parseFloat(localStorage.getItem("quran_spread_zoom") || "100"),
+    translationBelow: localStorage.getItem("quran_translation_below") === "true",
+  },
 
-  })(),
+  // ==========================================
+  // RUNTIME STATE (Never persisted)
+  // ==========================================
+  runtime: {
+    // Hifz & Recitation
+    hifzEnabled: safeParseStorage("quran_hifzEnabled", false),
+    hifzRange: safeParseStorage("quran_hifzRange", { start: null, end: null }),
+    currentReciter: safeParseStorage("quran_reciter", "Muhammad_Ayyoub_128kbps"),
+
+    // Audio Recording
+    mediaRecorder: null, // Active MediaRecorder instance
+    audioStream: null, // Persistent microphone stream (to avoid repeated prompts)
+    audioContext: null, // Web Audio API context for mic-level analysis
+    analyser: null, // AnalyserNode for volume detection
+    animationId: null, // RequestAnimationFrame ID for UI sync
+    audioChunks: [], // Temporary buffer for recording data
+    recordings: {}, // Map of ayah keys to blob URLs
+    recordingKeys: [], // Order of recordings to manage memory (LRU)
+    recordingMimeType: "audio/webm", // Selected mime type for current device
+  },
 };
+
+// Legacy aliases for backwards compatibility (to be deprecated)
+Object.defineProperties(window.AppState, {
+  currentSurah: {
+    get() { return this.current.surah; },
+    set(val) { this.current.surah = val; }
+  },
+  currentAyahIndex: {
+    get() { return this.current.ayahIndex; },
+    set(val) { this.current.ayahIndex = val; }
+  },
+  checkedAyats: {
+    get() { return this.user.checkedAyats; },
+    set(val) { this.user.checkedAyats = val; }
+  },
+  bookmarks: {
+    get() { return this.user.bookmarks; },
+    set(val) { this.user.bookmarks = val; }
+  },
+  notes: {
+    get() { return this.user.notes; },
+    set(val) { this.user.notes = val; }
+  },
+  highlights: {
+    get() { return this.user.highlights; },
+    set(val) { this.user.highlights = val; }
+  },
+  mediaRecorder: {
+    get() { return this.runtime.mediaRecorder; },
+    set(val) { this.runtime.mediaRecorder = val; }
+  },
+  audioStream: {
+    get() { return this.runtime.audioStream; },
+    set(val) { this.runtime.audioStream = val; }
+  },
+  audioContext: {
+    get() { return this.runtime.audioContext; },
+    set(val) { this.runtime.audioContext = val; }
+  },
+  analyser: {
+    get() { return this.runtime.analyser; },
+    set(val) { this.runtime.analyser = val; }
+  },
+  animationId: {
+    get() { return this.runtime.animationId; },
+    set(val) { this.runtime.animationId = val; }
+  },
+  audioChunks: {
+    get() { return this.runtime.audioChunks; },
+    set(val) { this.runtime.audioChunks = val; }
+  },
+  recordings: {
+    get() { return this.runtime.recordings; },
+    set(val) { this.runtime.recordings = val; }
+  },
+  recordingKeys: {
+    get() { return this.runtime.recordingKeys; },
+    set(val) { this.runtime.recordingKeys = val; }
+  },
+  recordingMimeType: {
+    get() { return this.runtime.recordingMimeType; },
+    set(val) { this.runtime.recordingMimeType = val; }
+  },
+  hifzEnabled: {
+    get() { return this.runtime.hifzEnabled; },
+    set(val) { this.runtime.hifzEnabled = val; }
+  },
+  hifzRange: {
+    get() { return this.runtime.hifzRange; },
+    set(val) { this.runtime.hifzRange = val; }
+  },
+  currentReciter: {
+    get() { return this.runtime.currentReciter; },
+    set(val) { this.runtime.currentReciter = val; }
+  },
+});
 
 window.els = {
   // Navigation & Header
@@ -117,8 +214,6 @@ window.els = {
   bismillahDisplay: document.getElementById("dsp-bismillah"),
   arabicDisplay: document.getElementById("dsp-arabic"),
   translationDisplay: document.getElementById("dsp-translation"),
-  copyTranslationBtn: document.getElementById("btn-copy-translation"),
-  copyTranslationBtnMobile: document.getElementById("btn-copy-translation-mobile"),
   totalAyahsNum: document.getElementById("dsp-total-ayahs"),
   ayahNotes: document.getElementById("inp-notes"),
   ayahNotesContainer: document.getElementById("cnt-notes"),
@@ -218,6 +313,7 @@ window.els = {
   notesToggle: document.getElementById("chk-notes"),
   audioToggle: document.getElementById("chk-audio"),
   wordAudioToggle: document.getElementById("chk-word-audio"),
+  translationPositionToggle: document.getElementById("chk-translation-below"),
 
   // Swipe UX Elements
   swipeToast: document.getElementById("toast-swipe"),

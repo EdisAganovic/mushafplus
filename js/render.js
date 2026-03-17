@@ -5,16 +5,206 @@
  */
 
 // --- VIRTUAL SCROLLING CONSTANTS ---
-// These values must match the CSS in tailwind.config.js / styles.css
+// These values are centralized in QURAN_CONSTANTS
 const VIRTUAL_GRID = {
-  ITEMS_PER_ROW: 5,      // grid-cols-5
-  ROW_HEIGHT: 52,        // h-11 (44px) + gap-2 (8px)
-  BUFFER_ROWS: 4,        // Extra rows for smooth scrolling
-  CELL_HEIGHT: 44,       // h-11 = 2.75rem = 44px
-  GAP_SIZE: 8,           // gap-2 = 0.5rem = 8px
-  SCROLL_OFFSET: 20,     // Padding for scrollIntoView
-  AUTO_SCROLL_DELAY: 100 // ms before auto-scrolling to active ayah
+  ITEMS_PER_ROW: QURAN_CONSTANTS.GRID_ITEMS_PER_ROW,
+  ROW_HEIGHT: QURAN_CONSTANTS.GRID_ROW_HEIGHT,
+  BUFFER_ROWS: QURAN_CONSTANTS.GRID_BUFFER_ROWS,
+  CELL_HEIGHT: QURAN_CONSTANTS.GRID_CELL_HEIGHT,
+  GAP_SIZE: QURAN_CONSTANTS.GRID_GAP_SIZE,
+  SCROLL_OFFSET: QURAN_CONSTANTS.GRID_SCROLL_OFFSET,
+  AUTO_SCROLL_DELAY: QURAN_CONSTANTS.GRID_AUTO_SCROLL_DELAY,
 };
+
+/**
+ * VirtualGrid Class - Encapsulates virtual scrolling logic for Ayah grids
+ * Eliminates code duplication between desktop and mobile grids
+ */
+class VirtualGrid {
+  constructor(container, scrollParent, options = {}) {
+    this.container = container;
+    this.scrollParent = scrollParent;
+    this.options = {
+      itemsPerRow: VIRTUAL_GRID.ITEMS_PER_ROW,
+      rowHeight: VIRTUAL_GRID.ROW_HEIGHT,
+      bufferRows: VIRTUAL_GRID.BUFFER_ROWS,
+      ...options
+    };
+    this.currentSurahId = null;
+    this.boundScrollHandler = this._onScroll.bind(this);
+    this.isInitialized = false;
+  }
+
+  /**
+   * Initialize the virtual grid with scroll listener
+   */
+  init() {
+    if (!this.container || !this.scrollParent || this.isInitialized) return;
+
+    this.scrollParent.addEventListener("scroll", this.boundScrollHandler, { passive: true });
+    this.isInitialized = true;
+  }
+
+  /**
+   * Destroy the virtual grid (cleanup)
+   */
+  destroy() {
+    if (!this.scrollParent) return;
+    this.scrollParent.removeEventListener("scroll", this.boundScrollHandler);
+    this.isInitialized = false;
+  }
+
+  /**
+   * Scroll event handler
+   */
+  _onScroll() {
+    requestAnimationFrame(() => this.render());
+  }
+
+  /**
+   * Render visible cells based on scroll position
+   */
+  render() {
+    const verses = AppState.currentSurah?.verses;
+    const surahId = AppState.currentSurah?.id;
+
+    if (!verses || !surahId) return;
+
+    // Update current surah ID if changed
+    if (this.currentSurahId !== surahId) {
+      this.container.dataset.surahId = surahId;
+      this.container.innerHTML = "";
+      if (this.scrollParent) this.scrollParent.scrollTop = 0;
+      this.currentSurahId = surahId;
+    }
+
+    const totalItems = verses.length;
+    const { itemsPerRow, rowHeight, bufferRows } = this.options;
+    const parentHeight = this.scrollParent.clientHeight;
+    const scrollTop = this.scrollParent.scrollTop;
+
+    const startRow = Math.max(0, Math.floor(scrollTop / rowHeight) - bufferRows);
+    const endRow = Math.min(
+      Math.ceil(totalItems / itemsPerRow),
+      Math.ceil((scrollTop + parentHeight) / rowHeight) + bufferRows
+    );
+
+    const startIndex = startRow * itemsPerRow;
+    const endIndex = Math.min(totalItems, endRow * itemsPerRow);
+
+    const totalRows = Math.ceil(totalItems / itemsPerRow);
+    this.container.style.height = `${totalRows * rowHeight}px`;
+    this.container.style.paddingTop = `${startRow * rowHeight}px`;
+
+    // Create fragment for visible slice
+    const frag = document.createDocumentFragment();
+    const hasMetadata = typeof window.getJuzStartAt === "function";
+
+    const hifzActive = AppState.runtime.hifzEnabled;
+    const start = AppState.runtime.hifzRange.start;
+    const end = AppState.runtime.hifzRange.end;
+    const hasBoth = hifzActive && start !== null && end !== null;
+    const hasOnlyStart = hifzActive && start !== null && end === null;
+
+    const hifzMin = hasBoth ? Math.min(start, end) : (hasOnlyStart ? start : null);
+    const hifzMax = hasBoth ? Math.max(start, end) : (hasOnlyStart ? start : null);
+
+    const activeIdx = AppState.current.ayahIndex;
+
+    for (let i = startIndex; i < endIndex; i++) {
+      const verse = verses[i];
+      const key = `${surahId}-${verse.id}`;
+      const isActive = i === activeIdx;
+      const isChecked = AppState.user.checkedAyats.has(key);
+      const isHifzRange = hifzMin !== null && i >= hifzMin && i <= hifzMax;
+      const hasNotes = !!AppState.user.notes[key];
+
+      const cell = document.createElement("button");
+      cell.dataset.index = i;
+      cell.className = "ayah-cell relative h-11 w-full px-1 flex rounded-lg text-xs font-medium transition-all items-center justify-center";
+
+      // Indicators
+      let juzStart = hasMetadata ? window.getJuzStartAt(surahId, verse.id) : null;
+      let pageStart = hasMetadata ? window.getPageStartAt(surahId, verse.id) : null;
+      const dots = [];
+
+      if (isHifzRange && hifzActive) {
+        dots.push('<div class="w-2 h-2 bg-rose-400 rounded-full"></div>');
+      }
+      if (juzStart !== null) {
+        dots.push('<div class="w-2 h-2 bg-amber-500 rounded-full"></div>');
+        cell.title = `Džuz ${juzStart}`;
+      }
+      if (pageStart !== null) {
+        dots.push('<div class="w-2 h-2 bg-blue-400 rounded-full"></div>');
+        cell.title = (cell.title ? cell.title + " · " : "") + `Str. ${pageStart}`;
+      }
+
+      if (dots.length > 0) {
+        cell.classList.add("flex-col", "gap-1");
+        cell.innerHTML = `<span class="text-[10px] leading-none">${i + 1}</span><div class="flex items-center justify-center gap-1 opacity-90 w-full">${dots.join("")}</div>`;
+      } else {
+        cell.innerHTML = `<span class="text-xs">${i + 1}</span>`;
+      }
+
+      // Styles
+      if (isChecked) {
+        cell.classList.add("bg-emerald-600", "text-white");
+      } else if (isHifzRange) {
+        cell.classList.add("bg-rose-500/10", "border", "border-dashed", "border-rose-500/30", "text-rose-300");
+      } else {
+        cell.classList.add("bg-slate-800", "text-slate-300", "border", "border-slate-700", "hover:bg-slate-600");
+      }
+
+      if (isActive) {
+        cell.classList.add("active-ayah-cell");
+        if (!isChecked) {
+          cell.classList.add("bg-slate-800");
+        }
+      }
+
+      if (hasNotes) cell.style.borderBottom = "2px solid #f59e0b";
+      frag.appendChild(cell);
+    }
+
+    this.container.innerHTML = "";
+    this.container.appendChild(frag);
+  }
+
+  /**
+   * Scroll to a specific index
+   */
+  scrollToIndex(index, options = { behavior: "smooth", block: "center" }) {
+    const cell = this.container.querySelector(`[data-index="${index}"]`);
+    if (cell) {
+      cell.scrollIntoView(options);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Scroll to a specific row with optional offset
+   */
+  scrollToRow(rowIndex, offsetRows = 0) {
+    if (!this.scrollParent) return;
+
+    const targetScroll = Math.max(0, (rowIndex + offsetRows) * this.options.rowHeight);
+    this.scrollParent.scrollTop = targetScroll;
+    this.render();
+  }
+
+  /**
+   * Find cell by index
+   */
+  getCell(index) {
+    return this.container.querySelector(`[data-index="${index}"]`);
+  }
+}
+
+// Store grid instances globally for access
+window.ayahGridDesktop = null;
+window.ayahGridMobile = null;
 
 /**
  * Renders the main Ayah display area.
@@ -156,7 +346,11 @@ window.fetchPageLayout = async function (pageNum) {
 };
 
 window.syncNavigationInputs = function() {
+  if (!AppState.currentSurah || !AppState.currentSurah.verses) return;
+
   const ayah = AppState.currentSurah.verses[AppState.currentAyahIndex];
+  if (!ayah) return;
+
   if (typeof window.getJuzNumber === "function" && typeof window.getPageNumber === "function") {
     const juzNum = window.getJuzNumber(AppState.currentSurah.id, ayah.id);
     const pageNum = window.getPageNumber(AppState.currentSurah.id, ayah.id);
@@ -168,7 +362,17 @@ window.syncNavigationInputs = function() {
 };
 
 window.renderAyah = function () {
+  if (!AppState.currentSurah || !AppState.currentSurah.verses) {
+    console.warn("[renderAyah] currentSurah or verses not loaded yet");
+    return;
+  }
+
   const ayah = AppState.currentSurah.verses[AppState.currentAyahIndex];
+  if (!ayah) {
+    console.warn(`[renderAyah] Ayah at index ${AppState.currentAyahIndex} not found`);
+    return;
+  }
+
   const key = `${AppState.currentSurah.id}-${ayah.id}`;
 
   // Keep inputs in sync
@@ -209,19 +413,31 @@ window.renderAyah = function () {
   const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
   const useHighlightAPI = isFirefox && window.CSS && CSS.highlights;
 
-  // -- OPTIMIZATION: Limited Cache Size (prevent memory bloat) --
-  if (!window._tajweedCache) window._tajweedCache = new Map();
-  if (window._tajweedCache.size > 100) {
-    const firstKey = window._tajweedCache.keys().next().value;
-    window._tajweedCache.delete(firstKey);
+  // -- OPTIMIZATION: LRU Cache for Tajweed tokenization (prevents memory bloat) --
+  if (!window._tajweedCache) {
+    window._tajweedCache = new Map();
   }
+
+  // LRU eviction: Move to end if exists, or evict oldest if at capacity
+  const CACHE_LIMIT = QURAN_CONSTANTS.TAJWEED_CACHE_SIZE || 500;
 
   let tokens;
   if (window.Tajweed) {
     if (window._tajweedCache.has(key)) {
+      // Cache hit: remove and re-add to move to end (most recently used)
       tokens = window._tajweedCache.get(key);
+      window._tajweedCache.delete(key);
+      window._tajweedCache.set(key, tokens);
     } else {
+      // Cache miss: tokenize and add to cache
       tokens = window.Tajweed.tokenize(ayah.ar);
+
+      // Evict oldest entry if at capacity
+      if (window._tajweedCache.size >= CACHE_LIMIT) {
+        const oldestKey = window._tajweedCache.keys().next().value;
+        window._tajweedCache.delete(oldestKey);
+      }
+
       window._tajweedCache.set(key, tokens);
     }
   } else {
@@ -771,35 +987,22 @@ window.updateGridCellState = function (idx) {
  * that only renders cells currently in or near the viewport.
  */
 window.renderAyahGrid = function (skipScroll = false) {
+  if (!AppState.currentSurah || !AppState.currentSurah.id) {
+    console.warn("[renderAyahGrid] currentSurah not loaded yet");
+    return;
+  }
+
   const surahId = AppState.currentSurah.id;
-  const verses = AppState.currentSurah.verses;
 
-  // Initialize or reset virtual scrolling for both desktop and mobile containers
-  const containers = [
-    { el: els.ayahGrid, parent: els.ayahGrid?.parentElement },
-    { el: els.ayahGridMobile, parent: els.ayahGridMobile?.parentElement }
-  ];
-
-  containers.forEach(cfg => {
-    if (!cfg.el || !cfg.parent) return;
-
-    // Reset container if surah changed
-    if (cfg.el.dataset.surahId !== String(surahId)) {
-      cfg.el.dataset.surahId = surahId;
-      cfg.el.innerHTML = "";
-      cfg.parent.scrollTop = 0;
-    }
-
-    // Attach scroll listener once
-    if (!cfg.parent.dataset.virtualized) {
-      cfg.parent.dataset.virtualized = "true";
-      cfg.parent.addEventListener("scroll", () => {
-        requestAnimationFrame(() => updateVirtualGrid(cfg.el, cfg.parent));
-      });
-    }
-
-    updateVirtualGrid(cfg.el, cfg.parent);
-  });
+  // Initialize VirtualGrid instances if not already created
+  if (!window.ayahGridDesktop && els.ayahGrid) {
+    window.ayahGridDesktop = new VirtualGrid(els.ayahGrid, els.ayahGrid?.parentElement);
+    window.ayahGridDesktop.init();
+  }
+  if (!window.ayahGridMobile && els.ayahGridMobile) {
+    window.ayahGridMobile = new VirtualGrid(els.ayahGridMobile, els.ayahGridMobile?.parentElement);
+    window.ayahGridMobile.init();
+  }
 
   // Setup Event Delegation for dynamic clicks (once)
   if (!window._gridClickInitialized) {
@@ -818,7 +1021,7 @@ window.renderAyahGrid = function (skipScroll = false) {
           AppState.hifzRange.end = null;
           if (els.hifzRangeText) els.hifzRangeText.innerText = `Opseg: ${idx + 1} - ...`;
           if (els.hifzRangeTextMobile) els.hifzRangeTextMobile.innerText = `Opseg: ${idx + 1} - ...`;
-          
+
           // Navigation: Jump to selection
           if (typeof goToAyah === "function") goToAyah(idx + 1);
         } else if (AppState.hifzRange.end === null) {
@@ -827,7 +1030,7 @@ window.renderAyahGrid = function (skipScroll = false) {
           const max = Math.max(AppState.hifzRange.start, AppState.hifzRange.end);
           if (els.hifzRangeText) els.hifzRangeText.innerText = `Opseg: ${min + 1} - ${max + 1}`;
           if (els.hifzRangeTextMobile) els.hifzRangeTextMobile.innerText = `Opseg: ${min + 1} - ${max + 1}`;
-          
+
           // Navigation: Jump to the start of the range
           if (typeof goToAyah === "function") goToAyah(min + 1);
         } else {
@@ -835,7 +1038,7 @@ window.renderAyahGrid = function (skipScroll = false) {
           AppState.hifzRange.end = null;
           if (els.hifzRangeText) els.hifzRangeText.innerText = `Opseg: ${idx + 1} - ...`;
           if (els.hifzRangeTextMobile) els.hifzRangeTextMobile.innerText = `Opseg: ${idx + 1} - ...`;
-          
+
           // Navigation: Jump to the starting point
           if (typeof goToAyah === "function") goToAyah(idx + 1);
         }
@@ -860,131 +1063,42 @@ window.renderAyahGrid = function (skipScroll = false) {
   setTimeout(() => {
     const targetRow = Math.floor(AppState.currentAyahIndex / VIRTUAL_GRID.ITEMS_PER_ROW);
     // Calculate scroll position - show one row before to give context
-    const containerHeight = els.ayahGrid?.parentElement?.clientHeight || 400;
-    const targetScroll = ((targetRow -1 ) * VIRTUAL_GRID.ROW_HEIGHT);
-    
-    containers.forEach(cfg => {
-      if (cfg.parent) {
-        cfg.parent.scrollTop = Math.max(0, targetScroll);
-        // Force update the virtual grid to render cells at the new scroll position
-        updateVirtualGrid(cfg.el, cfg.parent);
-      }
-    });
-    
-    // After scroll positions are set and virtual grid renders, scroll the cell into view
+    const targetScroll = Math.max(0, (targetRow - 1) * VIRTUAL_GRID.ROW_HEIGHT);
+
+    // Scroll both grids
+    if (window.ayahGridDesktop && window.ayahGridDesktop.scrollParent) {
+      window.ayahGridDesktop.scrollToRow(targetRow, -1);
+    }
+    if (window.ayahGridMobile && window.ayahGridMobile.scrollParent) {
+      window.ayahGridMobile.scrollToRow(targetRow, -1);
+    }
+
+    // After scroll positions are set, scroll the cell into view
     setTimeout(() => {
-      // Find the specific button in desktop grid
-      const cur = els.ayahGrid?.querySelector(`[data-index="${AppState.currentAyahIndex}"]`);
-      if (cur) {
-        cur.scrollIntoView({ behavior: "smooth", block: "center" });
-        console.log(`[Grid] Scrolled to ayah ${AppState.currentAyahIndex + 1}`);
-      } else {
-        console.warn(`[Grid] Cell for ayah ${AppState.currentAyahIndex + 1} not found in desktop grid.`);
+      let found = false;
+      // Find and scroll desktop cell
+      if (window.ayahGridDesktop) {
+        const cur = window.ayahGridDesktop.getCell(AppState.currentAyahIndex);
+        if (cur) {
+          cur.scrollIntoView({ behavior: "smooth", block: "center" });
+          found = true;
+        }
       }
 
       // Also scroll mobile grid
-      const mobileCur = els.ayahGridMobile?.querySelector(`[data-index="${AppState.currentAyahIndex}"]`);
-      if (mobileCur) {
-        mobileCur.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (window.ayahGridMobile) {
+        const mobileCur = window.ayahGridMobile.getCell(AppState.currentAyahIndex);
+        if (mobileCur) {
+          mobileCur.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else if (!found) {
+          console.warn(`[Grid] Cell for ayah ${AppState.currentAyahIndex + 1} not found.`);
+        }
       }
     }, 200);
   }, VIRTUAL_GRID.AUTO_SCROLL_DELAY + 50);
 
   AppState._prevGridIndex = AppState.currentAyahIndex;
 };
-
-/**
- * Updates the contents of the virtual grid based on scroll position.
- */
-function updateVirtualGrid(container, parent) {
-  const verses = AppState.currentSurah.verses;
-  const surahId = AppState.currentSurah.id;
-  const totalItems = verses.length;
-  const { ITEMS_PER_ROW, ROW_HEIGHT, BUFFER_ROWS } = VIRTUAL_GRID;
-
-  const parentHeight = parent.clientHeight;
-  const scrollTop = parent.scrollTop;
-
-  const startRow = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - BUFFER_ROWS);
-  const endRow = Math.min(Math.ceil(totalItems / ITEMS_PER_ROW), Math.ceil((scrollTop + parentHeight) / ROW_HEIGHT) + BUFFER_ROWS);
-
-  const startIndex = startRow * ITEMS_PER_ROW;
-  const endIndex = Math.min(totalItems, endRow * ITEMS_PER_ROW);
-
-  const totalRows = Math.ceil(totalItems / ITEMS_PER_ROW);
-  container.style.height = `${totalRows * ROW_HEIGHT}px`;
-  container.style.paddingTop = `${startRow * ROW_HEIGHT}px`;
-  
-  // Create fragment for visible slice
-  const frag = document.createDocumentFragment();
-  const hasMetadata = typeof window.getJuzStartAt === "function";
-  
-  const hifzActive = AppState.hifzEnabled;
-  const start = AppState.hifzRange.start;
-  const end = AppState.hifzRange.end;
-  const hasBoth = hifzActive && start !== null && end !== null;
-  const hasOnlyStart = hifzActive && start !== null && end === null;
-
-  const hifzMin = hasBoth ? Math.min(start, end) : (hasOnlyStart ? start : null);
-  const hifzMax = hasBoth ? Math.max(start, end) : (hasOnlyStart ? start : null);
-
-  for (let i = startIndex; i < endIndex; i++) {
-    const verse = verses[i];
-    const key = `${surahId}-${verse.id}`;
-    const activeIdx = parseInt(AppState.currentAyahIndex);
-    const isActive = i === activeIdx;
-    const isChecked = AppState.checkedAyats.has(key);
-    const isHifzRange = hifzMin !== null && i >= hifzMin && i <= hifzMax;
-    const hasNotes = !!AppState.notes[key];
-
-    const cell = document.createElement("button");
-    cell.dataset.index = i;
-    cell.className = "ayah-cell relative h-11 w-full px-1 flex rounded-lg text-xs font-medium transition-all items-center justify-center ";
-
-    // Indicators
-    let juzStart = hasMetadata ? window.getJuzStartAt(surahId, verse.id) : null;
-    let pageStart = hasMetadata ? window.getPageStartAt(surahId, verse.id) : null;
-    const dots = [];
-    if (isHifzRange && hifzActive) dots.push('<div class="w-2 h-2 bg-rose-400 rounded-full"></div>');
-    if (juzStart !== null) {
-      dots.push('<div class="w-2 h-2 bg-amber-500 rounded-full"></div>');
-      cell.title = `Džuz ${juzStart}`;
-    }
-    if (pageStart !== null) {
-      dots.push('<div class="w-2 h-2 bg-blue-400 rounded-full"></div>');
-      cell.title = (cell.title ? cell.title + " · " : "") + `Str. ${pageStart}`;
-    }
-
-    if (dots.length > 0) {
-      cell.classList.add("flex-col", "gap-1");
-      cell.innerHTML = `<span class="text-[10px] leading-none">${i + 1}</span><div class="flex items-center justify-center gap-1 opacity-90 w-full">${dots.join("")}</div>`;
-    } else {
-      cell.innerHTML = `<span class="text-xs">${i + 1}</span>`;
-    }
-
-    // Styles
-    if (isChecked) {
-      cell.classList.add("bg-emerald-600", "text-white");
-    } else if (isHifzRange) {
-      cell.classList.add("bg-rose-500/10", "border", "border-dashed", "border-rose-500/30", "text-rose-300");
-    } else {
-      cell.classList.add("bg-slate-800", "text-slate-300", "border", "border-slate-700", "hover:bg-slate-600");
-    }
-
-    if (isActive) {
-      cell.classList.add("active-ayah-cell");
-      if (!isChecked) {
-        cell.classList.add("bg-slate-800");
-      }
-    }
-
-    if (hasNotes) cell.style.borderBottom = "2px solid #f59e0b";
-    frag.appendChild(cell);
-  }
-
-  container.innerHTML = "";
-  container.appendChild(frag);
-}
 
 // --- SPREAD VIEW LOGIC EXTRACTED TO spread_engine.js ---
 

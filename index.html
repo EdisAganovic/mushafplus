@@ -95,15 +95,18 @@
                 <div class="flex items-center gap-2 shrink-0">
                     <button id="btn-spread-toggle"
                         class="text-slate-300 hover:text-emerald-500 bg-slate-950 border border-slate-700 hover:bg-slate-800 transition-colors w-[2.5rem] h-[2.5rem] text-[1.25rem] rounded-lg flex items-center justify-center shrink-0"
-                        title="Dvolisnica (Spread mode)">
+                        title="Dvolisnica (Spread mode)"
+                        aria-label="Uključi/isključi režim dvolisnice">
                         <ion-icon name="book-outline"></ion-icon>
                     </button>
                     <button id="btn-settings-toggle"
-                        class="text-slate-300 hover:text-emerald-500 bg-slate-950 border border-slate-700 hover:bg-slate-800 transition-colors w-[2.5rem] h-[2.5rem] text-[1.25rem] rounded-lg flex items-center justify-center shrink-0">
+                        class="text-slate-300 hover:text-emerald-500 bg-slate-950 border border-slate-700 hover:bg-slate-800 transition-colors w-[2.5rem] h-[2.5rem] text-[1.25rem] rounded-lg flex items-center justify-center shrink-0"
+                        aria-label="Otvori postavke">
                         <ion-icon name="options-outline"></ion-icon>
                     </button>
                     <button id="btn-menu-toggle"
-                        class="md:hidden text-slate-100 hover:text-emerald-500 transition-colors w-[2.5rem] h-[2.5rem] text-[1.25rem] rounded-lg hover:bg-slate-800 bg-slate-950 border border-slate-700 flex items-center justify-center shrink-0">
+                        class="md:hidden text-slate-100 hover:text-emerald-500 transition-colors w-[2.5rem] h-[2.5rem] text-[1.25rem] rounded-lg hover:bg-slate-800 bg-slate-950 border border-slate-700 flex items-center justify-center shrink-0"
+                        aria-label="Otvori navigaciju">
                         <ion-icon name="menu-outline"></ion-icon>
                     </button>
                 </div>
@@ -220,7 +223,8 @@
                     <div
                         class="flex items-center gap-2 sm:gap-4 w-full bg-slate-800/40 p-2 sm:p-3 rounded-2xl border border-slate-700/50 backdrop-blur-sm shadow-inner">
                         <button id="btn-ayah-play"
-                            class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-500 transition-all active:scale-90 shadow-lg shadow-emerald-900/40 group overflow-hidden shrink-0">
+                            class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-500 transition-all active:scale-90 shadow-lg shadow-emerald-900/40 group overflow-hidden shrink-0"
+                            aria-label="Pusti/pauziraj recitaciju">
                             <ion-icon name="play" id="icon-ayah-play" class="text-xl ml-1"></ion-icon>
                             <ion-icon name="pause" id="icon-ayah-pause" class="text-xl hidden"></ion-icon>
                         </button>
@@ -244,7 +248,8 @@
                                 title="Brzina">1x</button>
                             <button id="btn-ayah-loop" data-i18n-title="loopAyah"
                                 class="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-lg sm:text-xl text-slate-500 hover:text-emerald-400 transition-colors rounded-full hover:bg-slate-800"
-                                title="Ponavljaj ajet">
+                                title="Ponavljaj ajet"
+                                aria-label="Ponavljaj ajet">
                                 <ion-icon name="repeat"></ion-icon>
                             </button>
                         </div>
@@ -261,7 +266,8 @@
                         style="background-color: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.2);">
                         <button id="btn-user-play"
                             class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full transition-all active:scale-90 shadow-lg group overflow-hidden shrink-0"
-                            style="background-color: #ff3f5f4f; color: white;">
+                            style="background-color: #ff3f5f4f; color: white;"
+                            aria-label="Pusti/pauziraj tvoj snimak">
                             <ion-icon name="play" id="icon-user-play" class="text-xl ml-1"></ion-icon>
                             <ion-icon name="pause" id="icon-user-pause" class="text-xl hidden"></ion-icon>
                         </button>
@@ -334,7 +340,7 @@
 
             <div class="flex justify-between items-center mb-6 md:hidden">
                 <h2 class="text-lg font-bold text-slate-200" data-i18n="menu">Meni</h2>
-                <button id="btn-close-sidebar" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
+                <button id="btn-close-sidebar" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors" aria-label="Zatvori meni">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
@@ -464,7 +470,7 @@
                 <ion-icon name="options-outline"></ion-icon>
                 <span data-i18n="preferences">Postavke</span>
             </h2>
-            <button id="btn-close-settings" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
+            <button id="btn-close-settings" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors" aria-label="Zatvori postavke">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -586,6 +592,20 @@
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" id="chk-lightmode" class="sr-only peer">
+                        <div
+                            class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
+                        </div>
+                    </label>
+                </div>
+
+                <div
+                    class="pt-2 flex items-center justify-between bg-slate-950/30 p-3 rounded-xl border border-slate-800 mt-2">
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold text-slate-300" data-i18n="translationPosition">Prijevod ispod</span>
+                        <span class="text-[10px] text-slate-500" data-i18n="translationPositionDesc">Prikaži prijevod nakon arapskog teksta</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="chk-translation-below" class="sr-only peer">
                         <div
                             class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500">
                         </div>
@@ -726,7 +746,7 @@
                 <ion-icon name="repeat-outline"></ion-icon>
                 <span>Hifz Mod</span>
             </h2>
-            <button id="btn-close-hifz" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
+            <button id="btn-close-hifz" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors" aria-label="Zatvori Hifz mod">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -785,7 +805,7 @@
                 <ion-icon name="bookmarks-outline"></ion-icon>
                 <span data-i18n="bookmarks">Zapamćeno</span>
             </h2>
-            <button id="btn-close-bookmarks" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors">
+            <button id="btn-close-bookmarks" class="text-3xl text-slate-400 hover:text-slate-200 transition-colors" aria-label="Zatvori zapamćeno">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -802,7 +822,7 @@
         <div class="modal-container modal-container-lg h-[80vh] flex flex-col animate-modal-slide-up shadow-modal">
             <div class="shrink-0 border-b border-slate-800 p-4 relative z-10 bg-slate-900 rounded-t-2xl">
                 <div class="flex items-center gap-3 w-full">
-                    <button class="text-slate-400 hover:text-emerald-400 transition-colors p-1" data-modal-close="mdl-search">
+                    <button class="text-slate-400 hover:text-emerald-400 transition-colors p-1" data-modal-close="mdl-search" aria-label="Nazad">
                         <ion-icon name="arrow-back-outline" class="text-2xl"></ion-icon>
                     </button>
                     <div class="relative w-full">
@@ -825,18 +845,18 @@
     </div>
 
     <!-- ===== About Modal ===== -->
-    <div id="mdl-about" class="modal-overlay hidden animate-modal-fade-in">
+    <div id="mdl-about" class="modal-overlay hidden animate-modal-fade-in" role="dialog" aria-modal="true" aria-labelledby="mdl-about-title" aria-describedby="mdl-about-desc">
         <div class="modal-container max-h-[85vh] flex flex-col animate-modal-slide-up shadow-modal">
             <div class="modal-header shrink-0">
-                <h2 class="modal-title">
+                <h2 id="mdl-about-title" class="modal-title">
                     <ion-icon name="information-circle-outline" class="text-emerald-400"></ion-icon>
                     O aplikaciji
                 </h2>
-                <button class="modal-close" data-modal-close="mdl-about">
+                <button id="mdl-about-close" class="modal-close" data-modal-close="mdl-about" aria-label="Zatvori modal">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
-            <div class="modal-body modal-body-scroll">
+            <div id="mdl-about-desc" class="modal-body modal-body-scroll">
                 <div class="about-hero">
                     <div class="text-4xl mb-3">📖</div>
                     <h3 class="about-title">Mushaf Plus</h3>
@@ -866,14 +886,14 @@
     </div>
 
     <!-- ===== Version Modal ===== -->
-    <div id="mdl-version" class="modal-overlay hidden animate-modal-fade-in">
+    <div id="mdl-version" class="modal-overlay hidden animate-modal-fade-in" role="dialog" aria-modal="true" aria-labelledby="mdl-version-title">
         <div class="modal-container max-h-[85vh] flex flex-col animate-modal-slide-up shadow-modal">
             <div class="modal-header shrink-0">
-                <h2 class="modal-title">
+                <h2 id="mdl-version-title" class="modal-title">
                     <ion-icon name="git-branch-outline" class="text-emerald-400"></ion-icon>
                     Verzija
                 </h2>
-                <button class="modal-close" data-modal-close="mdl-version">
+                <button class="modal-close" data-modal-close="mdl-version" aria-label="Zatvori modal">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
@@ -941,14 +961,14 @@
     </div>
 
     <!-- ===== Surah & Hifz Modal ===== -->
-    <div id="mdl-surah" class="modal-overlay hidden animate-modal-fade-in">
+    <div id="mdl-surah" class="modal-overlay hidden animate-modal-fade-in" role="dialog" aria-modal="true" aria-labelledby="mdl-surah-title">
         <div class="modal-container modal-container-xl max-h-[85vh] flex flex-col animate-modal-slide-up shadow-modal">
             <div class="modal-header shrink-0">
-                <h2 class="modal-title">
+                <h2 id="mdl-surah-title" class="modal-title">
                     <ion-icon name="book-outline" class="text-emerald-400"></ion-icon>
                     Sura
                 </h2>
-                <button class="modal-close" data-modal-close="mdl-surah">
+                <button class="modal-close" data-modal-close="mdl-surah" aria-label="Zatvori modal">
                     <ion-icon name="close-outline"></ion-icon>
                 </button>
             </div>
@@ -973,7 +993,8 @@
     <div id="tlb-actions" class="fixed md:relative left-2 right-2 md:left-auto md:right-auto md:mt-8 flex items-center justify-center z-[9998] w-[calc(100%-1rem)] md:w-full max-w-lg mx-auto" style="bottom: 5.5rem;">
         <div class="flex items-center gap-2 sm:gap-3 bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-2xl p-2 shadow-2xl w-full max-w-lg">
             <button id="btn-prev"
-                class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all active:scale-95 shrink-0">
+                class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all active:scale-95 shrink-0"
+                aria-label="Prethodni ajet">
                 <ion-icon name="arrow-back-outline" class="text-lg sm:text-xl"></ion-icon>
             </button>
 
@@ -981,7 +1002,8 @@
                 class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl transition-all active:scale-95 shadow-lg relative overflow-hidden shrink-0 hover:shadow-xl"
                 style="background-color: rgba(244, 63, 94, 0.29); color: white;"
                 onmouseover="this.style.backgroundColor='rgba(244, 63, 94, 0.5)'"
-                onmouseout="this.style.backgroundColor='rgba(244, 63, 94, 0.29)'">
+                onmouseout="this.style.backgroundColor='rgba(244, 63, 94, 0.29)'"
+                aria-label="Snimi sebe kako učiš">
                 <div id="cnt-mic-meter" class="absolute inset-0 hidden pointer-events-none" style="background-color: rgba(0, 0, 0, 0.2);">
                     <div id="bar-mic-meter" class="h-full transition-all duration-75 w-0" style="background-color: #9a2236;">
                     </div>
@@ -991,19 +1013,22 @@
             </button>
 
             <button id="btn-valid"
-                class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 h-10 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent text-xs sm:text-base">
+                class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 h-10 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent text-xs sm:text-base"
+                aria-label="Označi ajet kao tačno pročitan">
                 <ion-icon name="checkmark-circle-outline" class="text-base sm:text-xl"></ion-icon>
                 <span data-i18n="valid">Tačno</span>
             </button>
 
             <button id="btn-bookmark"
-                class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 h-10 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent text-xs sm:text-base">
+                class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 h-10 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold active:scale-95 border-2 border-transparent text-xs sm:text-base"
+                aria-label="Dodaj ajet u zapamćene">
                 <ion-icon name="bookmark-outline" class="text-base sm:text-xl"></ion-icon>
                 <span data-i18n="bookmark">Označi</span>
             </button>
 
             <button id="btn-next"
-                class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all active:scale-95 shrink-0">
+                class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all active:scale-95 shrink-0"
+                aria-label="Sljedeći ajet">
                 <ion-icon name="arrow-forward-outline" class="text-lg sm:text-xl"></ion-icon>
             </button>
         </div>
@@ -1053,14 +1078,14 @@
     
     <!-- Zoom Toolbar (Left Side) -->
     <div id="tlb-zoom" class="hidden">
-        <button id="btn-zoom-in" class="btn-zoom" title="Zoom In">
+        <button id="btn-zoom-in" class="btn-zoom" title="Zoom In" aria-label="Uvećaj">
             <ion-icon name="add"></ion-icon>
         </button>
         <div id="dsp-zoom-val">100%</div>
-        <button id="btn-zoom-reset" class="btn-zoom" title="Reset Zoom">
+        <button id="btn-zoom-reset" class="btn-zoom" title="Reset Zoom" aria-label="Resetuj uvećanje">
             <ion-icon name="sync"></ion-icon>
         </button>
-        <button id="btn-zoom-out" class="btn-zoom" title="Zoom Out">
+        <button id="btn-zoom-out" class="btn-zoom" title="Zoom Out" aria-label="Umanji">
             <ion-icon name="remove"></ion-icon>
         </button>
     </div>
@@ -1105,6 +1130,7 @@
             "js/tajweed_engine.js",
             "js/i18n.js",
             "js/config.js",
+            "js/constants.js",
             "js/validation.js",
             "js/utils.js",
             "js/effects.js",

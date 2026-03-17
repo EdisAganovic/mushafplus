@@ -153,18 +153,106 @@ function closeHifz() {
 }
 
 /**
+ * Stores the currently focused element before modal opens (for focus return)
+ */
+let lastFocusedElementBeforeModal = null;
+
+/**
+ * Gets all focusable elements within a container
+ */
+function getFocusableElements(container) {
+  const focusableSelectors = [
+    'button:not([disabled])',
+    'a[href]',
+    'input:not([disabled]):not([type="hidden"])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])',
+    'audio[controls]',
+    'video[controls]',
+    '[contenteditable]:not([contenteditable="false"])'
+  ].join(', ');
+
+  return Array.from(container.querySelectorAll(focusableSelectors)).filter(el => {
+    return el.offsetParent !== null; // Visible elements only
+  });
+}
+
+/**
+ * Sets up focus trap within a modal
+ */
+function trapFocusInModal(modal) {
+  const focusableElements = getFocusableElements(modal);
+  const firstFocusable = focusableElements[0];
+  const lastFocusable = focusableElements[focusableElements.length - 1];
+
+  if (firstFocusable) {
+    firstFocusable.focus();
+  }
+
+  // Remove any existing focus trap listener
+  modal.removeEventListener('keydown', handleModalTabKey);
+  modal._focusTrapHandler = handleModalTabKey;
+
+  modal.addEventListener('keydown', handleModalTabKey);
+
+  function handleModalTabKey(e) {
+    if (e.key !== 'Tab') return;
+
+    // Refresh focusable elements in case content changed
+    const currentFocusable = getFocusableElements(modal);
+    const first = currentFocusable[0];
+    const last = currentFocusable[currentFocusable.length - 1];
+
+    if (!currentFocusable.length) return;
+
+    if (e.shiftKey) {
+      // Shift + Tab: going backwards
+      if (document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      // Tab: going forwards
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+}
+
+/**
+ * Releases focus trap from a modal
+ */
+function releaseFocusTrap(modal) {
+  if (modal && modal._focusTrapHandler) {
+    modal.removeEventListener('keydown', modal._focusTrapHandler);
+    delete modal._focusTrapHandler;
+  }
+}
+
+/**
  * Opens a generic modal by ID.
  */
 function openModal(id) {
   const modal = document.getElementById(id);
-  if (modal) modal.classList.remove("hidden");
-  
+  if (!modal) return;
+
+  // Store the currently focused element for later restoration
+  lastFocusedElementBeforeModal = document.activeElement;
+
+  modal.classList.remove("hidden");
+
+  // Set up focus trapping
+  trapFocusInModal(modal);
+
   // Explicitly hide sidebar for Surah selector as requested
   if (id === "mdl-surah" && els.sidebar) {
     els.sidebar.classList.add("md:hidden");
     if (typeof closeSidebar === "function") closeSidebar();
   }
-  
+
   updateToolbarVisibility();
 }
 
@@ -173,7 +261,18 @@ function openModal(id) {
  */
 function closeModal(id) {
   const modal = document.getElementById(id);
-  if (modal) modal.classList.add("hidden");
+  if (!modal) return;
+
+  // Release focus trap
+  releaseFocusTrap(modal);
+
+  modal.classList.add("hidden");
+
+  // Return focus to the element that was focused before modal opened
+  if (lastFocusedElementBeforeModal && typeof lastFocusedElementBeforeModal.focus === "function") {
+    lastFocusedElementBeforeModal.focus();
+  }
+  lastFocusedElementBeforeModal = null;
 
   // Restore sidebar visibility when closing Surah selector (only if not in spread mode)
   if (id === "mdl-surah" && els.sidebar && !AppState.settings.spreadMode) {
@@ -241,17 +340,20 @@ function updateThemeDotsUI() {
  * @param {boolean} reset - If true, resets to 100%
  */
 window.updateSpreadZoom = function(delta = 0, reset = false) {
-  let target = reset ? 100 : (AppState.settings.spreadZoom || 100) + delta;
-  
-  // Clamp between 70% and 250%
-  target = Math.max(70, Math.min(250, target));
-  
+  const MIN_ZOOM = QURAN_CONSTANTS.MIN_ZOOM || 50;
+  const MAX_ZOOM = QURAN_CONSTANTS.MAX_ZOOM || 300;
+
+  let target = reset ? QURAN_CONSTANTS.DEFAULT_ZOOM || 100 : (AppState.settings.spreadZoom || 100) + delta;
+
+  // Clamp between MIN_ZOOM and MAX_ZOOM
+  target = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, target));
+
   AppState.settings.spreadZoom = target;
   localStorage.setItem("quran_spread_zoom", target);
-  
+
   // Apply to .h-full value
   document.documentElement.style.setProperty('--h-full-value', `${target}%`);
-  
+
   // Update Display
   if (els.zoomValDisplay) {
     els.zoomValDisplay.textContent = `${target}%`;

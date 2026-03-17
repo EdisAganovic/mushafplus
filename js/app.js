@@ -119,6 +119,10 @@ async function init() {
       document.body.classList.toggle("hide-notes", !AppState.settings.showNotes);
     }
 
+    if (els.translationPositionToggle) {
+      els.translationPositionToggle.checked = AppState.settings.translationBelow;
+    }
+
     // Apply spread mode using centralized function
     if (typeof window.applySpreadMode === "function") {
       window.applySpreadMode();
@@ -126,6 +130,7 @@ async function init() {
 
     applySettings();
     applyTranslations();
+    applyTranslationPosition();
     updateReciterLabel();
 
     // --- UPDATE NOTIFICATION ---
@@ -152,7 +157,7 @@ async function init() {
     }
   } catch (error) {
     console.error("Init failed:", error);
-    alert("Load Error: " + error.message);
+    showErrorToast("Greška pri učitavanju: " + error.message);
   }
 }
 
@@ -703,6 +708,15 @@ function setupEventListeners() {
     });
   }
 
+  // --- TRANSLATION POSITION TOGGLE ---
+  if (els.translationPositionToggle) {
+    els.translationPositionToggle.addEventListener("change", (e) => {
+      AppState.settings.translationBelow = e.target.checked;
+      localStorage.setItem("quran_translation_below", e.target.checked);
+      applyTranslationPosition();
+    });
+  }
+
   // --- KEYBOARD SHORTCUTS (extracted) ---
   if (typeof window.initKeyboardShortcuts === "function") {
     window.initKeyboardShortcuts();
@@ -791,6 +805,47 @@ function setupEventListeners() {
       if (els.settingsPreviewAr) els.settingsPreviewAr.style.lineHeight = lh;
       localStorage.setItem("quran_ar_lh", lh);
     });
+  }
+}
+
+/**
+ * Reorders the Ayah Card elements based on the translation position setting.
+ */
+function applyTranslationPosition() {
+  const card = els.ayahCard;
+  if (!card) return;
+
+  const translationWrap = els.translationDisplay ? els.translationDisplay.parentElement : null;
+  const bismillah = els.bismillahDisplay;
+  const arabic = els.arabicDisplay;
+  const tajweedLegend = els.tajweedLegendContainer;
+  
+  if (!translationWrap || !arabic || !tajweedLegend) return;
+
+  if (AppState.settings.translationBelow) {
+    // Order: Bismillah -> Arabic -> Translation -> Tajweed Legend
+    if (bismillah) card.insertBefore(bismillah, tajweedLegend);
+    card.insertBefore(arabic, tajweedLegend);
+    card.insertBefore(translationWrap, tajweedLegend);
+  } else {
+    // Order: Translation -> Bismillah -> Arabic -> Tajweed Legend
+    card.insertBefore(translationWrap, tajweedLegend);
+    if (bismillah) card.insertBefore(bismillah, tajweedLegend);
+    card.insertBefore(arabic, tajweedLegend);
+  }
+  
+  // Update preview in settings
+  if (els.settingsPreviewAr && els.settingsPreviewBs) {
+    const prvArContainer = els.settingsPreviewAr.closest('.p-3');
+    const prvBsContainer = els.settingsPreviewBs.closest('.p-3');
+    if (prvArContainer && prvBsContainer) {
+      const prvParent = prvArContainer.parentElement;
+      if (AppState.settings.translationBelow) {
+        prvParent.insertBefore(prvArContainer, prvBsContainer);
+      } else {
+        prvParent.insertBefore(prvBsContainer, prvArContainer);
+      }
+    }
   }
 }
 
@@ -905,60 +960,47 @@ function setupMobileNavHandlers() {
   }
   if (els.settingsClose) els.settingsClose.onclick = closeAllMenusAndModals;
   if (els.settingsOverlay) els.settingsOverlay.onclick = closeAllMenusAndModals;
-
-  // Copy translation
-  const handleCopyTranslation = () => {
-    if (!els.translationDisplay) return;
-    const text = els.translationDisplay.innerText;
-    if (!text) return;
-
-    navigator.clipboard.writeText(text).then(() => {
-      const originalIcon = '<ion-icon name="copy-outline"></ion-icon>';
-      const successIcon = '<ion-icon name="checkmark-outline" class="text-emerald-500"></ion-icon>';
-
-      if (els.copyTranslationBtn) {
-        els.copyTranslationBtn.innerHTML = successIcon;
-        setTimeout(() => { if (els.copyTranslationBtn) els.copyTranslationBtn.innerHTML = originalIcon; }, 2000);
-      }
-
-      if (els.copyTranslationBtnMobile) {
-        const originalMobile = els.copyTranslationBtnMobile.innerHTML;
-        els.copyTranslationBtnMobile.innerHTML = `<ion-icon name="checkmark-outline" class="text-emerald-500"></ion-icon><span class="text-emerald-500" data-i18n="copied">Kopirano</span>`;
-        setTimeout(() => { if (els.copyTranslationBtnMobile) els.copyTranslationBtnMobile.innerHTML = originalMobile; }, 2000);
-      }
-    });
-  };
-
-  if (els.copyTranslationBtn) els.copyTranslationBtn.onclick = handleCopyTranslation;
-  if (els.copyTranslationBtnMobile) els.copyTranslationBtnMobile.onclick = handleCopyTranslation;
 }
 
 /**
  * Sets up navigation input handlers (Juz, Page, Ayah)
  */
 function setupNavigationInputs() {
-  let navDebounce;
+  // Map to store original values for each input field
+  const originalValues = new Map();
 
-  const handleNavInput = (value, type) => {
-    clearTimeout(navDebounce);
-    if (!value || isNaN(value)) return;
+  // Track which inputs had Enter pressed (to prevent blur from reverting)
+  const enterPressedSet = new Set();
 
-    const num = parseInt(value);
+  /**
+   * Handles Enter key press on navigation inputs
+   * Only triggers navigation when user explicitly presses Enter
+   */
+  const handleEnterKey = (e, type) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const value = e.target.value;
+      if (!value || isNaN(value)) return;
 
-    // Instant Sibling Update
-    if (type === "juz" && num >= 1 && num <= 30) {
-      const [s, a] = window.JUZ_DATA[num];
-      const p = window.getPageNumber(s, a);
-      if (els.pageInput) els.pageInput.value = p;
-      if (els.headerPageInput) els.headerPageInput.value = p;
-    }
+      const num = parseInt(value);
 
-    if (type === "page" && num >= 1 && num <= 604) {
-      const [s, a] = window.PAGE_DATA[num];
-      if (els.juzInput) els.juzInput.value = window.getJuzNumber(s, a);
-    }
+      // Update sibling inputs before navigation
+      if (type === "juz" && num >= 1 && num <= 30) {
+        const [s, a] = window.JUZ_DATA[num];
+        const p = window.getPageNumber(s, a);
+        if (els.pageInput) els.pageInput.value = p;
+        if (els.headerPageInput) els.headerPageInput.value = p;
+      }
 
-    navDebounce = setTimeout(() => {
+      if (type === "page" && num >= 1 && num <= 604) {
+        const [s, a] = window.PAGE_DATA[num];
+        if (els.juzInput) els.juzInput.value = window.getJuzNumber(s, a);
+      }
+
+      // Mark that Enter was pressed (blur should not revert)
+      enterPressedSet.add(e.target);
+
+      // Trigger navigation
       if (type === "juz" && num >= 1 && num <= 30) {
         goToJuz(num);
       } else if (type === "page" && num >= 1 && num <= 604) {
@@ -969,21 +1011,66 @@ function setupNavigationInputs() {
           goToAyah(num);
         }
       }
-    }, 600);
+
+      // Remove blur listener to prevent revert
+      e.target.removeEventListener("blur", handleBlur);
+    }
   };
 
-  if (els.juzInput) {
-    els.juzInput.oninput = (e) => handleNavInput(e.target.value, "juz");
-  }
-  if (els.pageInput) {
-    els.pageInput.oninput = (e) => handleNavInput(e.target.value, "page");
-  }
-  if (els.ayahInput) {
-    els.ayahInput.oninput = (e) => handleNavInput(e.target.value, "ayah");
-  }
-  if (els.headerPageInput) {
-    els.headerPageInput.oninput = (e) => handleNavInput(e.target.value, "page");
-  }
+  /**
+   * Handles focus event: stores original value and selects all text
+   */
+  const handleFocus = (e) => {
+    const input = e.target;
+    // Store the original value
+    originalValues.set(input, input.value);
+    // Select all text for easy replacement
+    input.select();
+  };
+
+  /**
+   * Handles blur event: reverts to original value if Enter wasn't pressed
+   */
+  const handleBlur = (e) => {
+    const input = e.target;
+    const original = originalValues.get(input);
+
+    // Check if Enter was pressed (navigation already triggered)
+    if (enterPressedSet.has(input)) {
+      enterPressedSet.delete(input);
+      originalValues.delete(input);
+      return;
+    }
+
+    // Revert to original value
+    if (original !== undefined) {
+      input.value = original;
+    }
+
+    // Cleanup
+    originalValues.delete(input);
+  };
+
+  // Attach event listeners to all navigation inputs
+  const navInputs = [
+    { el: els.juzInput, type: "juz" },
+    { el: els.pageInput, type: "page" },
+    { el: els.ayahInput, type: "ayah" },
+    { el: els.headerPageInput, type: "page" },
+  ];
+
+  navInputs.forEach(({ el, type }) => {
+    if (el) {
+      // Focus: store original value and select all
+      el.addEventListener("focus", handleFocus);
+
+      // Keydown: handle Enter key for navigation
+      el.addEventListener("keydown", (e) => handleEnterKey(e, type));
+
+      // Blur: revert to original if Enter wasn't pressed
+      el.addEventListener("blur", handleBlur);
+    }
+  });
 }
 
 /**

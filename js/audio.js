@@ -9,6 +9,39 @@ let recordStartTime = null;
 
 // Flag to prevent race condition in getUserMedia
 let isRequestingMic = false;
+let micRequestQueue = null; // Queue for pending recording requests
+
+/**
+ * Queue or execute microphone recording request.
+ * Prevents multiple simultaneous getUserMedia calls.
+ */
+function requestMicRecording() {
+  return new Promise((resolve, reject) => {
+    if (!isRequestingMic && !AppState.audioStream) {
+      // No pending request, execute immediately
+      resolve(null);
+    } else if (isRequestingMic) {
+      // Queue this request
+      if (micRequestQueue) {
+        // Already queued, reject duplicate
+        reject(new Error("Recording already in progress"));
+        return;
+      }
+      micRequestQueue = { resolve, reject };
+    } else {
+      // Stream exists, proceed
+      resolve(null);
+    }
+  });
+}
+
+function processMicQueue() {
+  if (micRequestQueue) {
+    const { resolve } = micRequestQueue;
+    micRequestQueue = null;
+    resolve(null);
+  }
+}
 
 /**
  * Initiates the microphone recording session.
@@ -32,18 +65,28 @@ function getSupportedMimeType() {
 
 window.startRecording = async function () {
   try {
-    // CRITICAL FIX #1: Prevent race condition - only one getUserMedia call at a time
-    if (isRequestingMic) {
-      console.warn("[Recording] Already requesting microphone access, ignoring duplicate call");
+    // Check if another recording is being requested
+    const wasQueued = isRequestingMic && !AppState.audioStream;
+
+    if (wasQueued) {
+      console.warn("[Recording] Microphone access pending, please wait...");
+      showErrorToast("Molimo sačekajte dok se mikrofon ne aktivira...");
       return;
     }
 
+    // CRITICAL FIX #1: Prevent race condition - only one getUserMedia call at a time
     if (!AppState.audioStream) {
       isRequestingMic = true;
       try {
         AppState.audioStream = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
+        // Process any queued request
+        processMicQueue();
+      } catch (micError) {
+        console.error("[Recording] Microphone access denied:", micError);
+        showErrorToast(T.micError);
+        throw micError;
       } finally {
         isRequestingMic = false;
       }
@@ -70,7 +113,14 @@ window.startRecording = async function () {
 
       // CRITICAL FIX #2: Prevent memory leak - properly cleanup old Blob URL before replacing
       if (AppState.recordings[key]) {
-        URL.revokeObjectURL(AppState.recordings[key]);
+        const oldRec = AppState.recordings[key];
+        // Stop playback and clear source BEFORE revoking blob URL
+        if (els.audioPlayback && els.audioPlayback.src === oldRec.url) {
+          els.audioPlayback.pause();
+          els.audioPlayback.removeAttribute("src");
+          els.audioPlayback.load();
+        }
+        URL.revokeObjectURL(oldRec.url);
         delete AppState.recordings[key];
         // Remove key from tracking array (ensure no duplicates)
         const idx = AppState.recordingKeys.indexOf(key);
@@ -88,12 +138,19 @@ window.startRecording = async function () {
       AppState.recordingKeys.push(key);
 
       // --- OPTIMIZATION: Limit memory usage for long sessions ---
-      // We only keep the last 20 recordings in the "sliding window" to prevent memory exhaustion
-      while (AppState.recordingKeys.length > 20) {
+      // We only keep the last MAX_RECORDINGS recordings in the "sliding window" to prevent memory exhaustion
+      while (AppState.recordingKeys.length > QURAN_CONSTANTS.MAX_RECORDINGS) {
         const oldestKey = AppState.recordingKeys.shift();
         if (AppState.recordings[oldestKey]) {
-           URL.revokeObjectURL(AppState.recordings[oldestKey].url);
-           delete AppState.recordings[oldestKey];
+          const oldRec = AppState.recordings[oldestKey];
+          // CRITICAL: Stop playback and clear source BEFORE revoking blob URL
+          if (els.audioPlayback && els.audioPlayback.src === oldRec.url) {
+            els.audioPlayback.pause();
+            els.audioPlayback.removeAttribute("src");
+            els.audioPlayback.load();
+          }
+          URL.revokeObjectURL(oldRec.url);
+          delete AppState.recordings[oldestKey];
         }
       }
 
@@ -181,7 +238,8 @@ window.startRecording = async function () {
     }, 1000);
 
   } catch (err) {
-    alert(T.micError);
+    console.error("[Recording] Error:", err);
+    // Error already shown in mic access error handler
   }
 };
 

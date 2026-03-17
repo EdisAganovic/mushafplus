@@ -76,6 +76,25 @@ function handleKeyboardShortcut(e) {
     }
     return;
   }
+
+  // Zoom controls (only in spread mode): +, -, 0
+  if (AppState.settings.spreadMode) {
+    if (e.key === "+" || e.key === "=") {
+      e.preventDefault();
+      if (typeof updateSpreadZoom === "function") updateSpreadZoom(QURAN_CONSTANTS.ZOOM_STEP || 10);
+      return;
+    }
+    if (e.key === "-" || e.key === "_") {
+      e.preventDefault();
+      if (typeof updateSpreadZoom === "function") updateSpreadZoom(-(QURAN_CONSTANTS.ZOOM_STEP || 10));
+      return;
+    }
+    if (e.key === "0") {
+      e.preventDefault();
+      if (typeof updateSpreadZoom === "function") updateSpreadZoom(0, true);
+      return;
+    }
+  }
 }
 
 /**
@@ -89,16 +108,34 @@ window.initKeyboardShortcuts = function() {
 };
 
 /**
- * Handles Escape key to close modals
+ * Handles Escape key to close modals with proper focus management
  */
 window.initEscapeKeyHandler = function() {
   if (window._escapeKeyHandlerInitialized) return;
-  
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      document.querySelectorAll(".modal-overlay:not(.hidden)").forEach((m) => {
-        m.classList.add("hidden");
-      });
+      const visibleModals = document.querySelectorAll(".modal-overlay:not(.hidden)");
+
+      if (visibleModals.length > 0) {
+        // Close the topmost visible modal
+        const topModal = visibleModals[visibleModals.length - 1];
+
+        // Release focus trap if present
+        if (topModal._focusTrapHandler) {
+          topModal.removeEventListener('keydown', topModal._focusTrapHandler);
+          delete topModal._focusTrapHandler;
+        }
+
+        topModal.classList.add("hidden");
+
+        // Return focus to the trigger element
+        const triggerId = topModal.getAttribute('data-trigger');
+        if (triggerId) {
+          const trigger = document.getElementById(triggerId);
+          if (trigger) trigger.focus();
+        }
+      }
     }
   });
   window._escapeKeyHandlerInitialized = true;

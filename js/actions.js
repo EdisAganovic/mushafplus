@@ -10,12 +10,23 @@
  */
 window.loadSurah = function (id, retainAyahIndex = false) {
   const surah = AppState.data.find((s) => s.id === id);
-  if (!surah) return;
+  if (!surah) {
+    console.error(`[loadSurah] Surah ${id} not found in data`);
+    return;
+  }
 
   AppState.currentSurah = surah;
   if (!retainAyahIndex) {
     AppState.currentAyahIndex = 0;
     localStorage.setItem("last_ayah_index", 0);
+  } else {
+    // Ensure ayah index is within bounds
+    const maxIndex = surah.verses.length - 1;
+    if (AppState.currentAyahIndex > maxIndex) {
+      console.warn(`[loadSurah] Ayah index ${AppState.currentAyahIndex} out of bounds for Surah ${id}, resetting to 0`);
+      AppState.currentAyahIndex = 0;
+      localStorage.setItem("last_ayah_index", 0);
+    }
   }
   localStorage.setItem("last_surah", id);
 
@@ -414,7 +425,13 @@ window.importProgress = function (event) {
         );
       }
 
-      alert("Progress imported successfully!");
+      // Show success toast
+      const successToast = document.createElement("div");
+      successToast.className = "fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999] bg-emerald-600 text-white px-6 py-3 rounded-full shadow-2xl animate-bounce font-bold";
+      successToast.textContent = "Progress uspješno uvežen!";
+      document.body.appendChild(successToast);
+      setTimeout(() => successToast.remove(), 3000);
+
       if (AppState.currentSurah) {
         renderAyah();
         renderAyahGrid();
@@ -422,7 +439,12 @@ window.importProgress = function (event) {
         updateProgress();
       }
     } catch (err) {
-      alert("Invalid backup file. Could not import progress.");
+      // Show error toast
+      const errorToast = document.createElement("div");
+      errorToast.className = "fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999] bg-rose-600 text-white px-6 py-3 rounded-full shadow-2xl animate-bounce font-bold";
+      errorToast.textContent = "Neispravna backup datoteka. Uvoz nije uspio.";
+      document.body.appendChild(errorToast);
+      setTimeout(() => errorToast.remove(), 5000);
       console.error(err);
     }
     // reset input so the exact same file can be selected again if needed
