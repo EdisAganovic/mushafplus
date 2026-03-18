@@ -75,6 +75,36 @@
   border-color: #cbd5e1 !important;
 }
 
+/* --- Dark mode: Ayah grid cells — dark gray look with visible text --- */
+.dark .ayah-cell {
+  background-color: #1e293b !important;
+  color: #cbd5e1 !important;
+  border-color: #334155 !important;
+}
+
+.dark .ayah-cell:hover {
+  background-color: #334155 !important;
+  border-color: #475569 !important;
+}
+
+.dark .ayah-cell.bg-emerald-600 {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+}
+
+.dark .active-ayah-cell {
+  background-color: #064e3b !important;
+  border: 2px solid #10b981 !important;
+  color: #a7f3d0 !important;
+  z-index: 10;
+}
+
+.dark .active-ayah-cell.bg-emerald-600 {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+}
+
 .light .ayah-cell.bg-emerald-600 {
   background-color: #10b981 !important;
   color: #ffffff !important;
@@ -113,6 +143,42 @@
 
 .light #ayah-notes::placeholder {
   color: #94a3b8 !important;
+}
+
+
+/* --- Ayah number visibility in grid cells --- */
+.dark .ayah-cell span {
+  color: #cbd5e1 !important;
+}
+
+.dark .ayah-cell.bg-emerald-600 span {
+  color: #ffffff !important;
+}
+
+.dark .ayah-cell.active-ayah-cell span {
+  color: #a7f3d0 !important;
+}
+
+.dark .ayah-cell.hifz-range-active span {
+  color: #fb7185 !important;
+}
+
+
+/* --- Light mode ayah number visibility --- */
+.light .ayah-cell span {
+  color: #1e293b !important;
+}
+
+.light .ayah-cell.bg-emerald-600 span {
+  color: #ffffff !important;
+}
+
+.light .ayah-cell.active-ayah-cell span {
+  color: #065f46 !important;
+}
+
+.light .ayah-cell.hifz-range-active span {
+  color: #fb7185 !important;
 }
 
 

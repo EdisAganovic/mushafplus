@@ -12,7 +12,133 @@
  * - els: Mapping of every interactive HTML element by ID.
  */
 
-// Helper: Safe localStorage parsing with error handling
+// ==========================================
+// LOCALSTORAGE QUOTA MANAGEMENT
+// ==========================================
+
+/**
+ * Storage quota constants
+ */
+// Storage configuration - centralized constants
+const STORAGE_CONFIG = {
+  // Default browser quotas (varies by browser)
+  DEFAULT_QUOTA_BYTES: APP.DEFAULT_STORAGE_QUOTA_BYTES, // 5MB default assumption
+  // App-specific limits to stay safely under quota
+  MAX_NOTES_SIZE_BYTES: APP.MAX_NOTES_SIZE_BYTES, // 500KB for notes
+  MAX_RECORDINGS_COUNT: QURAN_CONSTANTS.TOTAL_PAGES, // Max ayahs in Quran (one recording per ayah)
+  MAX_NOTE_LENGTH: APP.MAX_NOTE_LENGTH, // Characters per note
+  STORAGE_WARNING_THRESHOLD: APP.STORAGE_WARNING_THRESHOLD, // Warn at 85% usage
+};
+
+/**
+ * Gets current localStorage usage statistics
+ * @returns {Object} Usage stats with used bytes, total quota, and percentage
+ */
+function getStorageStats() {
+  try {
+    const keys = Object.keys(localStorage);
+    let usedBytes = 0;
+
+    for (const key of keys) {
+      const value = localStorage.getItem(key);
+      if (value !== null) {
+        usedBytes += new Blob([value]).size;
+      }
+    }
+
+    // Try to get actual quota, fallback to default
+    let quotaBytes = STORAGE_CONFIG.DEFAULT_QUOTA_BYTES;
+    if (typeof storageQuota !== "undefined") {
+      quotaBytes = storageQuota;
+    }
+
+    return {
+      usedBytes,
+      quotaBytes,
+      availableBytes: quotaBytes - usedBytes,
+      usagePercentage: (usedBytes / quotaBytes) * 100,
+      isNearLimit: STORAGE_CONFIG.STORAGE_WARNING_THRESHOLD <= (usedBytes / quotaBytes),
+      keyCount: keys.length,
+    };
+  } catch (e) {
+    console.warn("[Storage] Could not get storage stats:", e);
+    return null;
+  }
+}
+
+/**
+ * Checks if localStorage is near quota limit
+ * @returns {Object|null} Warning info or null if safe
+ */
+function checkStorageQuota() {
+  const stats = getStorageStats();
+  if (!stats) return null;
+
+  if (stats.isNearLimit) {
+    return {
+      warning: true,
+      usagePercentage: stats.usagePercentage.toFixed(2),
+      availableBytes: stats.availableBytes,
+      message: `Storage usage at ${stats.usagePercentage}% - approaching limit.`,
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Cleans up old recordings to free space (LRU eviction)
+ * Keeps only the most recent recording per ayah
+ * @param {number} keepCount - Number of recent recordings to keep
+ * @returns {Object} Info about cleaned recordings
+ */
+function cleanupRecordings(keepCount = STORAGE_CONFIG.MAX_RECORDINGS_COUNT) {
+  const recordings = AppState.runtime?.recordings || {};
+  const recordingKeys = AppState.runtime?.recordingKeys || [];
+  
+  if (Object.keys(recordings).length <= keepCount) {
+    return { cleaned: 0, freedBytes: 0 };
+  }
+
+  // Sort keys by last access time (using notes as proxy for recency)
+  const sortedKeys = Object.keys(recordings).sort((a, b) => {
+    const timeA = AppState.user?.notes[a]?.updated || 0;
+    const timeB = AppState.user?.notes[b]?.updated || 0;
+    return timeB - timeA;
+  });
+
+  // Remove oldest recordings beyond keepCount
+  const keysToRemove = sortedKeys.slice(0, sortedKeys.length - keepCount);
+  let freedBytes = 0;
+
+  for (const key of keysToRemove) {
+    const blobUrl = recordings[key];
+    if (blobUrl && typeof URL !== "undefined" && URL.revokeObjectURL) {
+      try {
+        URL.revokeObjectURL(blobUrl);
+      } catch (e) {
+        console.warn("[Storage] Failed to revoke recording URL:", e);
+      }
+    }
+    delete recordings[key];
+    freedBytes += new Blob([localStorage.getItem(key) || ""]).size;
+  }
+
+  // Update recordingKeys array
+  const recentKeys = sortedKeys.slice(keepCount - 100, keepCount); // Keep last 100 keys for quick access
+  AppState.runtime.recordings = recordings;
+  AppState.runtime.recordingKeys = recentKeys;
+
+  return {
+    cleaned: keysToRemove.length,
+    freedBytes,
+    remaining: Object.keys(recordings).length,
+  };
+}
+
+/**
+ * Safe localStorage parsing with error handling
+ */
 function safeParseStorage(key, fallback) {
   try {
     const item = localStorage.getItem(key);
@@ -30,13 +156,69 @@ function safeParseStorage(key, fallback) {
   }
 }
 
+/**
+ * Safe localStorage set with quota checking and cleanup
+ * @param {string} key - Storage key
+ * @param {*} value - Value to store
+ * @returns {boolean} True if successful, false if storage is full
+ */
+function safeSetStorage(key, value) {
+  // Check quota before writing
+  const stats = getStorageStats();
+  if (stats && stats.isNearLimit) {
+    console.warn("[Storage] Near quota limit, attempting cleanup...");
+    cleanupRecordings();
+    stats = getStorageStats();
+    if (stats && stats.isNearLimit) {
+      console.error("[Storage] Storage is full, cannot save data.");
+      return false;
+    }
+  }
+
+  try {
+    const serialized = JSON.stringify(value);
+    
+    // Check note size limit
+    if (key.includes("notes") && serialized.length > STORAGE_CONFIG.MAX_NOTES_SIZE_BYTES) {
+      console.warn(`[Storage] Note too large (${serialized.length} bytes), truncating...`);
+      // Truncate the value
+      const truncated = JSON.stringify({
+        ...value,
+        _truncated: true,
+        _originalLength: serialized.length
+      });
+      localStorage.setItem(key, truncated);
+    } else {
+      localStorage.setItem(key, serialized);
+    }
+    
+    return true;
+  } catch (e) {
+    console.error(`[Storage] Failed to set "${key}":`, e);
+    return false;
+  }
+}
+
+/**
+ * Safe localStorage remove with error handling
+ */
+function safeRemoveStorage(key) {
+  try {
+    localStorage.removeItem(key);
+    return true;
+  } catch (e) {
+    console.error(`[Storage] Failed to remove "${key}":`, e);
+    return false;
+  }
+}
+
 // Helper: Safe localStorage size migration with error handling
 function migrateSizeValue(key, fallback) {
   try {
     const v = parseFloat(localStorage.getItem(key) || fallback);
     if (isNaN(v)) return parseFloat(fallback);
     if (v < 10) return Math.round(v * 100); // was rem
-    if (v > 10 && v < 80) return Math.round((v / 16) * 100); // was px
+    if (v > 10 && v < GRID.ROW_HEIGHT) return Math.round((v / GRID.CELL_HEIGHT) * 100); // was px
     return v; // already %
   } catch (e) {
     console.error(`[Storage] Failed to migrate "${key}":`, e);

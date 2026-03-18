@@ -5,15 +5,15 @@
  */
 
 // --- VIRTUAL SCROLLING CONSTANTS ---
-// These values are centralized in QURAN_CONSTANTS
+// These values are centralized in GRID
 const VIRTUAL_GRID = {
-  ITEMS_PER_ROW: QURAN_CONSTANTS.GRID_ITEMS_PER_ROW,
-  ROW_HEIGHT: QURAN_CONSTANTS.GRID_ROW_HEIGHT,
-  BUFFER_ROWS: QURAN_CONSTANTS.GRID_BUFFER_ROWS,
-  CELL_HEIGHT: QURAN_CONSTANTS.GRID_CELL_HEIGHT,
-  GAP_SIZE: QURAN_CONSTANTS.GRID_GAP_SIZE,
-  SCROLL_OFFSET: QURAN_CONSTANTS.GRID_SCROLL_OFFSET,
-  AUTO_SCROLL_DELAY: QURAN_CONSTANTS.GRID_AUTO_SCROLL_DELAY,
+  ITEMS_PER_ROW: window.GRID.ITEMS_PER_ROW,
+  ROW_HEIGHT: window.GRID.ROW_HEIGHT,
+  BUFFER_ROWS: window.GRID.BUFFER_ROWS,
+  CELL_HEIGHT: window.GRID.CELL_HEIGHT,
+  GAP_SIZE: window.GRID.GAP_SIZE,
+  SCROLL_OFFSET: window.GRID.SCROLL_OFFSET,
+  AUTO_SCROLL_DELAY: window.GRID.AUTO_SCROLL_DELAY,
 };
 
 /**
@@ -39,10 +39,37 @@ class VirtualGrid {
    * Initialize the virtual grid with scroll listener
    */
   init() {
-    if (!this.container || !this.scrollParent || this.isInitialized) return;
+    if (!this.container || !this.scrollParent || this.isInitialized) {
+      console.warn('[VirtualGrid.init] Skipping init:', {
+        hasContainer: !!this.container,
+        hasScrollParent: !!this.scrollParent,
+        isInitialized: this.isInitialized
+      });
+      return;
+    }
 
+    // Cleanup any existing nodes before initializing
+    this.cleanup();
+    
     this.scrollParent.addEventListener("scroll", this.boundScrollHandler, { passive: true });
     this.isInitialized = true;
+    
+    console.log('[VirtualGrid.init] Initialized, calling render(). Container:', this.container.id, 'Scroll parent height:', this.scrollParent.clientHeight);
+    
+    // Initial render to populate the grid
+    this.render();
+  }
+
+  /**
+   * Debounce utility for scroll events on slower devices
+   */
+  _debounceRender() {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+    this.debounceTimer = setTimeout(() => {
+      requestAnimationFrame(() => this.render());
+    }, 100); // 100ms debounce for slower devices
   }
 
   /**
@@ -51,13 +78,33 @@ class VirtualGrid {
   destroy() {
     if (!this.scrollParent) return;
     this.scrollParent.removeEventListener("scroll", this.boundScrollHandler);
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+    }
     this.isInitialized = false;
   }
 
   /**
-   * Scroll event handler
+   * Cleanup off-screen DOM nodes immediately when switching surahs
    */
+  cleanup() {
+    // Remove all existing cells from the container
+    const existingCells = this.container.querySelectorAll(".ayah-cell");
+    existingCells.forEach(cell => cell.remove());
+    
+    // Clear any pending debounced renders
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = null;
+    }
+  }
+
+  /**
+ * Scroll event handler with debouncing for slower devices
+ */
   _onScroll() {
+    // Always render on scroll - no need for complex performance.now check
     requestAnimationFrame(() => this.render());
   }
 
@@ -68,32 +115,47 @@ class VirtualGrid {
     const verses = AppState.currentSurah?.verses;
     const surahId = AppState.currentSurah?.id;
 
-    if (!verses || !surahId) return;
+    if (!verses || !surahId) {
+      return;
+    }
 
-    // Update current surah ID if changed
+    // Update current surah ID if changed - cleanup off-screen nodes first
     if (this.currentSurahId !== surahId) {
+      this.cleanup();
       this.container.dataset.surahId = surahId;
       this.container.innerHTML = "";
+      
+      // Prevent scroll event from triggering during surah change
+      this.scrollParent.removeEventListener("scroll", this.boundScrollHandler);
       if (this.scrollParent) this.scrollParent.scrollTop = 0;
+      setTimeout(() => {
+        this.scrollParent.addEventListener("scroll", this.boundScrollHandler, { passive: true });
+      }, 0);
+      
       this.currentSurahId = surahId;
     }
 
     const totalItems = verses.length;
     const { itemsPerRow, rowHeight, bufferRows } = this.options;
-    const parentHeight = this.scrollParent.clientHeight;
+    
+    // Calculate total rows first to set container height
+    const totalRows = Math.ceil(totalItems / itemsPerRow);
+    this.container.style.height = `${totalRows * rowHeight}px`;
+    
+    // Now get accurate scroll position and parent height after container is sized
     const scrollTop = this.scrollParent.scrollTop;
+    const parentHeight = this.scrollParent.clientHeight;
 
     const startRow = Math.max(0, Math.floor(scrollTop / rowHeight) - bufferRows);
     const endRow = Math.min(
-      Math.ceil(totalItems / itemsPerRow),
+      totalRows,
       Math.ceil((scrollTop + parentHeight) / rowHeight) + bufferRows
     );
 
     const startIndex = startRow * itemsPerRow;
     const endIndex = Math.min(totalItems, endRow * itemsPerRow);
 
-    const totalRows = Math.ceil(totalItems / itemsPerRow);
-    this.container.style.height = `${totalRows * rowHeight}px`;
+    // Set paddingTop to offset visible cells
     this.container.style.paddingTop = `${startRow * rowHeight}px`;
 
     // Create fragment for visible slice
@@ -109,15 +171,15 @@ class VirtualGrid {
     const hifzMin = hasBoth ? Math.min(start, end) : (hasOnlyStart ? start : null);
     const hifzMax = hasBoth ? Math.max(start, end) : (hasOnlyStart ? start : null);
 
-    const activeIdx = AppState.current.ayahIndex;
+    const activeIdx = AppState.currentAyahIndex;
 
     for (let i = startIndex; i < endIndex; i++) {
       const verse = verses[i];
       const key = `${surahId}-${verse.id}`;
       const isActive = i === activeIdx;
-      const isChecked = AppState.user.checkedAyats.has(key);
+      const isChecked = AppState.checkedAyats.has(key);
       const isHifzRange = hifzMin !== null && i >= hifzMin && i <= hifzMax;
-      const hasNotes = !!AppState.user.notes[key];
+      const hasNotes = !!AppState.notes[key];
 
       const cell = document.createElement("button");
       cell.dataset.index = i;
@@ -232,10 +294,12 @@ document.addEventListener("click", () => {
  * - Mobile: Placed at bottom of document (viewport fixed).
  */
 window.relocateToolbar = function () {
+  // Guard clause: ensure els and AppState are defined before accessing their properties
+  if (!window.els || !AppState) return;
   if (!els.mainActionToolbar || !els.desktopToolbarPlaceholder) return;
 
   const isDesktop = window.innerWidth >= 768;
-  const isSpread = AppState.settings.spreadMode;
+  const isSpread = AppState.settings?.spreadMode;
 
   // CRITICAL: If spread mode is active, hide the toolbar
   if (isSpread) {
@@ -430,7 +494,7 @@ window.renderAyah = function () {
   }
 
   // LRU eviction: Move to end if exists, or evict oldest if at capacity
-  const CACHE_LIMIT = QURAN_CONSTANTS.TAJWEED_CACHE_SIZE || 500;
+  const CACHE_LIMIT = TAJWEED.CACHE_SIZE || 500;
 
   let tokens;
   if (window.Tajweed) {
@@ -828,6 +892,11 @@ window.renderAyah = function () {
   // 5. Notes, Checkmarks, & Bookmarks
   if (els.ayahNotesContainer) {
     if (AppState.settings.showNotes) {
+      const currentNote = els.ayahNotes.value;
+      // Save note if it has changed
+      if (currentNote !== (AppState.notes[key] || "")) {
+        saveNote(key, currentNote);
+      }
       els.ayahNotes.value = AppState.notes[key] || "";
     }
   }

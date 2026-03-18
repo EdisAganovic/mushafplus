@@ -81,10 +81,22 @@ h6 {
   color: #fb7185 !important;
 }
 
+.dark .hifz-range-active {
+  background-color: rgba(244, 63, 94, 0.35) !important;
+  border: 1.5px dashed rgba(244, 63, 94, 0.8) !important;
+  color: #fb7185 !important;
+}
+
 .active-ayah-cell {
   border: 2px solid #10b981 !important;
   z-index: 20;
   color: white !important;
+}
+
+.dark .active-ayah-cell {
+  border: 2px solid #10b981 !important;
+  z-index: 20;
+  color: #a7f3d0 !important;
 }
 
 .active-ayah-cell.hifz-range-active {
@@ -386,6 +398,207 @@ h6 {
   --theme-800: 17 94 89;
   --theme-900: 19 78 74;
   --theme-950: 4 47 46;
+}
+
+/* ===== Skeleton Loading States ===== */
+/* Pulse animation for skeleton screens */
+@keyframes skeleton-pulse {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + var(--skeleton-width)) 0;
+  }
+}
+
+/* Skeleton base styles */
+.skeleton {
+  background: linear-gradient(90deg, rgba(30, 41, 59, 0.5) 25%, rgba(47, 55, 70, 0.5), rgba(30, 41, 59, 0.5));
+  background-size: 200px 100%;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+/* Skeleton for Arabic text display */
+.skeleton-arabic {
+  --skeleton-width: 300px;
+  height: 2.25rem;
+  margin-bottom: 0.75rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Skeleton for translation text */
+.skeleton-translation {
+  --skeleton-width: 350px;
+  height: 1.5rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Skeleton for badges */
+.skeleton-badge {
+  --skeleton-width: 120px;
+  height: 2rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+
+/* Skeleton for audio player */
+.skeleton-audio-player {
+  --skeleton-width: 300px;
+  height: 2rem;
+  border-radius: 0.75rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Skeleton for notes textarea */
+.skeleton-notes {
+  --skeleton-width: 280px;
+  height: 6rem;
+  border-radius: 0.75rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid rgba(16, 185, 129, 0.1);
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* PWA Install Success Indicator */
+.pwa-install-success {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  opacity: 0;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(5, 150, 105, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 99999;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pwa-install-success.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.pwa-install-success .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
+.pwa-install-success .message {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.pwa-install-success .close-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.pwa-install-success .close-btn:hover {
+  opacity: 1;
+}
+
+/* Progress bar for large operations */
+.progress-bar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(15, 23, 42, 0.8);
+  z-index: 99998;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  width: 0%;
+  transition: width 0.3s ease-out;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.loading-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.loading-overlay-content {
+  text-align: center;
+  color: white;
+}
+
+.loading-overlay-content .spinner {
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1rem;
+}
+
+/* Skeleton for sidebar grid */
+.skeleton-grid-cell {
+  --skeleton-width: 40px;
+  height: 2.75rem;
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+/* Fade in animation for content after loading */
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-content {
+  animation: fadeInContent 0.4s ease-out forwards;
 }
 
 /* ===== Quran Text ===== */

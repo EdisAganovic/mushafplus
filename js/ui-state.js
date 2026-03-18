@@ -17,7 +17,7 @@ function openSidebar() {
       setTimeout(() => {
         els.sidebarOverlay.classList.remove("opacity-0");
         els.sidebar.classList.remove("translate-x-full");
-      }, 10);
+        }, APP.TOAST_DELAY / 10); // Using a small delay for animation
     }
   } catch (e) {
     console.error("[UI] Error opening sidebar:", e);
@@ -71,7 +71,7 @@ function closeSettings() {
       els.settingsDrawer.classList.add("translate-x-full");
       setTimeout(() => {
         els.settingsOverlay.classList.add("hidden");
-      }, 300);
+      }, APP.MODAL_ANIMATION_DURATION);
     }
   } catch (e) {
     console.error("[UI] Error closing settings:", e);
@@ -108,7 +108,7 @@ function closeBookmarks() {
       els.bookmarksDrawer.classList.add("translate-x-full");
       setTimeout(() => {
         els.bookmarksOverlay.classList.add("hidden");
-      }, 300);
+      }, APP.MODAL_ANIMATION_DURATION);
     }
   } catch (e) {
     console.error("[UI] Error closing bookmarks:", e);
@@ -149,7 +149,7 @@ function closeHifz() {
       els.hifzDrawer.classList.add("translate-x-full");
       setTimeout(() => {
         els.hifzOverlay.classList.add("hidden");
-      }, 300);
+      }, APP.MODAL_ANIMATION_DURATION);
     }
   } catch (e) {
     console.error("[UI] Error closing hifz:", e);
@@ -341,16 +341,16 @@ function updateThemeDotsUI() {
  * @param {boolean} reset - If true, resets to 100%
  */
 window.updateSpreadZoom = function(delta = 0, reset = false) {
-  const MIN_ZOOM = QURAN_CONSTANTS.MIN_ZOOM || 50;
-  const MAX_ZOOM = QURAN_CONSTANTS.MAX_ZOOM || 300;
+  const MIN_ZOOM = APP.MIN_ZOOM || 50;
+  const MAX_ZOOM = APP.MAX_ZOOM || 300;
 
-  let target = reset ? QURAN_CONSTANTS.DEFAULT_ZOOM || 100 : (AppState.settings.spreadZoom || 100) + delta;
+  let target = reset ? APP.DEFAULT_ZOOM || 100 : (AppState.settings.spreadZoom || 100) + delta;
 
   // Clamp between MIN_ZOOM and MAX_ZOOM
   target = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, target));
 
   AppState.settings.spreadZoom = target;
-  localStorage.setItem("quran_spread_zoom", target);
+  safeSetStorage("quran_spread_zoom", target);
 
   // Apply to .h-full value
   document.documentElement.style.setProperty('--h-full-value', `${target}%`);

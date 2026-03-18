@@ -117,7 +117,7 @@ window.handleSearchInput = function(query, inputEl, containerEl, listEl, emptyEl
     };
 
     window.searchWorker.postMessage({ type: "search", query: query });
-  }, 300);
+  }, APP.SEARCH_DEBOUNCE);
 
   // Store timer for this specific input
   searchDebounceTimers.set(inputEl, timer);

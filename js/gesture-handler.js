@@ -8,12 +8,9 @@
 let touchStartX = 0;
 let touchStartY = 0;
 let swipeActive = false;
-const SWIPE_THRESHOLD = 60;
 // Pull to refresh state
 let ptrStartY = 0;
 let pullDistance = 0;
-const PTR_THRESHOLD = 120; // Distance to trigger refresh
-const PTR_MAX_PULL = 180; // Max visual pull
 let isPTRActive = false;
 
 /**
@@ -91,12 +88,12 @@ function handleTouchMove(e) {
   if (diffY > 0) {
     // We are pulling down
     // Use logarithmic-ish resistance
-    pullDistance = Math.min(diffY * 0.5, PTR_MAX_PULL);
+    pullDistance = Math.min(diffY * 0.5, GESTURE.PTR_MAX_PULL);
     
     // Move from -100% to 0 and beyond
-    // -64px is the height. So 0 pull = -64px. 
+    // -64px is the height. So 0 pull = -64px.
     indicator.style.transform = `translateY(${pullDistance - 64}px)`;
-    indicator.style.opacity = Math.min(pullDistance / 60, 1);
+    indicator.style.opacity = Math.min(pullDistance / GESTURE.SWIPE_THRESHOLD, 1);
     
     // Rotate icon based on pull
     if (icon) {
@@ -116,7 +113,7 @@ function handleTouchMove(e) {
 function handleTouchEnd(e) {
   const indicator = document.getElementById("ptr-indicator");
   const icon = document.getElementById("ptr-icon");
-  if (isPTRActive && pullDistance > PTR_THRESHOLD) {
+  if (isPTRActive && pullDistance > GESTURE.PTR_THRESHOLD) {
     // Trigger Refresh
     if (indicator) {
       if (icon) icon.classList.add("animate-spin-slow");
@@ -151,7 +148,7 @@ function handleTouchEnd(e) {
   const diffY = Math.abs(touchEndY - touchStartY);
 
   // Detect horizontal swipe with more generous vertical tolerance (80px instead of 50px)
-  if (diffX > diffY && diffX > SWIPE_THRESHOLD && diffY < 80) {
+  if (diffX > diffY && diffX > GESTURE.SWIPE_THRESHOLD && diffY < GESTURE.SWIPE_VERTICAL_TOLERANCE) {
     if (touchEndX < touchStartX) {
       // Swipe left - next ayah
       AppState.swipeDirection = "left";

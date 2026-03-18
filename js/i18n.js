@@ -81,8 +81,9 @@ window.T = {
   audioPlayerDesc: "Prikaži kontrolu zvuka",
   disableWordAudio: "Isključi audio za riječi",
   disableWordAudioDesc: "Onemogući zvuk pri kliku",
-  translationPositionLabel: "Pozicija prijevoda",
-  translationPositionDesc: "Prikaži prijevod iznad ili ispod arapskog teksta",
+  translationPosition: "Pozicija prijevoda",
+  translationPositionLabel: "Prijevod ispod",
+  translationPositionDesc: "Prikaži prijevod nakon arapskog teksta",
   showActionsToolbar: "Traka sa akcijama",
   showActionsToolbarDesc: "Prikaži dugmad (Snimi, Označi...)",
 
@@ -100,6 +101,9 @@ window.T = {
   micError: "Mikrofon nije dostupan ili pristup odbijen.",
   copy: "Kopiraj",
   copied: "Kopirano",
+
+  // PWA
+  pwaInstalled: "Aplikacija je instalirana!",
 };
 
 /**

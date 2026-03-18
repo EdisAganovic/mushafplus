@@ -1,7 +1,17 @@
-const CACHE_VERSION = "v0.1.6";
+/**
+ * @file service-worker.js
+ * @description Service Worker for caching static assets and audio recitations
+ */
+
+// Cache version - hardcoded since ServiceWorker runs in isolated context
+const CACHE_VERSION = "v0.1.7";
 const STATIC_CACHE = `mushaf-static-${CACHE_VERSION}`;
 const AUDIO_RECITATION_CACHE = `mushaf-recitation-${CACHE_VERSION}`;
 const AUDIO_WORD_CACHE = `mushaf-word-${CACHE_VERSION}`;
+
+// Maximum cache sizes - hardcoded since ServiceWorker runs in isolated context
+const MAX_WORDS_CACHE = 300; // ~20MB for word audio
+const MAX_RECITATIONS_CACHE = 20; // ~30MB for recitations
 
 const ASSETS_TO_CACHE = [
   "./",
@@ -66,12 +76,12 @@ self.addEventListener("fetch", (event) => {
         if (isWordAudio) {
           caches.open(AUDIO_WORD_CACHE).then((cache) => {
             cache.put(event.request, responseToCache);
-            trimCache(AUDIO_WORD_CACHE, 300); // Cache up to 300 words (~20MB)
+            trimCache(AUDIO_WORD_CACHE, MAX_WORDS_CACHE); // Cache up to 300 words (~20MB)
           });
         } else if (isRecitation) {
           caches.open(AUDIO_RECITATION_CACHE).then((cache) => {
             cache.put(event.request, responseToCache);
-            trimCache(AUDIO_RECITATION_CACHE, 20); // Cache up to 20 recitations (~30MB)
+            trimCache(AUDIO_RECITATION_CACHE, MAX_RECITATIONS_CACHE); // Cache up to 20 recitations (~30MB)
           });
         } else {
           caches.open(STATIC_CACHE).then((cache) => {

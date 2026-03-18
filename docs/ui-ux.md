@@ -94,4 +94,4 @@ All theme-related CSS variables and specific layer colorizations are isolated in
 *   **Light/Dark Adaptive**: Each theme has a dark version and a `.light` modified version to ensure perfect contrast regardless of the global app light/dark mode preference. The app dynamically handles combining the global mode with the specific page theme choice.
 
 ---
-*Last updated: 2026-03-17*
+*Last updated: 2026-03-18*

@@ -4,6 +4,24 @@
  * State mutation logic for navigation, validation, and content updates.
  */
 
+// Debounce timer for storage operations
+let storageDebounceTimer = null;
+
+/**
+ * Debounced storage save helper
+ * Waits 500ms after the last operation before saving to localStorage
+ * @param {string} key - Storage key
+ * @param {*} value - Value to store
+ */
+function debouncedStorageSave(key, value) {
+  if (storageDebounceTimer) {
+    clearTimeout(storageDebounceTimer);
+  }
+  storageDebounceTimer = setTimeout(() => {
+    safeSetStorage(key, value);
+  }, APP.STORAGE_SAVE_DEBOUNCE);
+}
+
 /**
  * Loads a Surah into focus. Navigates back to the first Ayah.
  * @param {number} id - Surah ID (1-114)
@@ -15,16 +33,19 @@ window.loadSurah = function (id, retainAyahIndex = false) {
     return;
   }
 
+  // Show skeleton loader while loading content
+  showSkeletonLoader();
+
   if (!retainAyahIndex) {
     AppState.currentAyahIndex = 0;
-    localStorage.setItem("last_ayah_index", 0);
+    safeSetStorage("last_ayah_index", 0);
   } else {
     // Ensure ayah index is within bounds
     const maxIndex = surah.verses.length - 1;
     if (AppState.currentAyahIndex > maxIndex) {
       console.warn(`[loadSurah] Ayah index ${AppState.currentAyahIndex} out of bounds for Surah ${id}, resetting to 0`);
       AppState.currentAyahIndex = 0;
-      localStorage.setItem("last_ayah_index", 0);
+      safeSetStorage("last_ayah_index", 0);
     }
   }
 
@@ -32,7 +53,7 @@ window.loadSurah = function (id, retainAyahIndex = false) {
   if (isNewSurah) {
     // Reset Hifz range when changing surahs to avoid confusing cross-surah state
     AppState.hifzRange = { start: null, end: null };
-    localStorage.setItem("quran_hifzRange", JSON.stringify(AppState.hifzRange));
+    safeSetStorage("quran_hifzRange", JSON.stringify(AppState.hifzRange));
     
     const text = "Klikni ajet za opseg";
     if (els.hifzRangeText) els.hifzRangeText.innerText = text;
@@ -40,11 +61,14 @@ window.loadSurah = function (id, retainAyahIndex = false) {
   }
   
   AppState.currentSurah = surah;
-  localStorage.setItem("last_surah", id);
+  safeSetStorage(STORAGE_KEYS.LAST_SURAH, id);
 
   renderAyah();
   renderAyahGrid();
   updateProgress();
+
+  // Hide skeleton loader and show content with fade-in animation after rendering
+  hideSkeletonLoader();
 };
 
 /**
@@ -189,7 +213,7 @@ window.nextAyah = function () {
       AppState.currentAyahIndex = min; // Jump to start if outside or at the end
     }
     
-    localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
+    safeSetStorage("last_ayah_index", AppState.currentAyahIndex);
     renderAyah();
     if (typeof renderAyahGrid === "function") renderAyahGrid();
     return;
@@ -198,7 +222,7 @@ window.nextAyah = function () {
   if (!AppState.swipeDirection) AppState.swipeDirection = "left";
   if (AppState.currentAyahIndex < AppState.currentSurah.verses.length - 1) {
     AppState.currentAyahIndex++;
-    localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
+    safeSetStorage("last_ayah_index", AppState.currentAyahIndex);
     renderAyah();
     if (typeof renderAyahGrid === "function") renderAyahGrid();
   } else {
@@ -235,7 +259,7 @@ window.prevAyah = function () {
       AppState.currentAyahIndex = max; // Loop back to end of Hifz range
     }
     
-    localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
+    safeSetStorage("last_ayah_index", AppState.currentAyahIndex);
     renderAyah();
     if (typeof renderAyahGrid === "function") renderAyahGrid();
     return;
@@ -243,7 +267,7 @@ window.prevAyah = function () {
 
   if (AppState.currentAyahIndex > 0) {
     AppState.currentAyahIndex--;
-    localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
+    safeSetStorage("last_ayah_index", AppState.currentAyahIndex);
     renderAyah();
     if (typeof renderAyahGrid === "function") renderAyahGrid();
   } else {
@@ -252,7 +276,7 @@ window.prevAyah = function () {
       els.surahSelect.value = prevSurahId;
       loadSurah(prevSurahId, true);
       AppState.currentAyahIndex = AppState.currentSurah.verses.length - 1;
-      localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
+      safeSetStorage(STORAGE_KEYS.LAST_AYAH_INDEX, AppState.currentAyahIndex);
       renderAyah();
       if (typeof renderAyahGrid === "function") renderAyahGrid();
     }
@@ -320,10 +344,7 @@ window.toggleCheckmark = function () {
     AppState.checkedAyats.add(key);
   }
 
-  debouncedStorageSave(
-    "quran_checked",
-    JSON.stringify([...AppState.checkedAyats]),
-  );
+  debouncedStorageSave(STORAGE_KEYS.CHECKED_AYATS, JSON.stringify([...AppState.checkedAyats]));
   
   // Enable grid scroll when toggling valid status (User requested navigation)
   AppState._shouldScrollGrid = true;
@@ -331,7 +352,7 @@ window.toggleCheckmark = function () {
   // Visual Feedback
   if (els.validBtn) {
     els.validBtn.classList.add("success-pop");
-    setTimeout(() => els.validBtn.classList.remove("success-pop"), 400);
+    setTimeout(() => els.validBtn.classList.remove("success-pop"), APP.SUCCESS_ANIMATION_DELAY);
   }
 
   renderAyah();
@@ -358,7 +379,7 @@ window.toggleBookmark = function () {
   }
 
   debouncedStorageSave(
-    "quran_bookmarks",
+    STORAGE_KEYS.BOOKMARKS,
     JSON.stringify([...AppState.bookmarks]),
   );
   
@@ -368,7 +389,7 @@ window.toggleBookmark = function () {
   // Visual Feedback
   if (els.bookmarkBtn) {
     els.bookmarkBtn.classList.add("success-pop");
-    setTimeout(() => els.bookmarkBtn.classList.remove("success-pop"), 400);
+    setTimeout(() => els.bookmarkBtn.classList.remove("success-pop"), APP.SUCCESS_ANIMATION_DELAY);
   }
 
   renderAyah();
@@ -393,6 +414,52 @@ window.toggleWordHighlight = function (ayahKey, wordIdx) {
 };
 
 /**
+ * Saves notes with size validation and truncation if needed.
+ * @param {string} ayahKey - Key for the note (surah-id-ayah-id)
+ * @param {string} text - Note text
+ */
+function saveNote(ayahKey, text) {
+  // Validate and sanitize input
+  const maxLength = APP.MAX_NOTE_LENGTH;
+  if (text.length > maxLength) {
+    console.warn(`[Notes] Note truncated from ${text.length} to ${maxLength} characters`);
+    text = text.substring(0, maxLength);
+  }
+
+  if (!AppState.user.notes[ayahKey]) {
+    AppState.user.notes[ayahKey] = {
+      text: "",
+      updated: Date.now()
+    };
+  }
+
+  AppState.user.notes[ayahKey].text = text;
+  AppState.user.notes[ayahKey].updated = Date.now();
+
+  debouncedStorageSave(STORAGE_KEYS.NOTES, JSON.stringify(AppState.user.notes));
+}
+
+/**
+ * Deletes a note for the given ayah.
+ * @param {string} ayahKey - Key for the note
+ */
+function deleteNote(ayahKey) {
+  if (AppState.user.notes[ayahKey]) {
+    delete AppState.user.notes[ayahKey];
+    debouncedStorageSave(STORAGE_KEYS.NOTES, JSON.stringify(AppState.user.notes));
+  }
+}
+
+/**
+ * Updates note text for the given ayah.
+ * @param {string} ayahKey - Key for the note
+ * @param {string} text - New note text
+ */
+function updateNoteText(ayahKey, text) {
+  saveNote(ayahKey, text);
+}
+
+/**
  * Exports user progress (checked ayats, notes, highlights) to a JSON file.
  */
 window.exportProgress = function () {
@@ -408,7 +475,7 @@ window.exportProgress = function () {
 
   const a = document.createElement("a");
   a.href = url;
-  a.download = `quran_progress_${new Date().toISOString().split("T")[0]}.json`;
+  a.download = `quran_progress_${new Date().toISOString().split("T")[0]}_${APP.VERSION}.json`;
   a.click();
 
   URL.revokeObjectURL(url);
@@ -431,25 +498,22 @@ window.importProgress = function (event) {
 
       if (Array.isArray(parsed.checkedAyats)) {
         AppState.checkedAyats = new Set(parsed.checkedAyats);
-        localStorage.setItem(
-          "quran_checked",
-          JSON.stringify([...AppState.checkedAyats]),
-        );
+        safeSetStorage(STORAGE_KEYS.CHECKED_AYATS, JSON.stringify([...AppState.checkedAyats]));
       }
       if (Array.isArray(parsed.bookmarks)) {
         AppState.bookmarks = new Set(parsed.bookmarks);
-        localStorage.setItem(
+        safeSetStorage(
           "quran_bookmarks",
           JSON.stringify([...AppState.bookmarks]),
         );
       }
       if (typeof parsed.notes === "object" && parsed.notes !== null) {
         AppState.notes = parsed.notes;
-        localStorage.setItem("quran_notes", JSON.stringify(AppState.notes));
+        safeSetStorage("quran_notes", JSON.stringify(AppState.notes));
       }
       if (typeof parsed.highlights === "object" && parsed.highlights !== null) {
         AppState.highlights = parsed.highlights;
-        localStorage.setItem(
+        safeSetStorage(
           "quran_highlights",
           JSON.stringify(AppState.highlights),
         );

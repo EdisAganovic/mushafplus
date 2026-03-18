@@ -11,9 +11,11 @@
 const PAGE_SVG_CACHE = new Map();
 const PAGE_LOAD_QUEUE = new Set(); // Track pages being loaded
 
-// MINOR FIX #1: Constants for magic numbers
-const MAX_PAGE = 604;
-const MIN_PAGE = 1;
+// Constants - centralized in APP namespace
+const PAGE_LIMITS = {
+  MAX: APP.MAX_PAGES,
+  MIN: 1
+};
 const SVG_PATH = "assets/optimized";
 
 /**
@@ -51,7 +53,7 @@ window.prefetchAdjacentPages = function(pageNum) {
     pageNum + 2, pageNum - 2,  // Next adjacent
     pageNum + 3, pageNum - 3   // Further pages (lower priority)
   ].filter((p) =>
-    p >= MIN_PAGE && p <= MAX_PAGE &&
+    p >= PAGE_LIMITS.MIN && p <= PAGE_LIMITS.MAX &&
     !PAGE_SVG_CACHE.has(p) &&
     !PAGE_LOAD_QUEUE.has(p)
   );
@@ -85,7 +87,7 @@ window.prefetchAdjacentPages = function(pageNum) {
  * Called once during initialization.
  */
 window.preloadCriticalPages = function() {
-  const criticalPages = [1, 2, 3, 604, 603, 602]; // First and last pages
+  const criticalPages = [PAGE_LIMITS.MIN, PAGE_LIMITS.MIN + 1, PAGE_LIMITS.MIN + 2, PAGE_LIMITS.MAX, PAGE_LIMITS.MAX - 1, PAGE_LIMITS.MAX - 2]; // First and last pages
 
   criticalPages.forEach((p) => {
     if (!PAGE_SVG_CACHE.has(p)) {
@@ -158,7 +160,7 @@ async function renderPageColumn(pageNum, idx, isRight, progressBar) {
   renderSpreadSkeleton(pageCol);
 
   // Handle null/invalid pages
-  if (pageNum === null || pageNum < MIN_PAGE || pageNum > MAX_PAGE) {
+  if (pageNum === null || pageNum < PAGE_LIMITS.MIN || pageNum > PAGE_LIMITS.MAX) {
     pageCol.classList.add("hidden", "lg:flex", "invisible");
     return pageCol;
   }
@@ -305,17 +307,17 @@ window.renderSpread = async function () {
 
   if (currentPage % 2 !== 0) {
     rightPageNum = currentPage;
-    leftPageNum = currentPage + 1 <= MAX_PAGE ? currentPage + 1 : null;
+    leftPageNum = currentPage + 1 <= PAGE_LIMITS.MAX ? currentPage + 1 : null;
   } else {
-    rightPageNum = currentPage - 1 >= MIN_PAGE ? currentPage - 1 : null;
+    rightPageNum = currentPage - 1 >= PAGE_LIMITS.MIN ? currentPage - 1 : null;
     leftPageNum = currentPage;
   }
 
   // Validate page numbers
-  if (rightPageNum && (rightPageNum < MIN_PAGE || rightPageNum > MAX_PAGE)) {
+  if (rightPageNum && (rightPageNum < PAGE_LIMITS.MIN || rightPageNum > PAGE_LIMITS.MAX)) {
     rightPageNum = null;
   }
-  if (leftPageNum && (leftPageNum < MIN_PAGE || leftPageNum > MAX_PAGE)) {
+  if (leftPageNum && (leftPageNum < PAGE_LIMITS.MIN || leftPageNum > PAGE_LIMITS.MAX)) {
     leftPageNum = null;
   }
 

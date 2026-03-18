@@ -20,27 +20,544 @@
 // 4. gesture-handler.js
 // ============================================
 
-// --- GLOBAL ERROR BOUNDARY ---
-window.onerror = function(message, source, lineno, colno, error) {
-  console.error("Global Error Caught:", message, "at", source, ":", lineno);
-  showErrorToast("Došlo je do greške u aplikaciji. Molimo osvježite stranicu.");
-  return false;
-};
+// ============================================
+// CENTRALIZED ERROR BOUNDARY CLASS
+// ============================================
 
-window.onunhandledrejection = function(event) {
-  console.error("Unhandled Promise Rejection:", event.reason);
-  showErrorToast("Greška u mrežnom zahtjevu ili obradi podataka.");
+/**
+ * Centralized Error Boundary for consistent error handling across the application.
+ * Provides structured logging, categorization of errors, and unified error reporting.
+ */
+class ErrorBoundary {
+  /**
+   * Creates an instance of ErrorBoundary.
+   */
+  constructor() {
+    this.errorCount = 0;
+    this.recoverableErrors = [];
+    this.unrecoverableErrors = [];
+    this.maxRecoverableHistory = 10;
+  }
+
+  /**
+   * Generates a structured log entry with timestamp and context.
+   * @param {Object} error - The error object
+   * @returns {Object} Structured log entry
+   */
+  _createLogEntry(error, context = {}) {
+    const now = new Date();
+    const timestamp = now.toISOString();
+    const shortTime = now.toLocaleTimeString('en-US', { hour12: false });
+
+    return {
+      id: `ERR-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      timestamp,
+      shortTime,
+      level: error.level || 'error',
+      type: context.type || 'unknown',
+      message: error.message || String(error),
+      source: error.source || 'unknown',
+      lineno: error.lineno || null,
+      colno: error.colno || null,
+      stack: error.stack || null,
+      context: {
+        ...context,
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        appVersion: navigator.appVersion
+      },
+      isRecoverable: context.isRecoverable !== undefined ? context.isRecoverable : this._isErrorRecoverable(error),
+      errorCount: ++this.errorCount
+    };
+  }
+
+  /**
+   * Determines if an error is recoverable (can be handled gracefully) or unrecoverable.
+   * @param {Object} error - The error object
+   * @returns {boolean} True if the error is recoverable
+   */
+  _isErrorRecoverable(error) {
+    const errorMessage = String(error.message || error);
+
+    // Unrecoverable errors - critical failures that prevent app functionality
+    const unrecoverablePatterns = [
+      /Cannot (read|write|find)/i,
+      /Failed to fetch/i,
+      /Network request failed/i,
+      /SecurityError/i,
+      /QuotaExceededError/i,
+      /InvalidAccessError/i,
+      /TypeError: Cannot read property 'undefined'/i,
+      /Cannot access before initialization/i,
+      /Script error./i
+    ];
+
+    // Recoverable errors - can be handled gracefully with user feedback
+    const recoverablePatterns = [
+      /Audio (play|load)/i,
+      /Microphone/i,
+      /Permission denied/i,
+      /User cancelled/i,
+      /Invalid input/i,
+      /Validation failed/i,
+      /Not found/i,
+      /Empty/i
+    ];
+
+    for (const pattern of unrecoverablePatterns) {
+      if (pattern.test(errorMessage)) return false;
+    }
+
+    for (const pattern of recoverablePatterns) {
+      if (pattern.test(errorMessage)) return true;
+    }
+
+    // Default: treat as recoverable unless it's a critical error
+    return !errorMessage.includes('null') && !errorMessage.includes('undefined');
+  }
+
+  /**
+   * Handles a global JavaScript error caught by window.onerror.
+   * @param {Object} errorInfo - Error information object
+   * @returns {boolean} True if error was handled, false otherwise
+   */
+  handleGlobalError(errorInfo) {
+    const logEntry = this._createLogEntry({ ...errorInfo }, { type: 'global' });
+
+    console.error('[ErrorBoundary] Global Error:', logEntry);
+
+    // Log to browser console with formatted output
+    this._logToConsole(logEntry);
+
+    // Store based on recoverability
+    if (logEntry.isRecoverable) {
+      this.recoverableErrors.push(logEntry);
+      if (this.recoverableErrors.length > this.maxRecoverableHistory) {
+        this.recoverableErrors.shift();
+      }
+    } else {
+      this.unrecoverableErrors.push(logEntry);
+      this._showErrorToast('Došlo je do kritične greške. Molimo osvježite stranicu.');
+    }
+
+    return true; // Prevent default error handling
+  }
+
+  /**
+   * Handles an unhandled promise rejection.
+   * @param {Object} event - The promise rejection event
+   * @returns {boolean} True if handled
+   */
+  handleUnhandledRejection(event) {
+    const logEntry = this._createLogEntry({ ...event.reason }, { type: 'promise-rejection' });
+
+    console.error('[ErrorBoundary] Unhandled Promise Rejection:', logEntry);
+
+    // Log to browser console with formatted output
+    this._logToConsole(logEntry);
+
+    // Store based on recoverability
+    if (logEntry.isRecoverable) {
+      this.recoverableErrors.push(logEntry);
+      if (this.recoverableErrors.length > this.maxRecoverableHistory) {
+        this.recoverableErrors.shift();
+      }
+    } else {
+      this.unrecoverableErrors.push(logEntry);
+      this._showErrorToast('Došlo je do greške u obradi podataka. Molimo pokušajte ponovo.');
+    }
+
+    return true; // Mark as handled
+  }
+
+  /**
+   * Logs error entry to browser console with formatted output.
+   * @param {Object} logEntry - The structured log entry
+   */
+  _logToConsole(logEntry) {
+    const { shortTime, level, type, message, source, lineno, colno, isRecoverable } = logEntry;
+
+    let prefix = `[${shortTime}] [ERR-${level.toUpperCase()}]`;
+    if (type !== 'unknown') {
+      prefix += ` [${type.toUpperCase()}]`;
+    }
+    if (!isRecoverable) {
+      prefix += ` [UNRECOVERABLE]`;
+    }
+
+    console.groupCollapsed(prefix);
+    console.log('Message:', message);
+
+    if (source !== 'unknown') {
+      console.log('Location:', source, ':', lineno, colno);
+    }
+
+    if (logEntry.stack) {
+      console.log('Stack trace:', logEntry.stack.split('\n').slice(0, 10).join('\n'));
+    }
+
+    console.log('Context:', JSON.stringify(logEntry.context, null, 2));
+    console.groupEnd();
+  }
+
+  /**
+   * Shows an error toast notification.
+   * @param {string} message - Error message to display
+   */
+  _showErrorToast(message) {
+    showErrorToast(message);
+  }
+
+  /**
+   * Gets recoverable errors for external handling (e.g., Sentry integration).
+   * @returns {Array} Array of recent recoverable error log entries
+   */
+  getRecoverableErrors() {
+    return [...this.recoverableErrors];
+  }
+
+  /**
+   * Gets unrecoverable errors for critical issue tracking.
+   * @returns {Array} Array of unrecoverable error log entries
+   */
+  getUnrecoverableErrors() {
+    return [...this.unrecoverableErrors];
+  }
+
+  /**
+   * Clears all error history (useful for testing or user action).
+   */
+  clearHistory() {
+    this.recoverableErrors = [];
+    this.unrecoverableErrors = [];
+    this.errorCount = 0;
+  }
+
+  /**
+   * Exports all errors as a JSON object for debugging/reporting.
+   * @returns {Object} Exported error data
+   */
+  exportErrors() {
+    return {
+      exportedAt: new Date().toISOString(),
+      totalErrors: this.errorCount,
+      recoverableCount: this.recoverableErrors.length,
+      unrecoverableCount: this.unrecoverableErrors.length,
+      errors: [
+        ...this.recoverableErrors.map(e => ({ id: e.id, message: e.message, timestamp: e.timestamp })),
+        ...this.unrecoverableErrors.map(e => ({ id: e.id, message: e.message, timestamp: e.timestamp }))
+      ]
+    };
+  }
+
+  /**
+   * Resets the error boundary instance (for testing purposes).
+   */
+  reset() {
+    this.recoverableErrors = [];
+    this.unrecoverableErrors = [];
+    this.errorCount = 0;
+  }
+}
+
+// ============================================
+// GLOBAL ERROR BOUNDARY INSTANCE
+// ============================================
+
+/**
+ * Global Error Boundary instance accessible throughout the application.
+ * Provides centralized error handling and logging.
+ */
+const GlobalErrorBoundary = new ErrorBoundary();
+
+// Make it globally accessible for modules that need to report errors
+window.__errorBoundary__ = GlobalErrorBoundary;
+
+// ============================================
+// GLOBAL ERROR HANDLERS
+// ============================================
+
+/**
+ * Global error handler for JavaScript errors.
+ * Uses the centralized ErrorBoundary class for consistent handling.
+ */
+window.onerror = function(message, source, lineno, colno, error) {
+  const errorBoundary = new ErrorBoundary();
+  return errorBoundary.handleGlobalError({
+    message,
+    source,
+    lineno,
+    colno,
+    error,
+    stack: error ? error.stack : undefined
+  });
 };
 
 /**
- * Shows error toast notification
+ * Global unhandled promise rejection handler.
+ * Uses the centralized ErrorBoundary class for consistent handling.
  */
-function showErrorToast(msg) {
+window.onunhandledrejection = function(event) {
+  const errorBoundary = new ErrorBoundary();
+  return errorBoundary.handleUnhandledRejection(event);
+};
+
+// ============================================
+// ERROR REPORTING HELPERS
+// ============================================
+
+/**
+ * Reports an error using the global error boundary.
+ * This provides consistent error handling across all modules.
+ * 
+ * @param {Error|string} error - The error to report
+ * @param {Object} [context] - Additional context about the error
+ * @param {string} [context.type] - Error type/category
+ * @param {boolean} [context.isRecoverable] - Whether the error is recoverable
+ * @returns {Promise<void>} Resolves when error is logged
+ */
+function reportError(error, context = {}) {
+  if (!error) return Promise.resolve();
+
+  const errorObj = error instanceof Error ? error : new Error(String(error));
+  
+  // Add context to the error
+  Object.assign(errorObj, context);
+
+  // Log using global error boundary
+  console.error('[ErrorBoundary] Application Error:', {
+    message: errorObj.message,
+    stack: errorObj.stack,
+    ...context
+  });
+
+  // Store in global error boundary if available
+  if (typeof window.__errorBoundary__ !== 'undefined') {
+    const eb = window.__errorBoundary__;
+    
+    if (context.isRecoverable === false) {
+      eb.unrecoverableErrors.push(eb._createLogEntry(errorObj, context));
+      showErrorToast('Došlo je do kritične greške. Molimo osvježite stranicu.', { dangerous: true });
+    } else {
+      eb.recoverableErrors.push(eb._createLogEntry(errorObj, context));
+      if (eb.recoverableErrors.length > eb.maxRecoverableHistory) {
+        eb.recoverableErrors.shift();
+      }
+    }
+  }
+
+  return Promise.resolve();
+}
+
+/**
+ * Reports a recoverable error (won't show toast notification).
+ * @param {Error|string} error - The error to report
+ * @param {Object} [context] - Additional context
+ */
+function reportRecoverableError(error, context = {}) {
+  return reportError(error, { ...context, isRecoverable: true });
+}
+
+/**
+ * Reports an unrecoverable error (shows toast notification).
+ * @param {Error|string} error - The error to report
+ * @param {Object} [context] - Additional context
+ */
+function reportUnrecoverableError(error, context = {}) {
+  return reportError(error, { ...context, isRecoverable: false });
+}
+
+/**
+ * Safely executes code with automatic error handling.
+ * @param {Function} fn - Function to execute
+ * @param {Object} [options] - Options for error handling
+ * @param {boolean} [options.recoverable=true] - Whether errors are recoverable
+ * @returns {Promise<any>} Result of the function or error info
+ */
+function safeExecute(fn, options = {}) {
+  const isRecoverable = options.recoverable !== false;
+
+  return Promise.resolve()
+    .then(() => fn())
+    .catch((error) => reportError(error, { isRecoverable }));
+}
+
+// ============================================
+// GLOBAL ERROR BOUNDARY ---
+// ============================================
+
+// --- LOCALSTORAGE QUOTA MONITORING ---
+function initStorageMonitoring() {
+  // Check storage quota on initialization
+  const stats = getStorageStats();
+  if (stats) {
+    console.log("[Storage] Quota Status:", {
+      usedBytes: stats.usedBytes,
+      quotaBytes: stats.quotaBytes,
+      usagePercentage: stats.usagePercentage.toFixed(2) + "%",
+      availableBytes: stats.availableBytes,
+      isNearLimit: stats.isNearLimit,
+    });
+
+    const quotaWarning = checkStorageQuota();
+    if (quotaWarning) {
+      console.warn("[Storage]", quotaWarning.message);
+      showErrorToast("Prostor za pohranu je gotov. Stari snimci će biti automatski obrisani.");
+    }
+  } else {
+    console.warn("[Storage] Could not retrieve storage statistics");
+  }
+
+  // Set up periodic monitoring (every 5 minutes)
+  setInterval(() => {
+    const stats = getStorageStats();
+    if (stats && stats.isNearLimit) {
+      console.warn("[Storage] Still near quota limit, cleaning up...");
+      cleanupRecordings();
+    }
+  }, APP.NAVIGATION_DEBOUNCE * 50); // 5 minutes
+}
+
+/**
+ * Shows error toast notification
+ * @param {string} msg - Error message to display
+ * @param {Object} [options] - Optional configuration
+ * @param {boolean} [options.dangerous=false] - If true, shows a more severe warning style
+ */
+function showErrorToast(msg, options = {}) {
   const toast = document.createElement("div");
-  toast.className = "fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999] bg-rose-600 text-white px-6 py-3 rounded-full shadow-2xl animate-bounce font-bold";
+  const isDangerous = options.dangerous || false;
+  
+  // Adjust styling based on severity
+  if (isDangerous) {
+    toast.className = "fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999] bg-red-700 text-white px-6 py-3 rounded-full shadow-2xl animate-bounce font-bold border-2 border-red-500";
+    } else {
+      toast.className = "fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999] bg-rose-600 text-white px-6 py-3 rounded-full shadow-2xl animate-bounce font-bold";
+    }
+    
   toast.textContent = msg;
   document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 5000);
+  setTimeout(() => toast.remove(), APP.TOAST_DURATION);
+}
+
+/**
+ * Shows the loading overlay
+ */
+function showLoading() {
+  const overlay = document.getElementById('loading-overlay');
+  if (overlay) {
+    overlay.classList.add('show');
+  }
+}
+
+/**
+ * Hides the loading overlay
+ */
+function hideLoading() {
+  const overlay = document.getElementById('loading-overlay');
+  if (overlay) {
+    overlay.classList.remove('show');
+  }
+}
+
+/**
+ * Shows the PWA install success indicator
+ */
+function showPwaInstallSuccess() {
+  const successEl = document.getElementById('pwa-install-success');
+  if (successEl) {
+    successEl.classList.remove('hidden');
+    // Trigger reflow to restart animation
+    successEl.offsetHeight;
+    successEl.classList.add('show');
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+      successEl.classList.remove('show');
+      setTimeout(() => {
+        successEl.classList.add('hidden');
+      }, 400);
+    }, 5000);
+  }
+}
+
+/**
+ * Hides the PWA install success indicator
+ */
+function hidePwaInstallSuccess() {
+  const successEl = document.getElementById('pwa-install-success');
+  if (successEl) {
+    successEl.classList.remove('show');
+    setTimeout(() => {
+      successEl.classList.add('hidden');
+    }, 400);
+  }
+}
+
+/**
+ * Updates progress bar for large operations
+ * @param {number} progress - Progress value from 0 to 100
+ */
+function updateProgressBar(progress) {
+  const progressBar = document.getElementById('progress-bar-fill');
+  if (progressBar) {
+    progressBar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+  }
+}
+
+/**
+ * Shows the progress bar container
+ */
+function showProgressBar() {
+  const container = document.getElementById('progress-bar-container');
+  if (container) {
+    container.classList.remove('hidden');
+  }
+}
+
+/**
+ * Hides the progress bar container
+ */
+function hideProgressBar() {
+  const container = document.getElementById('progress-bar-container');
+  if (container) {
+    container.classList.add('hidden');
+  }
+}
+
+/**
+ * Shows the skeleton loader
+ */
+function showSkeletonLoader() {
+  const skeletonLoader = document.getElementById('skeleton-loader');
+  const ayahCard = document.getElementById('crd-ayah');
+  
+  if (skeletonLoader) {
+    skeletonLoader.classList.remove('hidden');
+  }
+  
+  if (ayahCard && !ayahCard.classList.contains('hidden')) {
+    ayahCard.classList.add('hidden');
+  }
+}
+
+/**
+ * Hides the skeleton loader and shows the actual content
+ */
+function hideSkeletonLoader() {
+  const skeletonLoader = document.getElementById('skeleton-loader');
+  const ayahCard = document.getElementById('crd-ayah');
+  
+  if (skeletonLoader) {
+    skeletonLoader.classList.add('hidden');
+  }
+  
+  if (ayahCard && ayahCard.classList.contains('hidden')) {
+    ayahCard.classList.remove('hidden');
+    // Trigger reflow to restart animation
+    ayahCard.offsetHeight;
+    ayahCard.classList.add('fade-in-content');
+  }
 }
 
 /**
@@ -48,6 +565,12 @@ function showErrorToast(msg) {
  */
 async function init() {
   try {
+    // Show loading overlay on page load
+    showLoading();
+    
+    // Initialize storage monitoring FIRST
+    initStorageMonitoring();
+
     // 1. Validate Data Source
     if (typeof QURAN_DATA === "undefined") {
       throw new Error("QURAN_DATA missing. Check quran_data.js.");
@@ -59,11 +582,15 @@ async function init() {
     setupEventListeners();
     setupZoomControls();
 
-    // 3. Restore Session
+    // 3. Restore Session (using safeSetStorage)
     const lastSurah = localStorage.getItem("last_surah") || "1";
     const lastAyahIndex = parseInt(localStorage.getItem("last_ayah_index") || "0");
     if (els.surahSelect) els.surahSelect.value = lastSurah;
     AppState.currentAyahIndex = lastAyahIndex;
+    
+    // Hide loading overlay before showing content
+    hideLoading();
+
     loadSurah(parseInt(lastSurah), true);
 
     // 4. Load Bookmarks & Theme
@@ -79,7 +606,7 @@ async function init() {
     }
 
 
-
+    
     updateThemeDotsUI();
     if (AppState.settings.pageTheme) {
       document.body.classList.add(`quran-theme-${AppState.settings.pageTheme}`);
@@ -150,23 +677,71 @@ async function init() {
         }
       }, 1000);
     }
-    localStorage.setItem("last_seen_version", APP_VERSION);
+    safeSetStorage("last_seen_version", APP_VERSION);
 
     // Swipe UX: Show tutorial toast on first visit (mobile only)
     if (!localStorage.getItem("swipe_tutorial_seen") && window.innerWidth < 768) {
       setTimeout(() => {
         if (els.swipeToast) {
           els.swipeToast.classList.add("show");
-          localStorage.setItem("swipe_tutorial_seen", "true");
+          safeSetStorage("swipe_tutorial_seen", "true");
           setTimeout(() => els.swipeToast.classList.remove("show"), 3600);
         }
       }, 1200);
     }
+
+    // Hide skeleton loader and show actual content with fade-in animation
+    const skeletonLoader = document.getElementById('skeleton-loader');
+    if (skeletonLoader) {
+      skeletonLoader.classList.add('hidden');
+    }
+
+    // Add fade-in animation to the ayah card
+    const ayahCard = document.getElementById('crd-ayah');
+    if (ayahCard && !ayahCard.classList.contains('fade-in-content')) {
+      ayahCard.classList.add('fade-in-content');
+    }
+
+    // Setup PWA install handler
+    setupPwaInstallHandler();
   } catch (error) {
     console.error("Init failed:", error);
     showErrorToast("Greška pri učitavanju: " + error.message);
   }
 }
+
+/**
+ * Sets up PWA install event handlers
+ */
+function setupPwaInstallHandler() {
+  // Handle PWA beforeinstallprompt event
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the mini-profiler from showing initially
+    e.preventDefault();
+    
+    // Store the invite for later use
+    window.deferredPrompt = e;
+  });
+
+  // Handle PWA appinstalled event
+  window.addEventListener('appinstalled', () => {
+    console.log('PWA installed successfully');
+    showPwaInstallSuccess();
+  });
+}
+
+/**
+ * Handles PWA install success close button click
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  const pwaCloseBtn = document.querySelector('#pwa-install-success .close-btn');
+  if (pwaCloseBtn) {
+    pwaCloseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      hidePwaInstallSuccess();
+    });
+  }
+});
 
 /**
  * Fills the Surah dropdown menu
@@ -212,6 +787,14 @@ function setupEventListeners() {
       localStorage.setItem("quran_reciter", e.target.value);
       updateReciterLabel();
       renderAyah();
+    };
+  }
+
+  // --- SURAH SELECT ---
+  if (els.surahSelect) {
+    els.surahSelect.onchange = (e) => {
+      const surahId = parseInt(e.target.value);
+      loadSurah(surahId);
     };
   }
 
@@ -842,29 +1425,29 @@ function applyTranslationPosition() {
   
   if (!translationWrap || !arabic || !tajweedLegend) return;
 
+  // Bismillah is always at the top when visible
+  if (bismillah) {
+    card.insertBefore(bismillah, tajweedLegend);
+  }
+  
   if (AppState.settings.translationBelow) {
     // Order: Bismillah -> Arabic -> Translation -> Tajweed Legend
-    if (bismillah) card.insertBefore(bismillah, tajweedLegend);
     card.insertBefore(arabic, tajweedLegend);
     card.insertBefore(translationWrap, tajweedLegend);
   } else {
-    // Order: Translation -> Bismillah -> Arabic -> Tajweed Legend
+    // Order: Bismillah -> Translation -> Arabic -> Tajweed Legend
     card.insertBefore(translationWrap, tajweedLegend);
-    if (bismillah) card.insertBefore(bismillah, tajweedLegend);
     card.insertBefore(arabic, tajweedLegend);
   }
   
-  // Update preview in settings
+  // Update preview in settings - Bismillah is always first
   if (els.settingsPreviewAr && els.settingsPreviewBs) {
     const prvArContainer = els.settingsPreviewAr.closest('.p-3');
     const prvBsContainer = els.settingsPreviewBs.closest('.p-3');
     if (prvArContainer && prvBsContainer) {
       const prvParent = prvArContainer.parentElement;
-      if (AppState.settings.translationBelow) {
-        prvParent.insertBefore(prvArContainer, prvBsContainer);
-      } else {
-        prvParent.insertBefore(prvBsContainer, prvArContainer);
-      }
+      // Bismillah is always first in preview
+      prvParent.insertBefore(prvBsContainer, prvArContainer);
     }
   }
 }

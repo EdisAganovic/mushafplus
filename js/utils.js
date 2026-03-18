@@ -88,7 +88,12 @@ window.debouncedStorageSave = function (key, data) {
     const saveToDisk = () => {
       for (const k in storageQueue) {
         try {
-          localStorage.setItem(k, storageQueue[k]);
+          // Use safeSetStorage from config.js instead of direct localStorage.setItem
+          if (typeof safeSetStorage === "function") {
+            safeSetStorage(k, storageQueue[k]);
+          } else {
+            localStorage.setItem(k, storageQueue[k]);
+          }
         } catch (e) {
           console.error("Storage save error", e);
         }
@@ -101,5 +106,5 @@ window.debouncedStorageSave = function (key, data) {
     } else {
       saveToDisk();
     }
-  }, 300);
+  }, APP.STORAGE_SAVE_DEBOUNCE);
 };

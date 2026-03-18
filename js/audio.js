@@ -107,27 +107,6 @@ window.startRecording = async function () {
         type: AppState.recordingMimeType
       });
       const audioUrl = URL.createObjectURL(audioBlob);
-      const key = `${AppState.currentSurah.id}-${
-        AppState.currentSurah.verses[AppState.currentAyahIndex].id
-      }`;
-
-      // CRITICAL FIX #2: Prevent memory leak - properly cleanup old Blob URL before replacing
-      if (AppState.recordings[key]) {
-        const oldRec = AppState.recordings[key];
-        // Stop playback and clear source BEFORE revoking blob URL
-        if (els.audioPlayback && els.audioPlayback.src === oldRec.url) {
-          els.audioPlayback.pause();
-          els.audioPlayback.removeAttribute("src");
-          els.audioPlayback.load();
-        }
-        URL.revokeObjectURL(oldRec.url);
-        delete AppState.recordings[key];
-        // Remove key from tracking array (ensure no duplicates)
-        const idx = AppState.recordingKeys.indexOf(key);
-        if (idx > -1) {
-          AppState.recordingKeys.splice(idx, 1);
-        }
-      }
 
       // Store recording with duration metadata
       const duration = Math.round((Date.now() - recordStartTime) / 1000);
@@ -254,6 +233,27 @@ window.stopRecording = function () {
 };
 
 /**
+ * Saves the current recording to localStorage with cleanup of old recordings.
+ * Called automatically when stopRecording is invoked.
+ */
+function saveRecording() {
+  const key = `${AppState.currentSurah.id}-${
+    AppState.currentSurah.verses[AppState.currentAyahIndex].id
+  }`;
+
+  // Cleanup old recordings if we're near the limit
+  cleanupRecordings();
+
+  // Store recording with duration metadata
+  const duration = Math.round((Date.now() - recordStartTime) / 1000);
+  AppState.recordings[key] = {
+    url: audioUrl,
+    duration: duration
+  };
+  AppState.recordingKeys.push(key);
+}
+
+/**
  * Toggles between start and stop recording states.
  */
 window.toggleRecording = function () {
@@ -263,6 +263,7 @@ window.toggleRecording = function () {
     startRecording();
   } else {
     stopRecording();
+    saveRecording(); // Save recording when stopped
   }
 };
 
