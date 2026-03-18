@@ -73,7 +73,7 @@ window.AppState = {
   // ==========================================
   settings: {
     layouts: {}, // Cache for page-by-page word positions
-    arSize: migrateSizeValue("quran_ar_size", "200"),
+    arSize: migrateSizeValue("quran_ar_size", "220"),
     bsSize: migrateSizeValue("quran_bs_size", "100"),
     arLineHeight: parseFloat(localStorage.getItem("quran_ar_lh") || "1.6"),
     tajweed: localStorage.getItem("quran_tajweed") !== "false",

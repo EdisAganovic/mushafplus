@@ -136,6 +136,7 @@
   --page-bg: #111827;
   --page-text: #f1f5f9;
   --page-border: #1e293b;
+  --arabic-text: #f1f5f9;
 }
 
 /* 2. Maroon (Rich Maroon & Gold) */
@@ -162,6 +163,7 @@
   --page-bg: #2d241e;
   --page-text: #d4c3b3;
   --page-border: #3d322a;
+  --arabic-text: #d4c3b3;
 }
 
 /* 4. Slate (Modern Dark Mode) */
@@ -188,6 +190,7 @@
   --page-bg: #0f172a;
   --page-text: #cbd5e1;
   --page-border: #1e293b;
+  --arabic-text: #cbd5e1;
 }
 
 /* 6. Green (Zelena) */
@@ -201,6 +204,7 @@
   --page-bg: #022c22;
   --page-text: #d1fae5;
   --page-border: #064e3b;
+  --arabic-text: #d1fae5;
 }
 
 /* 7. Deep Pine (Tamni bor) */
@@ -486,18 +490,4 @@ svg [data-layer-type="pageNumber"] {
 }
 
 /* ── DARK MODE ADJUSTMENTS ── */
-.dark .quran-theme-original svg [data-layer-type="arabicText"] {
-  fill: #f1f5f9 !important;
-}
-
-.dark .quran-theme-sepia svg [data-layer-type="arabicText"] {
-  fill: #d4c3b3 !important;
-}
-
-.dark .quran-theme-night svg [data-layer-type="arabicText"] {
-  fill: #cbd5e1 !important;
-}
-
-.dark .quran-theme-green svg [data-layer-type="arabicText"] {
-  fill: #d1fae5 !important;
-}
+/* SVG fill is globally handled by var(--arabic-text) at line 466 */

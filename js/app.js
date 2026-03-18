@@ -187,7 +187,7 @@ function populateSurahSelect() {
       modalBtn.dataset.search = `${surah.id} ${surah.trans} ${surah.name}`.toLowerCase();
       modalBtn.innerHTML = `
         <span class="text-[13px] font-semibold text-slate-200 group-hover/item:text-emerald-400 truncate pr-2">${surah.id}. ${surah.trans}</span>
-        <span class="text-[14px] text-slate-400 font-quran shrink-0">${surah.name}</span>
+        <span class="text-[20px] font-quran shrink-0">${surah.name}</span>
       `;
       modalBtn.onclick = () => {
         loadSurah(surah.id);

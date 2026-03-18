@@ -19,6 +19,11 @@ textarea {
   font-family: 'Outfit', sans-serif !important;
 }
 
+.font-quran {
+  font-size: 1.1em;
+  color: var(--arabic-text);
+}
+
 h1,
 h2,
 h3,
@@ -300,18 +305,15 @@ h6 {
   border-right: 1px solid #e2e8f0;
 }
 
-/* --- Light mode: main card brighter background --- */
-.light #dsp-arabic,
-.light .quran-page-text {
-  color: #1e293b !important;
+/* Main Card Theme-aware Colors */
+#dsp-arabic,
+.quran-text {
+  color: var(--arabic-text);
 }
 
 #dsp-translation {
   padding-top: 1.0rem;
-}
-
-.light #dsp-translation {
-  color: #334155 !important;
+  color: var(--page-text);
 }
 
 .light .search-result-item {
