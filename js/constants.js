@@ -58,7 +58,7 @@ window.APP = {
 
   // Virtual Grid Constants (px)
   GRID_ITEMS_PER_ROW: 5,
-  GRID_ROW_HEIGHT: 80,
+  GRID_ROW_HEIGHT: 52,
   GRID_BUFFER_ROWS: 5,
   GRID_CELL_HEIGHT: 44,
   GRID_GAP_SIZE: 8,
@@ -101,8 +101,8 @@ window.GESTURE = {
 
 window.GRID = {
   ITEMS_PER_ROW: 5,
-  ROW_HEIGHT: 80,
-  BUFFER_ROWS: 5,
+  ROW_HEIGHT: 52,
+  BUFFER_ROWS: 4,
   CELL_HEIGHT: 44,
   GAP_SIZE: 8,
   SCROLL_OFFSET: 20,

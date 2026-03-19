@@ -3,6 +3,18 @@
 All notable changes to the Mushaf Plus project will be documented in this file.
 
 ## [0.1.6] - 2026-03-17
+## [0.1.7] - 2026-03-18
+### Performance Enhancements
+- **Audio Preloading**: Implemented zero-latency audio preloader for next ayah (render.js)
+- **Memory Management**: Added LRU recording cleanup with automatic blob URL revocation (audio.js)
+- **Service Worker**: Added periodic cache cleanup, quota monitoring, and LRU eviction strategy
+ - **UI Settings**: Added translation (Bosnian) line-height control matching Arabic settings
+
+### Documentation
+- Updated ARCHITECTURE.md with comprehensive SVG Layer Detection System documentation
+- Updated RECOMMENDATIONS.md: marked Audio Preloading, Virtual Scroll, and Service Worker cache management as COMPLETED
+ - **UI Settings**: Added translation (Bosnian) line-height control matching Arabic settings
+
 
 ### Added
 - **Pozicija prijevoda**: Dodana nova postavka u izborniku koja korisnicima omogućava da izaberu da li će se prijevod prikazivati iznad ili ispod arapskog teksta, prilagođavajući aplikaciju različitim stilovima učenja.
@@ -93,6 +105,7 @@ All notable changes to the Mushaf Plus project will be documented in this file.
 ### Fixed
 - **Slideri za tekst**: Veličina arapskog teksta, prijevoda i visina linije sada rade ispravno i odmah se primjenjuju.
 - **Service Worker Cache**: Ažurirana verzija cache-a za ispravno učitavanje svih datoteka.
+ - **UI Settings**: Added translation (Bosnian) line-height control matching Arabic settings
 
 ### Changed
 - **Verzija Modal**: Smanjena širina modala (520px → 380px) i poboljšana kompaktnost za bolji prikaz.

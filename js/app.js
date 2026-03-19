@@ -1399,7 +1399,7 @@ function setupEventListeners() {
 
   // Arabic line height
   if (els.arLhSlider) {
-    els.arLhSlider.addEventListener("input", (e) => {
+els.arLhSlider.addEventListener("input", (e) => {
       const lh = e.target.value;
       AppState.settings.arLineHeight = parseFloat(lh);
       els.arLhVal.innerText = lh;
@@ -1408,6 +1408,19 @@ function setupEventListeners() {
       if (els.settingsPreviewAr) els.settingsPreviewAr.style.lineHeight = lh;
       localStorage.setItem("quran_ar_lh", lh);
     });
+
+    // Translation line-height
+    if (els.bsLhSlider) {
+      els.bsLhSlider.addEventListener("input", (e) => {
+        const lh = e.target.value;
+        AppState.settings.bsLineHeight = parseFloat(lh);
+        els.bsLhVal.innerText = lh;
+        els.translationDisplay.style.lineHeight = lh;
+        // Update preview
+        if (els.settingsPreviewTr) els.settingsPreviewTr.style.lineHeight = lh;
+        localStorage.setItem("quran_bs_lh", lh);
+      });
+    }
   }
 }
 

@@ -255,9 +255,10 @@ window.AppState = {
   // ==========================================
   settings: {
     layouts: {}, // Cache for page-by-page word positions
-    arSize: migrateSizeValue("quran_ar_size", "220"),
+arSize: migrateSizeValue("quran_ar_size", "220"),
     bsSize: migrateSizeValue("quran_bs_size", "100"),
     arLineHeight: parseFloat(localStorage.getItem("quran_ar_lh") || "1.6"),
+    bsLineHeight: parseFloat(localStorage.getItem("quran_bs_lh") || "1.6"),
     tajweed: localStorage.getItem("quran_tajweed") !== "false",
     tajweedLegend: localStorage.getItem("quran_tajweed_legend") !== "false",
     lightMode: localStorage.getItem("quran_lightmode") === "true",
@@ -460,8 +461,10 @@ window.els = {
   arSizeVal: document.getElementById("dsp-ar-size"),
   bsSizeSlider: document.getElementById("rng-bs-size"),
   bsSizeVal: document.getElementById("dsp-bs-size"),
-  arLhSlider: document.getElementById("rng-ar-lh"),
+arLhSlider: document.getElementById("rng-ar-lh"),
   arLhVal: document.getElementById("dsp-ar-lh"),
+  bsLhSlider: document.getElementById("rng-bs-lh"),
+  bsLhVal: document.getElementById("dsp-bs-lh"),
 
   // Mobile Menu & Audio Controls
   mobileGridToggle: document.getElementById("btn-menu-toggle"),

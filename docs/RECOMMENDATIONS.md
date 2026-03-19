@@ -18,24 +18,18 @@ However, several areas can be improved for better maintainability, performance, 
 
 ### 2. **Performance Optimizations** ⚡
 
-#### 2.1 Virtual Scroll Buffer Management
+### 2.1 Virtual Scroll Buffer Management ✅ COMPLETED
 **Location:** [`js/render.js`](js/render.js:23)
 
-The `VirtualGrid` class creates a buffer of rows but doesn't implement efficient cleanup when switching surahs.
+**Status:** IMPLEMENTED
 
-```javascript
-// Current implementation (line 67-80)
-render() {
-  const verses = AppState.currentSurah?.verses;
-  // ... rendering logic
-}
-```
+Implements efficient cleanup when switching surahs, with debounced scroll events and DocumentFragment batch updates.
 
-**Recommendation:** 
-- Implement a `cleanup()` method to remove off-screen DOM nodes immediately
-- Add a debounce mechanism for scroll events on slower devices
-- Consider using DocumentFragment for batch DOM updates
-
+**Implemented Features:**
+- `cleanup()` method removes off-screen DOM nodes immediately (lines 89-101)
+- Debounce mechanism for scroll events on slower devices (100ms delay) - lines 66-73
+- `_onScroll()` now uses debounce instead of immediate requestAnimationFrame - line 106
+- DocumentFragment used for batch DOM updates (line 162)
 ---
 
 #### 2.2 Audio Preloading Strategy
@@ -44,259 +38,66 @@ render() {
 The app mentions "Zero-Latency Audio" with background preloading, but the implementation details are unclear.
 
 **Recommendation:** 
-- Implement a visible preloader indicator during initial load
-- Add audio cache size monitoring to prevent browser memory limits
-- Consider implementing audio chunking for faster seek operations
+### 2.2 Audio Preloading Strategy ✅ COMPLETED
+**Location:** [`js/render.js`](js/render.js:875), [`js/audio.js`](js/audio.js:119)
 
----
+**Status:** IMPLEMENTED
 
-#### 2.3 Service Worker Cache Management
+Implements zero-latency audio preloading for the next ayah with LRU-based recording memory management.
+
+**Implemented Features:**
+- **Zero-Latency Preloader** (`window._audioPreloader` in render.js:880) - Loads next ayah audio before user requests it
+- **LRU Recording Memory Management** (audio.js:119-134) - Automatically evicts oldest recordings when exceeding MAX_RECORDINGS limit
+- **Blob URL Cleanup** (audio.js:126-133) - Revokes blob URLs to prevent memory leaks before clearing rec
+
+**Configuration:**
+- `QURAN_CONSTANTS.MAX_RECORDINGS` set to total Quran pages (604) in config.js
+
+```javascript
+### 2.3 Service Worker Cache Management ✅ COMPLETED
 **Location:** [`service-worker.js`](service-worker.js:1)
 
-The current cache versioning strategy is good, but there's no mechanism to clean up old caches automatically.
+**Status:** IMPLEMENTED
 
+Implements periodic cache cleanup, cache quota monitoring, and LRU eviction strategy for smarter caching.
+
+**Implemented Features:**
+- `runPeriodicCleanup()` - Periodic cache cleanup routine on activation and periodically (lines 67-94)
+- LRU eviction strategy using request timestamps (lines 52-60)
+- Cache quota monitoring with configurable thresholds (`CACHE_CONFIG`, lines 18)
+- Smart caching with `cacheStorage.match()` capability
+- Cleanup of stale versioned caches older than 30 days (lines 97-135)
+
+**Message Event Extended:**
 ```javascript
-// Current (line 24-33)
-async function trimCache(cacheName, maxItems) {
-  const cache = await caches.open(cacheName);
-  const keys = await cache.keys();
-  if (keys.length > maxItems) {
-    await cache.delete(keys[0]);
+// Before: Only supported "SKIP_WAITING"
+addEventListener("message", (event) => {
+  if (event.data === "SKIP_WAITING") {
+    self.skipWaiting();
   }
-}
-```
-
-**Recommendation:** 
-- Implement a periodic cache cleanup routine
-- Add cache quota monitoring with user notifications
-- Consider using Cache Storage API's `cacheStorage.match()` for smarter caching
-
----
-
-### 3. **Code Quality & Maintainability** 💎
-
-
----
-
-#### 3.2 Error Handling Consistency
-**Location:** [`js/app.js`](js/app.js:24)
-
-✅ **COMPLETED** - Centralized error boundary class has been implemented with structured logging and error categorization.
-
-```javascript
-// New implementation (line 24-305)
-class ErrorBoundary {
-  constructor() {
-    this.errorCount = 0;
-    this.recoverableErrors = [];
-    this.unrecoverableErrors = [];
-    this.maxRecoverableHistory = 10;
-  }
-
-  _createLogEntry(error, context = {}) {
-    const now = new Date();
-    const timestamp = now.toISOString();
-    const shortTime = now.toLocaleTimeString('en-US', { hour12: false });
-
-    return {
-      id: `ERR-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      timestamp,
-      shortTime,
-      level: error.level || 'error',
-      type: context.type || 'unknown',
-      message: error.message || String(error),
-      source: error.source || 'unknown',
-      lineno: error.lineno || null,
-      colno: error.colno || null,
-      stack: error.stack || null,
-      context: {
-        ...context,
-        userAgent: navigator.userAgent,
-        language: navigator.language,
-        appVersion: navigator.appVersion
-      },
-      isRecoverable: context.isRecoverable !== undefined ? context.isRecoverable : this._isErrorRecoverable(error),
-      errorCount: ++this.errorCount
-    };
-  }
-
-  _isErrorRecoverable(error) {
-    const errorMessage = String(error.message || error);
-
-    // Unrecoverable errors - critical failures that prevent app functionality
-    const unrecoverablePatterns = [
-      /Cannot (read|write|find)/i,
-      /Failed to fetch/i,
-      /Network request failed/i,
-      /SecurityError/i,
-      /QuotaExceededError/i,
-      /InvalidAccessError/i,
-      /TypeError: Cannot read property 'undefined'/i,
-      /Cannot access before initialization/i,
-      /Script error./i
-    ];
-
-    // Recoverable errors - can be handled gracefully with user feedback
-    const recoverablePatterns = [
-      /Audio (play|load)/i,
-      /Microphone/i,
-      /Permission denied/i,
-      /User cancelled/i,
-      /Invalid input/i,
-      /Validation failed/i,
-      /Not found/i,
-      /Empty/i
-    ];
-
-    for (const pattern of unrecoverablePatterns) {
-      if (pattern.test(errorMessage)) return false;
-    }
-
-    for (const pattern of recoverablePatterns) {
-      if (pattern.test(errorMessage)) return true;
-    }
-
-    // Default: treat as recoverable unless it's a critical error
-    return !errorMessage.includes('null') && !errorMessage.includes('undefined');
-  }
-
-  handleGlobalError(errorInfo) {
-    const logEntry = this._createLogEntry({ ...errorInfo }, { type: 'global' });
-    console.error('[ErrorBoundary] Global Error:', logEntry);
-    this._logToConsole(logEntry);
-
-    if (logEntry.isRecoverable) {
-      this.recoverableErrors.push(logEntry);
-      if (this.recoverableErrors.length > this.maxRecoverableHistory) {
-        this.recoverableErrors.shift();
-      }
-    } else {
-      this.unrecoverableErrors.push(logEntry);
-      showErrorToast('Došlo je do kritične greške. Molimo osvježite stranicu.');
-    }
-
-    return true; // Prevent default error handling
-  }
-
-  handleUnhandledRejection(event) {
-    const logEntry = this._createLogEntry({ ...event.reason }, { type: 'promise-rejection' });
-    console.error('[ErrorBoundary] Unhandled Promise Rejection:', logEntry);
-    this._logToConsole(logEntry);
-
-    if (logEntry.isRecoverable) {
-      this.recoverableErrors.push(logEntry);
-      if (this.recoverableErrors.length > this.maxRecoverableHistory) {
-        this.recoverableErrors.shift();
-      }
-    } else {
-      this.unrecoverableErrors.push(logEntry);
-      showErrorToast('Došlo je do greške u obradi podataka. Molimo pokušajte ponovo.');
-    }
-
-    return true; // Mark as handled
-  }
-
-  _logToConsole(logEntry) {
-    const { shortTime, level, type, message, source, lineno, colno, isRecoverable } = logEntry;
-    let prefix = `[${shortTime}] [ERR-${level.toUpperCase()}]`;
-    if (type !== 'unknown') {
-      prefix += ` [${type.toUpperCase()}]`;
-    }
-    if (!isRecoverable) {
-      prefix += ` [UNRECOVERABLE]`;
-    }
-
-    console.groupCollapsed(prefix);
-    console.log('Message:', message);
-    if (source !== 'unknown') {
-      console.log('Location:', source, ':', lineno, colno);
-    }
-    if (logEntry.stack) {
-      console.log('Stack trace:', logEntry.stack.split('\n').slice(0, 10).join('\n'));
-    }
-    console.log('Context:', JSON.stringify(logEntry.context, null, 2));
-    console.groupEnd();
-  }
-
-  getRecoverableErrors() { return [...this.recoverableErrors]; }
-  getUnrecoverableErrors() { return [...this.unrecoverableErrors]; }
-  clearHistory() {
-    this.recoverableErrors = [];
-    this.unrecoverableErrors = [];
-    this.errorCount = 0;
-  }
-  exportErrors() {
-    return {
-      exportedAt: new Date().toISOString(),
-      totalErrors: this.errorCount,
-      recoverableCount: this.recoverableErrors.length,
-      unrecoverableCount: this.unrecoverableErrors.length,
-      errors: [
-        ...this.recoverableErrors.map(e => ({ id: e.id, message: e.message, timestamp: e.timestamp })),
-        ...this.unrecoverableErrors.map(e => ({ id: e.id, message: e.message, timestamp: e.timestamp }))
-      ]
-    };
-  }
-}
-
-// Global error boundary instance
-const GlobalErrorBoundary = new ErrorBoundary();
-window.__errorBoundary__ = GlobalErrorBoundary;
-
-// Global error handlers
-window.onerror = function(message, source, lineno, colno, error) {
-  const errorBoundary = new ErrorBoundary();
-  return errorBoundary.handleGlobalError({
-    message, source, lineno, colno, error,
-    stack: error ? error.stack : undefined
-  });
-};
-
-window.onunhandledrejection = function(event) {
-  const errorBoundary = new ErrorBoundary();
-  return errorBoundary.handleUnhandledRejection(event);
-};
-
-// Helper functions for consistent error reporting
-function reportError(error, context = {}) { /* ... */ }
-function reportRecoverableError(error, context = {}) { /* ... */ }
-function reportUnrecoverableError(error, context = {}) { /* ... */ }
-function safeExecute(fn, options = {}) { /* ... */ }
-```
-
-**Implementation Details:**
-- ✅ Centralized `ErrorBoundary` class with structured logging
-- ✅ Timestamps and full context in all error logs
-- ✅ Error categorization (recoverable vs. unrecoverable)
-- ✅ Browser console output with grouped formatting
-- ✅ Global error handlers for `window.onerror` and `window.onunhandledrejection`
-- ✅ Helper functions (`reportError`, `safeExecute`) for consistent module-level error handling
-- ✅ Toast notifications for critical errors only
-- ✅ Error history tracking (10 recoverable errors max)
-- ✅ Export functionality for debugging/reporting
-
-**Usage Examples:**
-
-```javascript
-// Report an error with context
-await reportError(new Error('Something went wrong'), {
-  type: 'api-call',
-  endpoint: '/api/data',
-  isRecoverable: true
 });
-
-// Use safeExecute wrapper for automatic error handling
-const result = await safeExecute(async () => {
-  const data = await fetchData();
-  return processData(data);
-}, { recoverable: false }); // Shows toast on error
-
-// Access global error boundary
-window.__errorBoundary__.exportErrors();
 ```
 
----
+**After:**
+```javascript
+// Now supports both SKIP_WAITING and CLEAN_UP
+addEventListener("message", (event) => {
+  if (event.data === "SKIP_WAITING") {
+    self.skipWaiting();
+  } else if (event.data === "CLEAN_UP") {
+    event.waitUntil(runPeriodicCleanup());
+  }
+});
+```
 
+**Added Configuration:**
+```javascript
+const CACHE_CONFIG = {
+  QUOTA_WARNING_THRESHOLD: 0.85, // 85% of quota triggers cleanup
+  MAX_CACHE_AGE_DAYS: 30,        // Remove caches older than 30 days
+};
+```
+---
 
 
 #### 4.3 Documentation Completeness

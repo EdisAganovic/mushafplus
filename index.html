@@ -16,7 +16,7 @@
     <!-- Global App Configuration -->
     <script>
         // IMPORTANT: Change this version to force cache refresh for all users
-        const APP_VERSION = "0.1.7";
+        const APP_VERSION = "0.1.8";
     </script>
 
     <!-- UI Styles and Favicon (Dynamic versioning) -->
@@ -422,8 +422,8 @@
             </div>
 
             <!-- Scrollable Ayah Grid -->
-            <div class="flex-[3] overflow-y-auto custom-scrollbar mb-2 min-h-[120px] bg-slate-950/50 p-3 rounded-xl border border-slate-800/60">
-                <div id="cnt-ayah-grid" class="grid grid-cols-5 content-start gap-2">
+            <div class="overflow-y-auto custom-scrollbar mb-2 min-h-[60px] max-h-[50vh] bg-slate-950/50 p-3 rounded-xl border border-slate-800/60" style="height: fit-content;">
+                <div id="cnt-ayah-grid" class="grid grid-cols-5 content-start gap-2" style="height: auto; position: relative;">
                     <!-- Ayah cells will be injected here -->
                 </div>
             </div>
@@ -434,7 +434,7 @@
                 <span data-i18n="bookmarks">Označeno</span>
             </h3>
             <div id="lst-bookmarks"
-                class="flex-[2] overflow-y-auto flex flex-col gap-2 pr-2 custom-scrollbar text-sm min-h-[150px]">
+                class="overflow-y-auto flex flex-col gap-2 pr-2 custom-scrollbar text-sm min-h-[150px] max-h-[40vh]">
                 <!-- Bookmarks will be injected here -->
                 <div class="text-slate-500 italic text-center w-full mt-2 text-xs" data-i18n="noBookmarks">Još nema
                     oznaka</div>
@@ -542,6 +542,15 @@
                     </div>
                     <input type="range" id="rng-ar-lh" min="1.0" max="4.0" step="0.1" value="1.6"
                         class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+
+                <div>
+                    <div class="flex justify-between mb-1 translate-y-1">
+                        <label class="text-[10px] text-slate-400 uppercase tracking-wider"
+                            data-i18n="translationLineHeight">Razmak redova (prijevod)</label>
+                        <span id="dsp-bs-lh" class="text-xs font-bold text-emerald-400">1.6</span>
+                    </div>
+                    <input type="range" id="rng-bs-lh" min="1.0" max="4.0" step="0.1" value="1.6"
+                        class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
                 </div>
 
                 <!-- Live Preview: Arabic -->
@@ -556,7 +565,7 @@
                 <div class="mt-2 p-3 bg-slate-950/50 rounded-xl border border-slate-800">
                     <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-2 font-bold">Prikaz — Prijevod
                     </div>
-                    <div id="prv-translation" class="font-outfit text-center" style="font-size:1rem">
+                    <div id="prv-translation" class="font-outfit text-center" style="font-size:1rem; line-height:1.6">
                         Reci: "On je Allah - Jedan! Allah je Utočište svakom."</div>
                 </div>
 
@@ -814,7 +823,7 @@
             </div>
 
             <!-- Scrollable Ayah Grid (Mobile) -->
-            <div class="flex-1 overflow-y-auto custom-scrollbar bg-slate-950/50 p-3 rounded-xl border border-slate-800/60 min-h-[120px]">
+            <div class="overflow-y-auto custom-scrollbar bg-slate-950/50 p-3 rounded-xl border border-slate-800/60 min-h-[60px] max-h-[60vh]" style="height: fit-content;">
                 <div id="cnt-ayah-grid-mobile" class="grid grid-cols-5 content-start gap-2">
                     <!-- Ayah cells will be injected here -->
                 </div>
@@ -838,7 +847,7 @@
         </div>
 
         <div id="lst-bookmarks-mobile"
-            class="flex-1 overflow-y-auto flex flex-col gap-2 pr-2 custom-scrollbar text-sm min-h-[150px]">
+            class="overflow-y-auto flex flex-col gap-2 pr-2 custom-scrollbar text-sm min-h-[150px] max-h-[50vh]">
             <div class="text-slate-500 italic text-center w-full mt-2 text-xs" data-i18n="noBookmarks">Još nema
                 oznaka</div>
         </div>

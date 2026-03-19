@@ -290,7 +290,11 @@ window.startMicMeter = function () {
   const dataArray = new Uint8Array(bufferLength);
   els.micMeterContainer.classList.remove("hidden");
 
-  function draw() {
+  let skipFrame = false; // Skip frames when volume is steady
+  
+  function draw(now) {
+    if (!AppState.audioContext || !AppState.analyser) return;
+    
     AppState.animationId = requestAnimationFrame(draw);
     AppState.analyser.getByteFrequencyData(dataArray);
 
@@ -300,9 +304,20 @@ window.startMicMeter = function () {
     }
     const average = sum / bufferLength;
     const volume = Math.min(100, (average / 40) * 100);
-    els.micMeterBar.style.width = volume + "%";
+    
+    // Skip updates when volume hasn't changed significantly (optimization)
+    if (skipFrame && Math.abs(volume - els.micMeterBar.style.width || 0) < 2) {
+      skipFrame = false;
+    } else {
+      els.micMeterBar.style.width = volume + "%";
+    }
+    
+    // Occasionally force refresh to prevent stale state buildup
+    if (Math.random() > 0.95) {
+      skipFrame = true;
+    }
   }
-  draw();
+  draw(); // Initial call without time parameter, subsequent calls use RAF callback signature
 };
 
 /**
@@ -310,6 +325,7 @@ window.startMicMeter = function () {
  */
 window.stopMicMeter = function () {
   if (AppState.animationId) cancelAnimationFrame(AppState.animationId);
+  AppState.animationId = null; // Reset state flag
   els.micMeterContainer.classList.add("hidden");
   els.micMeterBar.style.width = "0%";
 };

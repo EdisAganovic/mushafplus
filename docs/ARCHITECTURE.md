@@ -207,7 +207,7 @@ preslusavanje/
 - Generate Ayah Grid sidebar (286 buttons for Al-Baqarah)
 - Update navigation badges (Ayah, Juz, Page counters)
 - Render Bismillah display logic
-- Translation display
+- Translation display with configurable line-height
 
 **Performance Optimizations:**
 - O(1) DOM updates for grid (targeted class toggles)
@@ -268,12 +268,12 @@ preslusavanje/
 - Critical page preloading for instant load
 - Integration with SVG layer detection system
 
-### 10. `svg-layer-detector.js` - SVG Layer Detection System
+### 10. `svg-layer-detector.js` - SVG Layer Detection System ✅
 
 **Purpose:** Universal detection and coloring of Quran SVG page elements by layer type.
 
 **Features:**
-- **Automatic Layer Detection:** Identifies 7 layer types based on path characteristics:
+- **Automatic Layer Detection:** Identifies 9+ layer types based on path characteristics:
   - Border & Frame: Page borders and ornamental frames (green paths with z≥2)
   - Teardrop Shapes: Ornamental medallion backgrounds (green paths with z≤1, length 800-2500)
   - Arabic Text: Main calligraphy (largest black path)
@@ -281,27 +281,47 @@ preslusavanje/
   - Surah/Juz Header: Calligraphic labels at page top (black paths with len 5000-20000, z≤4)
   - Ornamental Marker: Decorative section markers (black paths with z>5, len>5000)
   - Page Number: Bottom page numerals (remaining black paths)
-- **Theme Integration:** Applies different color schemes per theme:
-  - Original: Gold borders, teal teardrops, dark text, white numerals
-  - Sepia: Brown tones with muted colors
-  - Night: Light text on dark backgrounds
-  - Green: Emerald color scheme throughout
+  - Surah Band: Ornamental framing bands (green horizontal frames)
+  - Surah Band Text: Calligraphy inside surah bands
+- **8 Built-in Themes:** Original, Sepia, Night, Green, Slate, Pine, Mocha, Plum
 - **Universal Algorithm:** Works on any Quran page SVG without hardcoded path IDs
 - **Dynamic Recoloring:** Updates colors when theme changes via `updateSVGLayerTheme()`
 - **Performance Optimized:** Runs detection once per SVG load with caching
 
+**Theme Configuration (`window.LAYER_COLORS`):**
+```javascript
+{
+  'original': { borderFrame: '#C4922A', teardrop: '#1B7A6A', ... },
+  'sepia': { borderFrame: '#d2b48c', teardrop: '#c19a6b', ... },
+  'night': { borderFrame: '#94A3B8', teardrop: '#64748B', ... },
+  'green': { borderFrame: '#059669', teardrop: '#10B981', ... },
+  'slate': { borderFrame: '#334155', teardrop: '#475569', ... },
+  'pine': { borderFrame: '#1F382A', teardrop: '#2A4B3A', ... },
+  'mocha': { borderFrame: '#4A352D', teardrop: '#63473D', ... },
+  'plum': { borderFrame: '#4A2C40', teardrop: '#683B5A', ... }
+}
+```
+
+**Detection Configuration (`DETECTION_CONFIG`):**
+- Criteria based on fill color (GREEN_FILL, BLACK_FILL)
+- Path characteristics: loop count (z), subpath count (M commands), length
+- Positional detection using y-coordinate from transforms
+
 **Key Functions:**
-- `detectSVGLayers(svgEl, theme)` - Analyzes SVG and returns layer metadata
+- `detectSVGLayers(svgEl, theme)` - Analyzes SVG and returns layer metadata array
 - `applySVGLayerColors(layers, theme)` - Applies colors to detected elements
-- `processSVGLayers(svgEl, theme)` - Main entry point combining detection and coloring
+- `processSVGLayers(svgEl, theme)` - Main entry point combining detection and coloring  
 - `updateSVGLayerTheme(newTheme)` - Updates all loaded SVGs when theme changes
 
 **Integration Points:**
-- Called automatically when SVG pages load in spread mode
+- Called automatically when SVG pages load in spread mode via `spread_engine.js`
 - Responds to theme change events from `app.js`
 - Adds `data-layer-type` attributes for CSS targeting
+- Runs on page initialization and recolors on theme switch
 
 ---
+
+### 11. `quranMeta.js` - Metadata Tables---
 
 ### 11. `quranMeta.js` - Metadata Tables
 
@@ -389,6 +409,7 @@ User holds Space/Record btn
 | `quran_hifzRange` | Object | `{ start: "2:255", end: "2:260" }` |
 | `quran_ar_size` | Number | Arabic font size (%) |
 | `quran_bs_size` | Number | Translation font size (%) |
+| `quran_bs_lh` | Number | Translation line-height (1.0-4.0) |
 
 ---
 
@@ -431,6 +452,7 @@ User holds Space/Record btn
 | **O(1) Grid Updates** | `render.js` | Targeted DOM class toggles vs full rebuild |
 | **Debounced Storage** | `actions.js` | `requestIdleCallback` for non-blocking saves |
 | **Critical Page Preload** | `app.js` | Preloads SVG pages for instant spread mode |
+| **SVG Detection Once** | `svg-layer-detector.js` | Layer detection runs once per page load, cached in DOM |
 | **Session Restore** | `app.js` | Remembers last surah + ayah position |
 
 ---

@@ -69,7 +69,7 @@ class VirtualGrid {
     }
     this.debounceTimer = setTimeout(() => {
       requestAnimationFrame(() => this.render());
-    }, 100); // 100ms debounce for slower devices
+    }, 200); // 200ms debounce for better performance on slower devices
   }
 
   /**
@@ -181,7 +181,11 @@ class VirtualGrid {
       const isHifzRange = hifzMin !== null && i >= hifzMin && i <= hifzMax;
       const hasNotes = !!AppState.notes[key];
 
+      // GPU acceleration hint for animations
       const cell = document.createElement("button");
+      
+      // GPU acceleration hint for animations
+      cell.style.willChange = "transform, opacity";
       cell.dataset.index = i;
       cell.className = "ayah-cell relative h-11 w-full px-1 flex rounded-lg text-xs font-medium transition-all items-center justify-center";
 
@@ -245,9 +249,17 @@ class VirtualGrid {
     return false;
   }
 
-  /**
-   * Scroll to a specific row with optional offset
-   */
+/**
+ * Scroll to the top of the grid
+ */
+  scrollToTop() {
+    if (!this.scrollParent) return;
+    this.scrollToRow(0, -1);
+  }
+
+/**
+ * Scroll to a specific row with optional offset
+ */
   scrollToRow(rowIndex, offsetRows = 0) {
     if (!this.scrollParent) return;
 

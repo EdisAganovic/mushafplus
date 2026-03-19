@@ -5,6 +5,7 @@
 window.T = {
   // Header
   appTitle: "Mushaf Plus",
+  appTheme: "Tema aplikacije",
   searchPlaceholder: "Pretraži tekst ili ajet (2:255)...",
   selectSurah: "Izaberi suru...",
   noResults: "Nema rezultata",
@@ -57,7 +58,7 @@ window.T = {
   arabicFontSize: "Veličina arapskog fonta",
   translationFontSize: "Veličina prijevoda",
   arabicLineHeight: "Razmak redova (arapski)",
-  appTheme: "Tema aplikacije",
+  translationLineHeight: "Razmak redova (prijevod)",
   themeEmerald: "Smaragdna (Podrazumijevano)",
   themeBlue: "Kraljevski plava",
   themeAmber: "Zlato",
