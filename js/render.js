@@ -1144,47 +1144,30 @@ window.renderAyahGrid = function (skipScroll = false) {
   if (window.ayahGridDesktop) window.ayahGridDesktop.render();
   if (window.ayahGridMobile) window.ayahGridMobile.render();
 
-  // Auto-scroll active ayah into view (both desktop and mobile grids)
+  // Auto-scroll active ayah into view (desktop only to prevent jerking)
   if (skipScroll) return;
-
-  // Use a two-step approach: first position the scroll, then find and scroll the cell
   setTimeout(() => {
     const targetRow = Math.floor(AppState.currentAyahIndex / VIRTUAL_GRID.ITEMS_PER_ROW);
-    // Calculate scroll position - show one row before to give context
-    const targetScroll = Math.max(0, (targetRow - 1) * VIRTUAL_GRID.ROW_HEIGHT);
 
-    // Scroll both grids
     if (window.ayahGridDesktop && window.ayahGridDesktop.scrollParent) {
+      // Only scroll on desktop to prevent visual jerking from multiple scroll calls
       window.ayahGridDesktop.scrollToRow(targetRow, -1);
     }
-    if (window.ayahGridMobile && window.ayahGridMobile.scrollParent) {
-      window.ayahGridMobile.scrollToRow(targetRow, -1);
-    }
 
-    // After scroll positions are set, scroll the cell into view
+    // After scroll position is set, scroll the cell into view smoothly
     setTimeout(() => {
       let found = false;
-      // Find and scroll desktop cell
       if (window.ayahGridDesktop) {
         const cur = window.ayahGridDesktop.getCell(AppState.currentAyahIndex);
         if (cur) {
           cur.scrollIntoView({ behavior: "smooth", block: "center" });
           found = true;
         }
+      } else if (!found) {
+        console.warn("[Grid] Desktop grid not found.");
       }
-
-      // Also scroll mobile grid
-      if (window.ayahGridMobile) {
-        const mobileCur = window.ayahGridMobile.getCell(AppState.currentAyahIndex);
-        if (mobileCur) {
-          mobileCur.scrollIntoView({ behavior: "smooth", block: "center" });
-        } else if (!found) {
-          console.warn(`[Grid] Cell for ayah ${AppState.currentAyahIndex + 1} not found.`);
-        }
-      }
-    }, 200);
-  }, VIRTUAL_GRID.AUTO_SCROLL_DELAY + 50);
-
+    }, 100);
+  });
   AppState._prevGridIndex = AppState.currentAyahIndex;
 };
 

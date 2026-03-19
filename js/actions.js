@@ -221,7 +221,7 @@ window.nextAyah = function () {
     
     safeSetStorage("last_ayah_index", AppState.currentAyahIndex);
     renderAyah();
-    if (typeof renderAyahGrid === "function") renderAyahGrid(true); // skips autoscroll on manual navigation
+    if (typeof renderAyahGrid === "function") renderAyahGrid(); 
     return;
   }
 
@@ -230,7 +230,7 @@ window.nextAyah = function () {
     AppState.currentAyahIndex++;
     safeSetStorage("last_ayah_index", AppState.currentAyahIndex);
     renderAyah();
-    if (typeof renderAyahGrid === "function") renderAyahGrid(true); // skips autoscroll on manual navigation
+    if (typeof renderAyahGrid === "function") renderAyahGrid(); 
   } else {
     const nextSurahId = AppState.currentSurah.id + 1;
     if (nextSurahId <= 114) {
@@ -267,7 +267,7 @@ window.prevAyah = function () {
     
     safeSetStorage("last_ayah_index", AppState.currentAyahIndex);
     renderAyah();
-    if (typeof renderAyahGrid === "function") renderAyahGrid(true); // skips autoscroll on manual navigation
+    if (typeof renderAyahGrid === "function") renderAyahGrid(); 
     return;
   }
 
@@ -275,7 +275,7 @@ window.prevAyah = function () {
     AppState.currentAyahIndex--;
     safeSetStorage("last_ayah_index", AppState.currentAyahIndex);
     renderAyah();
-    if (typeof renderAyahGrid === "function") renderAyahGrid(true); // skips autoscroll on manual navigation
+    if (typeof renderAyahGrid === "function") renderAyahGrid(); 
   } else {
     const prevSurahId = AppState.currentSurah.id - 1;
     if (prevSurahId >= 1) {
@@ -284,7 +284,7 @@ window.prevAyah = function () {
       AppState.currentAyahIndex = AppState.currentSurah.verses.length - 1;
       safeSetStorage(STORAGE_KEYS.LAST_AYAH_INDEX, AppState.currentAyahIndex);
       renderAyah();
-      if (typeof renderAyahGrid === "function") renderAyahGrid(true); // skips autoscroll on manual navigation
+      if (typeof renderAyahGrid === "function") renderAyahGrid(); 
     }
   }
 };
@@ -333,7 +333,7 @@ window.toggleSpreadMode = function () {
     window.applySpreadMode();
 
     renderAyah();
-    if (typeof renderAyahGrid === "function") renderAyahGrid(true); // skips autoscroll on manual navigation
+    if (typeof renderAyahGrid === "function") renderAyahGrid(); 
 };
 
 /**
