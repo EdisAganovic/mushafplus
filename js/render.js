@@ -1148,27 +1148,24 @@ window.renderAyahGrid = function (skipScroll = false) {
 
   // Auto-scroll active ayah into view (desktop only to prevent jerking)
   if (skipScroll) return;
-  setTimeout(() => {
-    const targetRow = Math.floor(AppState.currentAyahIndex / VIRTUAL_GRID.ITEMS_PER_ROW);
 
+  requestAnimationFrame(() => {
+    const targetRow = Math.floor(AppState.currentAyahIndex / VIRTUAL_GRID.ITEMS_PER_ROW); 
+    
     if (window.ayahGridDesktop && window.ayahGridDesktop.scrollParent) {
-      // Only scroll on desktop to prevent visual jerking from multiple scroll calls
-      window.ayahGridDesktop.scrollToRow(targetRow, -1);
-    }
-
-    // After scroll position is set, scroll the cell into view smoothly
-    setTimeout(() => {
-      let found = false;
-      if (window.ayahGridDesktop) {
-        const cur = window.ayahGridDesktop.getCell(AppState.currentAyahIndex);
-        if (cur) {
-          cur.scrollIntoView({ behavior: "smooth", block: "center" });
-          found = true;
-        }
-      } else if (!found) {
-        console.warn("[Grid] Desktop grid not found.");
+      const parent = window.ayahGridDesktop.scrollParent;
+      const rowHeight = VIRTUAL_GRID.ROW_HEIGHT; 
+      const scrollTop = parent.scrollTop;
+      const parentHeight = parent.clientHeight;
+      
+      const targetTop = targetRow * rowHeight;
+      const isVisible = (targetTop >= scrollTop && targetTop + rowHeight <= scrollTop + parentHeight);
+      
+      // Only scroll if NOT visible to prevent unnecessary jerking
+      if (!isVisible) {
+        window.ayahGridDesktop.scrollToRow(targetRow, -1);
       }
-    }, 100);
+    }
   });
   AppState._prevGridIndex = AppState.currentAyahIndex;
 };

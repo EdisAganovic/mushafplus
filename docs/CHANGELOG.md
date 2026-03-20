@@ -3,30 +3,18 @@
 All notable changes to the Mushaf Plus project will be documented in this file.
 
 ## [0.1.6] - 2026-03-17
-## [0.1.7] - 2026-03-18
-### Performance Enhancements
-- **Audio Preloading**: Implemented zero-latency audio preloader for next ayah (render.js)
-- **Memory Management**: Added LRU recording cleanup with automatic blob URL revocation (audio.js)
-- **Service Worker**: Added periodic cache cleanup, quota monitoring, and LRU eviction strategy
- - **UI Settings**: Added translation (Bosnian) line-height control matching Arabic settings
-
-### Documentation
-- Updated ARCHITECTURE.md with comprehensive SVG Layer Detection System documentation
-- Updated RECOMMENDATIONS.md: marked Audio Preloading, Virtual Scroll, and Service Worker cache management as COMPLETED
- - **UI Settings**: Added translation (Bosnian) line-height control matching Arabic settings
-
-
-### Added
-- **Pozicija prijevoda**: Dodana nova postavka u izborniku koja korisnicima omogućava da izaberu da li će se prijevod prikazivati iznad ili ispod arapskog teksta, prilagođavajući aplikaciju različitim stilovima učenja.
-
-### Improved
-- **Spread Mode**: 
-  - Poboljšano pozicioniranje tooltipova za izbor tema koji su se ranije preklapali sa drugim UI elementima na desnoj strani ekrana.
-  - Rafiniran vizuelni indikator za **Pull-to-refresh** (uklonjen tekst, istaknuta ikona) za čistiji i moderniji izgled.
+## [0.1.7] - 2026-03-21
 
 ### Fixed
-- **Hifz mod**: Ispravljen problem gdje je aktivacija Hifz moda uzrokovala nepotrebno skrolovanje do ajeta čak i ako je korisnik već bio pozicioniran na njemu.
-- **Navigacija**: Riješen bag u Spread Mode režimu gdje se stranice Mushafa nisu ispravno re-renderovale nakon zatvaranja selektora sura.
+- **Tedžvid bojenje (Firefox)**: Riješen problem s vidljivošću tedžvidskih pravila pri prvom učitavanju aplikacije u Firefoxu korištenjem sinhroniziranog renderinga nakon unhidinga.
+- **Navigacija**: Ispravljen bag koji je uzrokovao prestanak rada navigacije (ReferenceError) uslijed greške u kodu.
+
+### Added
+- **Audio Preloading**: Implementiran napredni sistem pred-učitavanja zvuka (Zero-Latency) za sljedeći ajet radi tečnijeg iskustva slušanja.
+
+### Improved
+- **Service Worker**: Poboljšana logika čišćenja keša i upravljanja kvotama memorije.
+- **UI Postavke**: Dodana kontrola visine linije za prijevod (Bosanski) koja prati postavke arapskog teksta.
 
 ## [0.1.5] - 2026-03-17
 

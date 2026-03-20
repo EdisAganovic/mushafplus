@@ -130,13 +130,9 @@ window.goToAyah = function (ayahNum) {
   if (idx >= 0 && idx < AppState.currentSurah.verses.length) {
     AppState.currentAyahIndex = idx;
     localStorage.setItem("last_ayah_index", idx);
-    
-    // Scroll to top of grid when navigating (mobile only)
-    if (window.ayahGridMobile) {
-      window.ayahGridMobile.scrollToTop();
-    }
-    
-    
+    renderAyah();
+    renderAyahGrid();
+    updateProgress();
   }
 };
 
@@ -223,7 +219,7 @@ window.nextAyah = function () {
     
     safeSetStorage("last_ayah_index", AppState.currentAyahIndex);
     
-    if (typeof renderAyahGrid === "function") { renderAyah(); renderAyahGrid(); }
+    if (typeof renderAyahGrid === "function") { renderAyah(); renderAyahGrid(); updateProgress(); }
     return;
   }
 
@@ -269,7 +265,7 @@ window.prevAyah = function () {
     
     safeSetStorage("last_ayah_index", AppState.currentAyahIndex);
     
-    if (typeof renderAyahGrid === "function") { renderAyah(); renderAyahGrid(); }
+    if (typeof renderAyahGrid === "function") { renderAyah(); renderAyahGrid(); updateProgress(); }
     return;
   }
 
@@ -287,6 +283,7 @@ window.prevAyah = function () {
       safeSetStorage(STORAGE_KEYS.LAST_AYAH_INDEX, AppState.currentAyahIndex);
       renderAyah();
       if (typeof renderAyahGrid === "function") renderAyahGrid(); 
+      updateProgress();
     }
   }
 };
