@@ -4,7 +4,7 @@
  */
 
 // Cache version - hardcoded since ServiceWorker runs in isolated context
-const CACHE_VERSION = "v0.1.7";
+const CACHE_VERSION = "0.1.7";
 const STATIC_CACHE = `mushaf-static-${CACHE_VERSION}`;
 const AUDIO_RECITATION_CACHE = `mushaf-recitation-${CACHE_VERSION}`;
 const AUDIO_WORD_CACHE = `mushaf-word-${CACHE_VERSION}`;

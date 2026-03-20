@@ -391,14 +391,6 @@ function initStorageMonitoring() {
   // Check storage quota on initialization
   const stats = getStorageStats();
   if (stats) {
-    console.log("[Storage] Quota Status:", {
-      usedBytes: stats.usedBytes,
-      quotaBytes: stats.quotaBytes,
-      usagePercentage: stats.usagePercentage.toFixed(2) + "%",
-      availableBytes: stats.availableBytes,
-      isNearLimit: stats.isNearLimit,
-    });
-
     const quotaWarning = checkStorageQuota();
     if (quotaWarning) {
       console.warn("[Storage]", quotaWarning.message);
@@ -582,16 +574,24 @@ async function init() {
     setupEventListeners();
     setupZoomControls();
 
-    // 3. Restore Session (using safeSetStorage)
+// 3. Restore Session (using safeSetStorage)
     const lastSurah = localStorage.getItem("last_surah") || "1";
     const lastAyahIndex = parseInt(localStorage.getItem("last_ayah_index") || "0");
     if (els.surahSelect) els.surahSelect.value = lastSurah;
     AppState.currentAyahIndex = lastAyahIndex;
-    
-    // Hide loading overlay before showing content
+
+// Hide loading overlay before showing content
     hideLoading();
 
+    // Apply tajweed class BEFORE loadSurah so renderAyah() sees it immediately
+    if (AppState.settings.tajweed) {
+      console.log("[APP DEBUG] Adding tajweed-active class, settings.tajweed=", AppState.settings.tajweed);
+      document.body.classList.add("tajweed-active");
+    }
+
     loadSurah(parseInt(lastSurah), true);
+
+
 
     // 4. Load Bookmarks & Theme
     renderBookmarks();
@@ -621,9 +621,7 @@ async function init() {
     // Set initial toggle states
     if (els.tajweedToggle) {
       els.tajweedToggle.checked = AppState.settings.tajweed;
-      if (AppState.settings.tajweed) {
-        document.body.classList.add("tajweed-active");
-      }
+      // Class already applied before loadSurah above; no need to repeat here
     }
 
     if (els.tajweedLegendToggle) {

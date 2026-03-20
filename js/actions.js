@@ -62,13 +62,15 @@ window.loadSurah = function (id, retainAyahIndex = false) {
   
   AppState.currentSurah = surah;
   safeSetStorage(STORAGE_KEYS.LAST_SURAH, id);
-
-  renderAyah();
-  renderAyahGrid();
-  updateProgress();
-
-  // Hide skeleton loader and show content with fade-in animation after rendering
+  // Hide skeleton loader first so the browser has a visible DOM for rendering
   hideSkeletonLoader();
+
+  // Use requestAnimationFrame to ensure unhide paint has started before calculation
+  requestAnimationFrame(() => {
+    renderAyah();
+    renderAyahGrid();
+    updateProgress();
+  });
 };
 
 /**
@@ -90,9 +92,9 @@ window.goToJuz = function (juz) {
   localStorage.setItem("last_surah", sId);
   localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
 
-  renderAyah();
-  renderAyahGrid();
-  updateProgress();
+  
+  g
+  
 };
 
 /**
@@ -113,9 +115,9 @@ window.goToPage = function (page) {
   localStorage.setItem("last_surah", sId);
   localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
 
-  renderAyah();
-  renderAyahGrid();
-  updateProgress();
+  
+  g
+  
 };
 
 /**
@@ -134,7 +136,7 @@ window.goToAyah = function (ayahNum) {
       window.ayahGridMobile.scrollToTop();
     }
     
-    renderAyah();
+    
   }
 };
 
@@ -220,8 +222,8 @@ window.nextAyah = function () {
     }
     
     safeSetStorage("last_ayah_index", AppState.currentAyahIndex);
-    renderAyah();
-    if (typeof renderAyahGrid === "function") renderAyahGrid(); 
+    
+    if (typeof renderAyahGrid === "function") { renderAyah(); renderAyahGrid(); }
     return;
   }
 
@@ -266,8 +268,8 @@ window.prevAyah = function () {
     }
     
     safeSetStorage("last_ayah_index", AppState.currentAyahIndex);
-    renderAyah();
-    if (typeof renderAyahGrid === "function") renderAyahGrid(); 
+    
+    if (typeof renderAyahGrid === "function") { renderAyah(); renderAyahGrid(); }
     return;
   }
 
@@ -332,8 +334,8 @@ window.toggleSpreadMode = function () {
     // Apply UI changes consistently
     window.applySpreadMode();
 
-    renderAyah();
-    if (typeof renderAyahGrid === "function") renderAyahGrid(); 
+    
+    if (typeof renderAyahGrid === "function") g 
 };
 
 /**
@@ -361,13 +363,13 @@ window.toggleCheckmark = function () {
     setTimeout(() => els.validBtn.classList.remove("success-pop"), APP.SUCCESS_ANIMATION_DELAY);
   }
 
-  renderAyah();
+  
   if (typeof updateGridCellState === "function") {
     updateGridCellState(AppState.currentAyahIndex);
   } else {
-    renderAyahGrid();
+    g
   }
-  updateProgress();
+  
 };
 
 /**
@@ -398,25 +400,46 @@ window.toggleBookmark = function () {
     setTimeout(() => els.bookmarkBtn.classList.remove("success-pop"), APP.SUCCESS_ANIMATION_DELAY);
   }
 
-  renderAyah();
+  
   renderBookmarks();
 };
 
 /**
  * Persistently toggles highlight on a specific word index within an Ayah.
  */
-window.toggleWordHighlight = function (ayahKey, wordIdx) {
-  if (!AppState.highlights[ayahKey]) AppState.highlights[ayahKey] = [];
-  const index = AppState.highlights[ayahKey].indexOf(wordIdx);
-  if (index > -1) {
-    AppState.highlights[ayahKey].splice(index, 1);
-    if (AppState.highlights[ayahKey].length === 0)
-      delete AppState.highlights[ayahKey];
-  } else {
-    AppState.highlights[ayahKey].push(wordIdx);
+window.toggleWordHighlight = function(ayahKey, wordIdx) {
+  if (typeof ayahKey !== 'string' || wordIdx === undefined) return;
+  const idx = parseInt(wordIdx);
+
+  // Repair corrupted highlights (double-stringified string instead of object)
+  let hl = AppState.user.highlights;
+  if (typeof hl === 'string') {
+    try { hl = JSON.parse(hl); } catch(e) { hl = {}; }
+    AppState.user.highlights = hl;
   }
-  debouncedStorageSave("quran_highlights", JSON.stringify(AppState.highlights));
-  renderAyah();
+  if (!hl || typeof hl !== 'object') {
+    AppState.user.highlights = {};
+    hl = AppState.user.highlights;
+  }
+
+  // Ensure array exists for this ayah
+  if (!Array.isArray(hl[ayahKey])) {
+    hl[ayahKey] = [];
+  }
+
+  const arr = hl[ayahKey];
+  const pos = arr.indexOf(idx);
+
+  if (pos > -1) {
+    arr.splice(pos, 1);
+  } else {
+    arr.push(idx);
+  }
+
+  // Pass the RAW object — safeSetStorage will JSON.stringify it
+  debouncedStorageSave("quran_highlights", AppState.user.highlights);
+
+  
 };
 
 /**
@@ -533,10 +556,10 @@ window.importProgress = function (event) {
       setTimeout(() => successToast.remove(), 3000);
 
       if (AppState.currentSurah) {
-        renderAyah();
-        renderAyahGrid();
+        
+        g
         renderBookmarks();
-        updateProgress();
+        
       }
     } catch (err) {
       // Show error toast

@@ -654,7 +654,42 @@ h6 {
 /* Prevent word spans from clipping descenders/diacritics (fixes Firefox) */
 .quran-word {
   overflow: visible;
-  display: inline;
+  display: inline-block;
+  position: relative;
+  transition: all 0.2s ease;
+  padding: 0 0.15rem;
+  border-radius: 4px;
+}
+
+.word-hold-progress {
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  width: 0%;
+  height: 4px;
+  background: #f43f5e; /* rose-500 red */
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 1px 4px rgba(244, 63, 94, 0.4);
+}
+
+@keyframes word-hold-fill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.word-pressing.quran-word {
+  transform: scale(0.96);
+  background: rgba(244, 63, 94, 0.1) !important;
+}
+
+.word-pressing .word-hold-progress {
+  animation: word-hold-fill 1s linear forwards;
+}
+
+.word-pressing.quran-word .quran-word-content {
+  opacity: 0.8;
 }
 
 /* ===== Scrollbar Utilities ===== */
@@ -785,7 +820,7 @@ h6 {
   bottom: auto;
   left: auto;
   transform: translateX(-50%);
-  background-color: #065f46;
+  background-color: rgba(6, 95, 70, 0.85);
   color: #f8fafc;
   padding: 8px 14px;
   border-radius: 10px;
@@ -1860,4 +1895,51 @@ body.spread-mode-active .btn-theme-dot::after {
 
 #page-theme-select:focus {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgb(var(--theme-500))'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+}
+.word-loading-text {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(244, 63, 94, 0.9);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.word-pressing .word-loading-text {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.word-loading-text + .word-loading-bar {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background-color: rgba(244, 63, 94, 0.5);
+  border-radius: 2px;
+  opacity: 0;
+}
+
+.word-pressing .word-loading-bar {
+  opacity: 1;
+  animation: pulse-bar 1s ease-in-out infinite;
+}
+
+@keyframes pulse-bar {
+  0%, 100% { transform: translateX(-50%) scaleX(0.4); }
+  50% { transform: translateX(-50%) scaleX(1); }
+}
+
+.quran-word {
+  position: relative;
 }

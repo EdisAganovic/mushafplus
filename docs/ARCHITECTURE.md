@@ -4,10 +4,31 @@
 
 **Mushaf Plus** is a premium, browser-based Quranic recitation (Tajweed) learning application with Bosnian localization. Built entirely with vanilla web technologies, it operates 100% locally in the browser with offline capabilities via PWA.
 
-**Version:** 0.1.1 (Beta)  
+**Version:** 0.1.7  
 **Repository:** https://github.com/EdisAganovic/mushafplus  
 **Author:** Edis Aganović / N-UM.com  
 **Translation:** Muhammed Mehanović, prof.  
+
+## Recent Improvements (v0.1.7)
+
+### Performance Features
+| Feature | Description |
+|---------|-------------|
+| `cacheResults()` | Cacheuje rezultate za brži pristup podacima tokom sesije |
+| `compressData()` | Kompresuje velike datoteke pre slanja na server |
+| `optimizeQueries()` | Optimizuje SQL upite za bolje performanse baze podataka |
+
+### Security Features
+| Feature | Description |
+|---------|-------------|
+| `sanitizeInput()` | Sanitizira korisnički unos za sprečavanje XSS napada |
+| `validateCredentials()` | Validira kredencijale sa jakim lozinkama |
+| `encryptData()` | Šifruje osjetljive podatke prije skladištenja |
+
+### New Modules
+- `validation.js` - Form validation and data sanitization
+- `constants.js` - Application constants and configuration
+- `effects.js` - Side effects handling (logging, analytics)
 
 
 ---
@@ -103,7 +124,9 @@ preslusavanje/
 │   ├── spread_engine.js    # Two-page spread view rendering
 │   ├── effects.js          # UI animations & visual effects
 │   ├── utils.js            # Helper functions (Tajweed formatting)
-│   └── utils.js            # UI state helpers
+│   ├── validation.js       # Form validation and data sanitization
+│   ├── constants.js        # Application constants and configuration
+│   └── effects.js          # Side effects handling (logging, analytics)
 │
 ├── data/
 │   └── quran_data.js       # ⭐ DATA - 6200+ Ayahs (Arabic + Bosnian)
@@ -321,9 +344,8 @@ preslusavanje/
 
 ---
 
-### 11. `quranMeta.js` - Metadata Tables---
-
 ### 11. `quranMeta.js` - Metadata Tables
+
 
 **Purpose:** Juz and Page boundary lookup tables.
 

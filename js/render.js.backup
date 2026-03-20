@@ -535,7 +535,7 @@ window.renderAyah = function () {
   if (window.CSS && CSS.highlights) {
     CSS.highlights.forEach((val, hKey) => {
       if (hKey.startsWith("rule-")) {
-        val.clear(); // Clear ranges instead of deleting the object
+        CSS.highlights.delete(hKey);
       }
     });
   }
@@ -608,12 +608,10 @@ window.renderAyah = function () {
             range.setEnd(textNode, currentOffset + segLen);
 
             const hName = `rule-${seg.rule}`;
-            let hSet = CSS.highlights.get(hName);
-            if (!hSet) {
-              hSet = new Highlight();
-              CSS.highlights.set(hName, hSet);
+            if (!CSS.highlights.has(hName)) {
+              CSS.highlights.set(hName, new Highlight());
             }
-            hSet.add(range);
+            CSS.highlights.get(hName).add(range);
 
             if (seg.tip) {
               // Store tip in dataset for event delegation
