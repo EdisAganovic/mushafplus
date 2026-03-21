@@ -13,8 +13,8 @@ const PAGE_LOAD_QUEUE = new Set(); // Track pages being loaded
 
 // Constants - centralized in APP namespace
 const PAGE_LIMITS = {
-  MAX: APP.MAX_PAGES,
-  MIN: 1
+  MAX: QURAN_CONSTANTS.TOTAL_PAGES,
+  MIN: QURAN_CONSTANTS.MIN_PAGE || 1
 };
 const SVG_PATH = "assets/optimized";
 

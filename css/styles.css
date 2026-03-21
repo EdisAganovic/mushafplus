@@ -1942,4 +1942,14 @@ body.spread-mode-active .btn-theme-dot::after {
 
 .quran-word {
   position: relative;
+  transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s ease;
+  border-radius: 6px;
+}
+
+.quran-word:hover {
+  background-color: rgba(16, 185, 129, 0.28) !important;
+}
+
+.dark .quran-word:hover {
+  background-color: rgba(16, 185, 129, 0.35) !important;
 }

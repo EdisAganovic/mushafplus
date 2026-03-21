@@ -92,9 +92,9 @@ window.goToJuz = function (juz) {
   localStorage.setItem("last_surah", sId);
   localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
 
-  
-  g
-  
+  renderAyah();
+  if (typeof renderAyahGrid === "function") renderAyahGrid();
+  updateProgress();
 };
 
 /**
@@ -115,9 +115,9 @@ window.goToPage = function (page) {
   localStorage.setItem("last_surah", sId);
   localStorage.setItem("last_ayah_index", AppState.currentAyahIndex);
 
-  
-  g
-  
+  renderAyah();
+  if (typeof renderAyahGrid === "function") renderAyahGrid();
+  updateProgress();
 };
 
 /**
@@ -307,18 +307,21 @@ window.applySpreadMode = function() {
   // Handle Sidebar Visibility: hide sidebar in spread mode
   if (AppState.settings.spreadMode) {
     if (els.sidebar) els.sidebar.classList.add("md:hidden");
+    if (els.ayahCard) els.ayahCard.classList.add("hidden");
+    if (els.spreadCard) els.spreadCard.classList.remove("hidden");
     if (els.appContainer) els.appContainer.classList.replace("max-w-[1400px]", "max-w-full");
     document.body.classList.add("spread-mode-active");
     if (els.zoomToolbar) els.zoomToolbar.classList.remove("hidden");
     if (els.pageThemeToggleContainer) els.pageThemeToggleContainer.classList.remove("hidden");
   } else {
     if (els.sidebar) els.sidebar.classList.remove("md:hidden");
+    if (els.ayahCard) els.ayahCard.classList.remove("hidden");
+    if (els.spreadCard) els.spreadCard.classList.add("hidden");
     if (els.appContainer) els.appContainer.classList.replace("max-w-full", "max-w-[1400px]");
     document.body.classList.remove("spread-mode-active");
     if (els.zoomToolbar) els.zoomToolbar.classList.add("hidden");
     if (els.pageThemeToggleContainer) els.pageThemeToggleContainer.classList.add("hidden");
   }
-
 };
 
 /**
@@ -332,7 +335,8 @@ window.toggleSpreadMode = function () {
     window.applySpreadMode();
 
     
-    if (typeof renderAyahGrid === "function") g 
+    if (typeof renderAyah === "function") renderAyah();
+    if (typeof renderAyahGrid === "function") renderAyahGrid(); 
 };
 
 /**
@@ -364,7 +368,7 @@ window.toggleCheckmark = function () {
   if (typeof updateGridCellState === "function") {
     updateGridCellState(AppState.currentAyahIndex);
   } else {
-    g
+    if (typeof renderAyahGrid === "function") renderAyahGrid();
   }
   
 };
@@ -552,12 +556,8 @@ window.importProgress = function (event) {
       document.body.appendChild(successToast);
       setTimeout(() => successToast.remove(), 3000);
 
-      if (AppState.currentSurah) {
-        
-        g
+        renderAyah();
         renderBookmarks();
-        
-      }
     } catch (err) {
       // Show error toast
       const errorToast = document.createElement("div");

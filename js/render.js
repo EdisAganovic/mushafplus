@@ -584,7 +584,7 @@ window.renderAyah = function () {
 
     const currentWordSpan = document.createElement("span");
     currentWordSpan.className =
-      "quran-word px-0.5 rounded-md transition-all cursor-pointer hover:bg-emerald-500/20";
+      "quran-word px-0.5 rounded-md transition-all cursor-pointer";
     currentWordSpan.dataset.index = wordIndex;
 
     if (activeHighlights.includes(wordIndex)) {
