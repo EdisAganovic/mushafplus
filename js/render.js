@@ -40,11 +40,6 @@ class VirtualGrid {
    */
   init() {
     if (!this.container || !this.scrollParent || this.isInitialized) {
-      console.warn('[VirtualGrid.init] Skipping init:', {
-        hasContainer: !!this.container,
-        hasScrollParent: !!this.scrollParent,
-        isInitialized: this.isInitialized
-      });
       return;
     }
 
@@ -53,8 +48,6 @@ class VirtualGrid {
     
     this.scrollParent.addEventListener("scroll", this.boundScrollHandler, { passive: true });
     this.isInitialized = true;
-    
-    console.log('[VirtualGrid.init] Initialized, calling render(). Container:', this.container.id, 'Scroll parent height:', this.scrollParent.clientHeight);
     
     // Initial render to populate the grid
     this.render();

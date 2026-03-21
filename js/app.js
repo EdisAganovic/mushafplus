@@ -585,7 +585,6 @@ async function init() {
 
     // Apply tajweed class BEFORE loadSurah so renderAyah() sees it immediately
     if (AppState.settings.tajweed) {
-      console.log("[APP DEBUG] Adding tajweed-active class, settings.tajweed=", AppState.settings.tajweed);
       document.body.classList.add("tajweed-active");
     }
 
