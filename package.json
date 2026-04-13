@@ -4,7 +4,9 @@
   "description": "A premium, fully responsive browser-based application designed to help users memorize and perfect their Quranic recitation (Tajweed) with Bosnian localized interface.",
   "main": "tailwind.config.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "update-version": "node update-version.js",
+    "update-version:minor": "node update-version.js $(($(jq -r '.version | split(\".\")[1]') + 1)).0.0"
   },
   "repository": {
     "type": "git",

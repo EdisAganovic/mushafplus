@@ -8,7 +8,9 @@
     <!-- PWA Settings -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#064e3b">
+    <!-- Apple Touch Icon with WebP fallback -->
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-512x512.png">
 
     <!-- Analytics Tracking -->
     <script defer src="https://stats.prodesign387.com/script.js" data-website-id="366e6b8b-263b-48a3-8596-87502ef214c1"></script>
@@ -16,12 +18,16 @@
     <!-- Global App Configuration -->
     <script>
         // IMPORTANT: Change this version to force cache refresh for all users
-        const APP_VERSION = "0.1.7";
+        const APP_VERSION = "0.1.8";
     </script>
 
     <!-- UI Styles and Favicon (Dynamic versioning) -->
     <script>
+        // Favicon with WebP fallback for modern browsers
+        document.write(`<link rel="icon" type="image/webp" href="favicon.webp">`);
         document.write(`<link rel="icon" type="image/png" href="favicon.png?v=${APP_VERSION}">`);
+        
+        // Stylesheets with versioning
         document.write(`<link rel="stylesheet" href="css/tailwind-output.css?v=${APP_VERSION}">`);
         document.write(`<link rel="stylesheet" href="css/themes.css?v=${APP_VERSION}">`);
         document.write(`<link rel="stylesheet" href="css/styles.css?v=${APP_VERSION}">`);
@@ -35,7 +41,7 @@
     <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <style>
-        #version-modal[data-auto-open="true"] .changelog-entry:not(:first-of-type) {
+        #mdl-version[data-auto-open="true"] .changelog-entry:nth-of-type(n+4) {
             display: none;
         }
     </style>
@@ -934,6 +940,28 @@
                 </button>
             </div>
             <div class="modal-body modal-body-scroll">
+                <!-- v0.1.8 -->
+                <div class="changelog-entry">
+                    <div class="changelog-header">
+                        <span class="changelog-version-pill">0.1.8</span>
+                        <h4 class="changelog-title">Ispravke Snimanja i Verzije</h4>
+                        <span class="changelog-date">13. april 2026.</span>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-fixed">Popravljeno</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Snimanje glasa</strong> — Riješen problem s prikazom i spremanjem korisničkih snimaka nakon završetka snimanja.</li>
+                             <li class="changelog-item"><strong>Verzija aplikacije</strong> — Ispravljena logika pohrane verzije koja je uzrokovala ponovno prikazivanje ekrana dobrodošlice.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-improved">Poboljšano</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Pregled ažuriranja</strong> — Ekran dobrodošlice sada prikazuje zadnja tri ažuriranja radi bolje preglednosti novih funkcija.</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- v0.1.7 -->
                 <div class="changelog-entry">
                     <div class="changelog-header">
@@ -981,28 +1009,6 @@
                         <ul class="changelog-list">
                              <li class="changelog-item"><strong>Hifz mod</strong> — Spriječeno nepotrebno ponovno skrolovanje na trenutni ajet pri aktivaciji hifz moda.</li>
                              <li class="changelog-item"><strong>Spread Mode Meni</strong> — Ispravljen problem sa vidljivošću stranica nakon zatvaranja izbornika sura.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- v0.1.5 -->
-                <div class="changelog-entry">
-                    <div class="changelog-header">
-                        <span class="changelog-version-pill">0.1.5</span>
-                        <h4 class="changelog-title">UI & UX Standardizacija</h4>
-                        <span class="changelog-date">17. mart 2026.</span>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-improved">Poboljšano</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>UI Arhitektura</strong> — Standardizirano imenovanje svih HTML elemenata radi lakšeg održavanja i stabilnijeg koda.</li>
-                             <li class="changelog-item"><strong>Navigacija Swajpom</strong> — Dodan tečan "Smooth Scroll" povratak na početak stranice prilikom prelaksa na drugi ajet putem geste.</li>
-                        </ul>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-fixed">Popravljeno</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Spread Mode Prikaz</strong> — Popravljen vizualni bag sa vidljivošću menija nakon izbora sure iz liste, te popravljeno skrivanje navigacije izbornika tema.</li>
                         </ul>
                     </div>
                 </div>

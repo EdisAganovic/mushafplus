@@ -103,6 +103,9 @@ window.startRecording = async function () {
     };
 
     AppState.mediaRecorder.onstop = () => {
+      const currentAyah = AppState.currentSurah.verses[AppState.currentAyahIndex];
+      const key = `${AppState.currentSurah.id}-${currentAyah.id}`;
+
       const audioBlob = new Blob(AppState.audioChunks, {
         type: AppState.recordingMimeType
       });
@@ -118,7 +121,7 @@ window.startRecording = async function () {
 
       // --- OPTIMIZATION: Limit memory usage for long sessions ---
       // We only keep the last MAX_RECORDINGS recordings in the "sliding window" to prevent memory exhaustion
-      while (AppState.recordingKeys.length > QURAN_CONSTANTS.MAX_RECORDINGS) {
+      while (AppState.recordingKeys.length > APP.MAX_RECORDINGS) {
         const oldestKey = AppState.recordingKeys.shift();
         if (AppState.recordings[oldestKey]) {
           const oldRec = AppState.recordings[oldestKey];
@@ -233,27 +236,6 @@ window.stopRecording = function () {
 };
 
 /**
- * Saves the current recording to localStorage with cleanup of old recordings.
- * Called automatically when stopRecording is invoked.
- */
-function saveRecording() {
-  const key = `${AppState.currentSurah.id}-${
-    AppState.currentSurah.verses[AppState.currentAyahIndex].id
-  }`;
-
-  // Cleanup old recordings if we're near the limit
-  cleanupRecordings();
-
-  // Store recording with duration metadata
-  const duration = Math.round((Date.now() - recordStartTime) / 1000);
-  AppState.recordings[key] = {
-    url: audioUrl,
-    duration: duration
-  };
-  AppState.recordingKeys.push(key);
-}
-
-/**
  * Toggles between start and stop recording states.
  */
 window.toggleRecording = function () {
@@ -263,7 +245,6 @@ window.toggleRecording = function () {
     startRecording();
   } else {
     stopRecording();
-    saveRecording(); // Save recording when stopped
   }
 };
 

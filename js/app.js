@@ -665,16 +665,16 @@ async function init() {
     updateReciterLabel();
 
     // --- UPDATE NOTIFICATION ---
-    const lastSeenVersion = localStorage.getItem("last_seen_version");
-    if (lastSeenVersion && lastSeenVersion !== APP_VERSION) {
+    const lastSeenVersion = safeParseStorage("last_seen_version", null);
+    if (lastSeenVersion !== APP_VERSION) {
       setTimeout(() => {
         if (els.versionModal) {
           els.versionModal.setAttribute("data-auto-open", "true");
           openModal("mdl-version");
         }
       }, 1000);
+      safeSetStorage("last_seen_version", APP_VERSION);
     }
-    safeSetStorage("last_seen_version", APP_VERSION);
 
     // Swipe UX: Show tutorial toast on first visit (mobile only)
     if (!localStorage.getItem("swipe_tutorial_seen") && window.innerWidth < 768) {

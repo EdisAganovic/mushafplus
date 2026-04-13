@@ -4,10 +4,11 @@
  */
 
 // Cache version - hardcoded since ServiceWorker runs in isolated context
-const CACHE_VERSION = "v0.1.7";
+const CACHE_VERSION = "v0.1.8";
 const STATIC_CACHE = `mushaf-static-${CACHE_VERSION}`;
 const AUDIO_RECITATION_CACHE = `mushaf-recitation-${CACHE_VERSION}`;
 const AUDIO_WORD_CACHE = `mushaf-word-${CACHE_VERSION}`;
+const DATA_CACHE = `mushaf-data-${CACHE_VERSION}`;
 
 // Maximum cache sizes - hardcoded since ServiceWorker runs in isolated context
 const MAX_WORDS_CACHE = 300; // ~20MB for word audio
@@ -137,13 +138,20 @@ self.addEventListener("install", (event) => {
     caches.open(STATIC_CACHE).then(async (cache) => {
       await cache.addAll(ASSETS_TO_CACHE);
       
-      // Run initial cleanup on install
-      const activeClients = await self.clients.matchAll();
-      
-      return Promise.all([
-        cache.addAll(ASSETS_TO_CACHE),
-        runPeriodicCleanup(),
-      ]);
+      // Pre-cache Quran data file with versioning
+      return caches.open(DATA_CACHE).then(dataCache => {
+        return dataCache.addAll([
+          `./data/quran_data.js?v=${CACHE_VERSION}`
+        ]);
+      }).then(() => {
+        // Run initial cleanup on install
+        const activeClients = await self.clients.matchAll();
+        
+        return Promise.all([
+          cache.addAll(ASSETS_TO_CACHE),
+          runPeriodicCleanup(),
+        ]);
+      });
     }),
   );
 });
@@ -153,7 +161,7 @@ self.addEventListener("activate", (event) => {
     Promise.all([
       // Clean up old caches from previous versions
       caches.keys().then((cacheNames) => {
-        const validCaches = [STATIC_CACHE, AUDIO_RECITATION_CACHE, AUDIO_WORD_CACHE];
+        const validCaches = [STATIC_CACHE, AUDIO_RECITATION_CACHE, AUDIO_WORD_CACHE, DATA_CACHE];
         return Promise.all(
           cacheNames.map((cacheName) => {
             if (!validCaches.includes(cacheName)) {
@@ -188,6 +196,39 @@ self.addEventListener("message", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
+  
+  // Quran data file - cache-first strategy with aggressive caching
+  if (url.pathname.includes("quran_data.js")) {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) {
+          console.log('[SW] Serving cached quran_data.js');
+          return cachedResponse;
+        }
+        
+        // Fetch from network and cache it for future use
+        return fetch(event.request).then((networkResponse) => {
+          if (!networkResponse || networkResponse.status !== 200) {
+            return networkResponse;
+          }
+
+          const responseToCache = networkResponse.clone();
+          
+          caches.open(DATA_CACHE).then((dataCache) => {
+            dataCache.put(event.request, responseToCache);
+          });
+          
+          console.log('[SW] Cached quran_data.js for offline use');
+          return networkResponse;
+        }).catch(err => {
+          console.error('[SW] Failed to fetch quran_data.js:', err);
+          return caches.match('./data/quran_data.js?v=' + CACHE_VERSION);
+        });
+      })
+    );
+    return;
+  }
+
   const isMp3 = url.pathname.endsWith(".mp3");
   const isWordAudio = isMp3 && url.pathname.includes("/assets/audio/");
   const isRecitation = isMp3 && !isWordAudio;

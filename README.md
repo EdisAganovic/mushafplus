@@ -53,6 +53,27 @@ The app uses a static production build of **Tailwind CSS**. If you modify the `i
 npx tailwindcss -i ./css/input.css -o ./css/tailwind-output.css --minify
 ```
 
+### 🔄 Version Management & Cache Busting
+
+The app uses versioning to cache-bust static assets (CSS, JS, icons). When updating content:
+
+**Auto-increment version:**
+```bash
+# Increment patch version (e.g., 0.1.7 → 0.1.8)
+npm run update-version
+
+# Increment minor version (e.g., 0.1.7 → 0.2.0)
+npm run update-version:minor
+```
+
+**Set specific version:**
+```bash
+# Set to v1.0.0
+npm run update-version v1.0.0
+```
+
+This will update all cached files with the new version parameter. For large data updates (quran_data.js), also update the cache version in `service-worker.js` manually or via the script.
+
 ### Note on Microphone Permissions
 
 Microphone access requires a secure context (HTTPS or localhost). If running locally, please use a server like **VS Code Live Server** or similar to enable the recording feature.

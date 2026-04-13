@@ -2,7 +2,16 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
-## [0.1.6] - 2026-03-17
+## [0.1.8] - 2026-04-13
+
+### Fixed
+- **Snimanje glasa**: Riješen problem s prikazom i spremanjem korisničkih snimaka nakon završetka snimanja. Osigurano je da snimak odmah postane vidljiv i spreman za reprodukciju.
+- **Verzija aplikacije**: Ispravljena logika provjere verzije (safeParseStorage) koja je uzrokovala ponovno prikazivanje ekrana dobrodošlice na svaki load stranice.
+- **MAX_RECORDINGS**: Ispravljena pogrešna referenca na konstantu u sistemu za čišćenje memorije snimaka.
+
+### Improved
+- **Pregled ažuriranja**: Ekran dobrodošlice (Version Modal) sada prikazuje zadnja tri ažuriranja umjesto samo jednog, pružajući korisniku bolji uvid u nedavne promjene.
+
 ## [0.1.7] - 2026-03-21
 
 ### Fixed
