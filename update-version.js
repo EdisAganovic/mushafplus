@@ -43,7 +43,7 @@ function updateVersion(filePath, version) {
 
   // Update CACHE_VERSION constant  
   if (cacheVersionPattern.test(content)) {
-    const currentCacheVersion = match(cacheVersionPattern.exec(content))[1];
+    const currentCacheVersion = cacheVersionPattern.exec(content)[1];
     let newCacheVersion = version;
     
     // Add cache version prefix if not present
@@ -56,8 +56,8 @@ function updateVersion(filePath, version) {
     console.log(`✅ Updated CACHE_VERSION in ${filePath}`);
   }
 
-  // Update all ?v= parameters
-  if (updated) {
+  // Update all ?v= parameters (except for service-worker.js which uses dynamic CACHE_VERSION)
+  if (updated && !filePath.endsWith('service-worker.js')) {
     let matches = 0;
     content = content.replace(writePattern, (match, p1) => {
       matches++;

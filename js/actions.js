@@ -572,3 +572,90 @@ window.importProgress = function (event) {
   };
   reader.readAsText(file);
 };
+
+/**
+ * Shows a beautiful premium custom glassmorphic toast notification.
+ * @param {string} message - Notification text to show
+ */
+window.showToast = function (message) {
+  // Remove existing toast if any
+  const existing = document.getElementById('app-custom-toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.id = 'app-custom-toast';
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 8.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    opacity: 0;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(16, 185, 129, 0.45);
+    border-radius: 14px;
+    padding: 10px 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    color: #f8fafc;
+    font-size: 13px;
+    font-family: "Outfit", sans-serif;
+    font-weight: 500;
+    z-index: 99999;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  `;
+  toast.innerHTML = `<div class="flex items-center gap-2.5"><ion-icon name="checkmark-circle" class="text-emerald-400 text-lg shrink-0"></ion-icon><span>${message}</span></div>`;
+  document.body.appendChild(toast);
+
+  // Force reflow
+  void toast.offsetWidth;
+
+  // Show
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+  toast.style.opacity = '1';
+
+  // Hide after 2.5 seconds
+  setTimeout(() => {
+    toast.style.transform = 'translateX(-50%) translateY(-10px)';
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
+};
+
+/**
+ * Copies the current Ayah and its Bosnian translation to the clipboard structured beautifully for sharing on social networks.
+ */
+window.copyForSocial = function () {
+  if (!AppState.currentSurah || !AppState.currentSurah.verses) return;
+  const surah = AppState.currentSurah;
+  const index = AppState.currentAyahIndex;
+  const verse = surah.verses[index];
+  if (!verse) return;
+
+  const url = `${window.location.origin}${window.location.pathname}?sura=${surah.id}&ayah=${verse.id}`;
+
+  const shareText = `Sura: ${surah.id}. ${surah.trans}, ajet: ${verse.id}
+
+${verse.ar}
+
+"${verse.bs}"
+
+Prevod tumačenja: M. Mehanović, prof.
+
+Slušaj i čitaj na Mushaf Plus:
+${url}`;
+
+  // Visual Feedback for the button
+  if (els.shareCopyBtn) {
+    els.shareCopyBtn.classList.add("success-pop");
+    setTimeout(() => els.shareCopyBtn.classList.remove("success-pop"), APP.SUCCESS_ANIMATION_DELAY || 300);
+  }
+
+  navigator.clipboard.writeText(shareText).then(() => {
+    window.showToast("Ajet je kopiran za društvene mreže!");
+  }).catch(err => {
+    console.error("Failed to copy:", err);
+    window.showToast("Greška pri kopiranju.");
+  });
+};
+

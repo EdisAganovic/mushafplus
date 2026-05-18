@@ -9,8 +9,8 @@
 
 window.APP = {
   // Versioning
-  VERSION: "0.1.8",
-  CACHE_VERSION: "v0.1.8",
+  VERSION: "0.1.9",
+  CACHE_VERSION: "v0.1.9",
   STORAGE_VERSION: 2,
 
   // Storage Limits

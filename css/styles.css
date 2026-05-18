@@ -820,7 +820,7 @@ h6 {
   bottom: auto;
   left: auto;
   transform: translateX(-50%);
-  background-color: rgba(6, 95, 70, 0.85);
+  background-color: rgba(6, 95, 70, 0.65);
   color: #f8fafc;
   padding: 8px 14px;
   border-radius: 10px;
@@ -837,8 +837,8 @@ h6 {
   z-index: 9999;
   pointer-events: none;
   animation: tooltipIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
   line-height: 1.5;
 }
 
@@ -923,7 +923,7 @@ h6 {
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  background: rgba(var(--slate-900), 0.92);
+  background: rgba(var(--slate-900), 0.7);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(var(--theme-500), 0.25);
   border-radius: 1rem;

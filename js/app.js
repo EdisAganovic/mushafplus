@@ -1180,6 +1180,7 @@ function setupEventListeners() {
   if (els.recordBtn) els.recordBtn.onclick = toggleRecording;
   if (els.validBtn) els.validBtn.onclick = toggleCheckmark;
   if (els.bookmarkBtn) els.bookmarkBtn.onclick = toggleBookmark;
+  if (els.shareCopyBtn) els.shareCopyBtn.onclick = window.copyForSocial;
 
   if (els.ayahNotes) {
     els.ayahNotes.oninput = (e) => {

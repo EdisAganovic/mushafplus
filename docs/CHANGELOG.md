@@ -2,6 +2,11 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.1.9] - 2026-05-18
+
+### Added
+- **Ubačeno "Share" dugme za dijeljenje na mreže**: Dodana opcija za prelijepo strukturirano kopiranje ajeta za društvene mreže uz direktni link za slušanje i čitanje.
+
 ## [0.1.8] - 2026-04-13
 
 ### Fixed

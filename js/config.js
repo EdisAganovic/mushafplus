@@ -246,6 +246,7 @@ window.els = {
   recordText: document.getElementById("record-text"),
   validBtn: document.getElementById("btn-valid"),
   bookmarkBtn: document.getElementById("btn-bookmark"),
+  shareCopyBtn: document.getElementById("btn-share-copy"),
   bookmarksList: document.getElementById("lst-bookmarks"),
   audioPlayback: document.getElementById("aud-playback"),
   ayahAudioContainer: document.getElementById("cnt-ayah-audio"),

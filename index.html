@@ -18,19 +18,19 @@
     <!-- Global App Configuration -->
     <script>
         // IMPORTANT: Change this version to force cache refresh for all users
-        const APP_VERSION = "0.1.8";
+        const APP_VERSION = "0.1.9";
     </script>
 
     <!-- UI Styles and Favicon (Dynamic versioning) -->
     <script>
         // Favicon with WebP fallback for modern browsers
         document.write(`<link rel="icon" type="image/webp" href="favicon.webp">`);
-        document.write(`<link rel="icon" type="image/png" href="favicon.png?v=${APP_VERSION}">`);
+        document.write(`<link rel="icon" type="image/png" href="favicon.png?v=0.1.9">`);
         
         // Stylesheets with versioning
-        document.write(`<link rel="stylesheet" href="css/tailwind-output.css?v=${APP_VERSION}">`);
-        document.write(`<link rel="stylesheet" href="css/themes.css?v=${APP_VERSION}">`);
-        document.write(`<link rel="stylesheet" href="css/styles.css?v=${APP_VERSION}">`);
+        document.write(`<link rel="stylesheet" href="css/tailwind-output.css?v=0.1.9">`);
+        document.write(`<link rel="stylesheet" href="css/themes.css?v=0.1.9">`);
+        document.write(`<link rel="stylesheet" href="css/styles.css?v=0.1.9">`);
     </script>
 
     <!-- Google Fonts -->
@@ -918,10 +918,10 @@
                         <span class="about-info-label">Prevod tumačenja</span>
                         <span class="about-info-value">M. Mehanović, prof.</span>
                     </div>
-                    <div class="about-info-box">
-                        <span class="about-info-label">Verzija</span>
-                        <span class="about-info-value">0.1.6</span>
-                    </div>
+                    <a href="https://www.n-um.com" target="_blank" rel="noopener" class="about-info-box hover:border-emerald-500/30 hover:bg-slate-950/70 transition-all duration-200 group">
+                        <span class="about-info-label group-hover:text-emerald-400 transition-colors">Web stranica</span>
+                        <span class="about-info-value text-emerald-400 group-hover:text-emerald-300 transition-colors">www.n-um.com</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -940,11 +940,26 @@
                 </button>
             </div>
             <div class="modal-body modal-body-scroll">
+                <!-- v0.1.9 -->
+                <div class="changelog-entry">
+                    <div class="changelog-header">
+                        <span class="changelog-version-pill">0.1.9</span>
+                        <h4 class="changelog-title">Dijeljenje</h4>
+                        <span class="changelog-date">18. maj 2026.</span>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-new">Novo</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Ubačeno "Share" dugme za dijeljenje na mreže</strong> — Dodana opcija za prelijepo strukturirano kopiranje ajeta za društvene mreže uz direktni link za slušanje i čitanje.</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- v0.1.8 -->
                 <div class="changelog-entry">
                     <div class="changelog-header">
                         <span class="changelog-version-pill">0.1.8</span>
-                        <h4 class="changelog-title">Ispravke Snimanja i Verzije</h4>
+                        <h4 class="changelog-title">Ispravke snimanja i verzije</h4>
                         <span class="changelog-date">13. april 2026.</span>
                     </div>
                     <div class="changelog-section">
@@ -980,35 +995,6 @@
                         <span class="changelog-badge badge-improved">Poboljšano</span>
                         <ul class="changelog-list">
                              <li class="changelog-item"><strong>Audio Preloading</strong> — Implementiran sistem pred-učitavanja zvuka za tečniju reprodukciju.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- v0.1.6 -->
-                <div class="changelog-entry">
-                    <div class="changelog-header">
-                        <span class="changelog-version-pill">0.1.6</span>
-                        <h4 class="changelog-title">Nove Opcije i Ispravke</h4>
-                        <span class="changelog-date">17. mart 2026.</span>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-new">Novo</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Pozicija prijevoda</strong> — Dodana postavka za izbor prikaza prijevoda iznad ili ispod arapskog teksta.</li>
-                        </ul>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-improved">Poboljšano</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Spread Mode Layout</strong> — Poboljšano pozicioniranje tooltipova za izbor tema u režimu dvolisnice.</li>
-                             <li class="changelog-item"><strong>Pull-to-refresh</strong> — Rafiniran vizuelni indikator za osvježavanje stranice.</li>
-                        </ul>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-fixed">Popravljeno</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Hifz mod</strong> — Spriječeno nepotrebno ponovno skrolovanje na trenutni ajet pri aktivaciji hifz moda.</li>
-                             <li class="changelog-item"><strong>Spread Mode Meni</strong> — Ispravljen problem sa vidljivošću stranica nakon zatvaranja izbornika sura.</li>
                         </ul>
                     </div>
                 </div>
@@ -1081,6 +1067,12 @@
                 aria-label="Dodaj ajet u zapamćene">
                 <ion-icon name="bookmark-outline" class="text-base sm:text-xl"></ion-icon>
                 <span data-i18n="bookmark">Označi</span>
+            </button>
+
+            <button id="btn-share-copy"
+                class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all active:scale-95 shrink-0 border-2 border-transparent"
+                aria-label="Kopiraj ajet za društvene mreže" title="Kopiraj za društvene mreže">
+                <ion-icon name="share-social-outline" class="text-lg sm:text-xl text-emerald-400"></ion-icon>
             </button>
 
             <button id="btn-next"
@@ -1206,7 +1198,7 @@
         ];
 
         scriptsToLoad.forEach(src => {
-            document.write(`<script src="${src}?v=${APP_VERSION}"><\/script>`);
+            document.write(`<script src="${src}?v=0.1.9"><\/script>`);
         });
 
         // Run validation after all scripts load
@@ -1278,7 +1270,7 @@
                 toast.style.cssText = `
                     position: fixed; bottom: 8.5rem; left: 50%; width: 90%; max-width: 320px;
                     transform: translateX(-50%) translateY(20px); opacity: 0;
-                    background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(8px);
+                    background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px);
                     border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px;
                     padding: 12px 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
                     display: flex; align-items: center; justify-content: space-between; gap: 12px;
