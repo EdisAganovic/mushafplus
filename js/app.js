@@ -1121,9 +1121,16 @@ function setupEventListeners() {
       // Auto-advance to next ayah if enabled
       if (AppState.settings.autoplay && typeof nextAyah === "function") {
         nextAyah();
+        // Capture the target ayah so a manual navigation during the delay
+        // below doesn't cause us to resume playback for the wrong ayah.
+        const expectedSurahId = AppState.currentSurah?.id;
+        const expectedAyahIndex = AppState.currentAyahIndex;
         // Crucial: Start playback of the new ayah
         setTimeout(() => {
-          if (els.ayahAudio) {
+          const stillOnExpectedAyah =
+            AppState.currentSurah?.id === expectedSurahId &&
+            AppState.currentAyahIndex === expectedAyahIndex;
+          if (els.ayahAudio && stillOnExpectedAyah) {
             els.ayahAudio.play().catch(e => {
                 console.warn("[Autoplay] Playback blocked or failed:", e);
                 resetAyahAudioUI();

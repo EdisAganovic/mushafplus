@@ -4,7 +4,7 @@
  */
 
 // Cache version - hardcoded since ServiceWorker runs in isolated context
-const CACHE_VERSION = "v0.1.9";
+const CACHE_VERSION = "v0.1.10";
 const STATIC_CACHE = `mushaf-static-${CACHE_VERSION}`;
 const AUDIO_RECITATION_CACHE = `mushaf-recitation-${CACHE_VERSION}`;
 const AUDIO_WORD_CACHE = `mushaf-word-${CACHE_VERSION}`;
@@ -55,29 +55,29 @@ async function getCacheStats() {
 /**
  * Advanced cache cleanup with LRU eviction strategy
  */
-async function cleanupCache(cacheName) {
+async function cleanupCache(cacheName, maxItems = MAX_WORDS_CACHE) {
   const cache = await caches.open(cacheName);
   const keys = await cache.keys();
-  
-  if (keys.length <= MAX_WORDS_CACHE) return false;
-  
+
+  if (keys.length <= maxItems) return false;
+
   // Sort by fetch time (oldest first) using request.time property
   keys.sort((a, b) => {
     const dateA = new URL(a.url).searchParams.get("time") || 0;
     const dateB = new URL(b.url).searchParams.get("time") || 0;
     return dateA - dateB;
   });
-  
+
   // Delete oldest entries above threshold, keeping maxItems most recent
   let deletedCount = 0;
   for (const [index, key] of keys.entries()) {
-    if (deletedCount >= Math.max(0, keys.length - MAX_WORDS_CACHE)) {
+    if (deletedCount >= Math.max(0, keys.length - maxItems)) {
       break;
     }
     await cache.delete(key);
     deletedCount++;
   }
-  
+
   return deletedCount > 0;
 }
 
@@ -91,7 +91,7 @@ async function runPeriodicCleanup() {
   ];
 
   for (const { name, max } of cachesToCleanup) {
-    await cleanupCache(name);
+    await cleanupCache(name, max);
   }
   
   // Clean up stale versioned caches older than MAX_CACHE_AGE_DAYS
@@ -121,8 +121,8 @@ async function runPeriodicCleanup() {
             } catch (e) {}
           }
           
-          // Skip deleting if within age limit
-          if (!requestDate || (now - requestDate.getTime() < thirtyDaysMs)) {
+          // Delete only if older than the age limit; keep recent/undated entries
+          if (requestDate && (now - requestDate.getTime() >= thirtyDaysMs)) {
             await cache.delete(key);
           }
         }
@@ -145,12 +145,7 @@ self.addEventListener("install", (event) => {
         ]);
       }).then(() => {
         // Run initial cleanup on install
-        const activeClients = await self.clients.matchAll();
-        
-        return Promise.all([
-          cache.addAll(ASSETS_TO_CACHE),
-          runPeriodicCleanup(),
-        ]);
+        return runPeriodicCleanup();
       });
     }),
   );
@@ -185,12 +180,6 @@ self.addEventListener("message", (event) => {
     self.skipWaiting();
   } else if (event.data === "CLEAN_UP") {
     event.waitUntil(runPeriodicCleanup());
-  }
-});
-
-self.addEventListener("message", (event) => {
-  if (event.data === "SKIP_WAITING") {
-    self.skipWaiting();
   }
 });
 
@@ -247,12 +236,12 @@ self.addEventListener("fetch", (event) => {
         if (isWordAudio) {
           caches.open(AUDIO_WORD_CACHE).then((cache) => {
             cache.put(event.request, responseToCache);
-            trimCache(AUDIO_WORD_CACHE, MAX_WORDS_CACHE); // Cache up to 300 words (~20MB)
+            cleanupCache(AUDIO_WORD_CACHE, MAX_WORDS_CACHE); // Cache up to 300 words (~20MB)
           });
         } else if (isRecitation) {
           caches.open(AUDIO_RECITATION_CACHE).then((cache) => {
             cache.put(event.request, responseToCache);
-            trimCache(AUDIO_RECITATION_CACHE, MAX_RECITATIONS_CACHE); // Cache up to 20 recitations (~30MB)
+            cleanupCache(AUDIO_RECITATION_CACHE, MAX_RECITATIONS_CACHE); // Cache up to 20 recitations (~30MB)
           });
         } else {
           caches.open(STATIC_CACHE).then((cache) => {
@@ -263,20 +252,5 @@ self.addEventListener("fetch", (event) => {
         return networkResponse;
       });
     })
-  );
-});
-
-self.addEventListener("activate", (event) => {
-  const cacheWhitelist = [STATIC_CACHE, AUDIO_RECITATION_CACHE, AUDIO_WORD_CACHE];
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (!cacheWhitelist.includes(cacheName)) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
   );
 });

@@ -59,8 +59,8 @@ function cleanupRecordings(keepCount = STORAGE_CONFIG.MAX_RECORDINGS_COUNT) {
   if (Object.keys(recordings).length <= keepCount) return { cleaned: 0, freedBytes: 0 };
 
   const sortedKeys = Object.keys(recordings).sort((a, b) => {
-    const timeA = AppState.user?.notes[a]?.updated || 0;
-    const timeB = AppState.user?.notes[b]?.updated || 0;
+    const timeA = recordings[a]?.createdAt || 0;
+    const timeB = recordings[b]?.createdAt || 0;
     return timeB - timeA;
   });
 
@@ -68,7 +68,7 @@ function cleanupRecordings(keepCount = STORAGE_CONFIG.MAX_RECORDINGS_COUNT) {
   let freedBytes = 0;
 
   for (const key of keysToRemove) {
-    const blobUrl = recordings[key];
+    const blobUrl = recordings[key]?.url;
     if (blobUrl && typeof URL !== "undefined" && URL.revokeObjectURL) {
       URL.revokeObjectURL(blobUrl);
     }

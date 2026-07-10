@@ -38,19 +38,19 @@
     <!-- Global App Configuration -->
     <script>
         // IMPORTANT: Change this version to force cache refresh for all users
-        const APP_VERSION = "0.1.9";
+        const APP_VERSION = "0.1.10";
     </script>
 
     <!-- UI Styles and Favicon (Dynamic versioning) -->
     <script>
         // Favicon with WebP fallback for modern browsers
         document.write(`<link rel="icon" type="image/webp" href="favicon.webp">`);
-        document.write(`<link rel="icon" type="image/png" href="favicon.png?v=0.1.9">`);
+        document.write(`<link rel="icon" type="image/png" href="favicon.png?v=0.1.10">`);
         
         // Stylesheets with versioning
-        document.write(`<link rel="stylesheet" href="css/tailwind-output.css?v=0.1.9">`);
-        document.write(`<link rel="stylesheet" href="css/themes.css?v=0.1.9">`);
-        document.write(`<link rel="stylesheet" href="css/styles.css?v=0.1.9">`);
+        document.write(`<link rel="stylesheet" href="css/tailwind-output.css?v=0.1.10">`);
+        document.write(`<link rel="stylesheet" href="css/themes.css?v=0.1.10">`);
+        document.write(`<link rel="stylesheet" href="css/styles.css?v=0.1.10">`);
     </script>
 
     <!-- Google Fonts -->
@@ -960,6 +960,29 @@
                 </button>
             </div>
             <div class="modal-body modal-body-scroll">
+                <!-- v0.1.10 -->
+                <div class="changelog-entry">
+                    <div class="changelog-header">
+                        <span class="changelog-version-pill">0.1.10</span>
+                        <h4 class="changelog-title">Pretraga i keširanje</h4>
+                        <span class="changelog-date">10. juli 2026.</span>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-fixed">Popravljeno</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Pretraga (Search)</strong> — Riješen problem preklapanja sporijih pretraga preko novijih (race-condition).</li>
+                             <li class="changelog-item"><strong>Snimanje glasa</strong> — Pojednostavljen rad mikrofona i dodano vrijeme kreiranja snimaka.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-section">
+                        <span class="changelog-badge badge-improved">Poboljšano</span>
+                        <ul class="changelog-list">
+                             <li class="changelog-item"><strong>Upravljanje memorijom</strong> — Limitiran SVG keš dvolisnice na 40 stranica radi uštede RAM memorije.</li>
+                             <li class="changelog-item"><strong>Service Worker</strong> — Optimizovan algoritam za stabilnije čišćenje keša i starih verzija.</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <!-- v0.1.9 -->
                 <div class="changelog-entry">
                     <div class="changelog-header">
@@ -993,28 +1016,6 @@
                         <span class="changelog-badge badge-improved">Poboljšano</span>
                         <ul class="changelog-list">
                              <li class="changelog-item"><strong>Pregled ažuriranja</strong> — Ekran dobrodošlice sada prikazuje zadnja tri ažuriranja radi bolje preglednosti novih funkcija.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- v0.1.7 -->
-                <div class="changelog-entry">
-                    <div class="changelog-header">
-                        <span class="changelog-version-pill">0.1.7</span>
-                        <h4 class="changelog-title">Tedžvid i Performanse</h4>
-                        <span class="changelog-date">21. mart 2026.</span>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-fixed">Popravljeno</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Tedžvid bojenje</strong> — Riješen problem s vidljivošću tedžvida u Firefoxu pri pokretanju aplikacije.</li>
-                             <li class="changelog-item"><strong>Navigacija</strong> — Ispravljena greška (ReferenceError) koja je povremeno prekidala navigaciju.</li>
-                        </ul>
-                    </div>
-                    <div class="changelog-section">
-                        <span class="changelog-badge badge-improved">Poboljšano</span>
-                        <ul class="changelog-list">
-                             <li class="changelog-item"><strong>Audio Preloading</strong> — Implementiran sistem pred-učitavanja zvuka za tečniju reprodukciju.</li>
                         </ul>
                     </div>
                 </div>
@@ -1218,7 +1219,7 @@
         ];
 
         scriptsToLoad.forEach(src => {
-            document.write(`<script src="${src}?v=0.1.9"><\/script>`);
+            document.write(`<script src="${src}?v=0.1.10"><\/script>`);
         });
 
         // Run validation after all scripts load

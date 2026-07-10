@@ -538,7 +538,16 @@ window.importProgress = function (event) {
         );
       }
       if (typeof parsed.notes === "object" && parsed.notes !== null) {
-        AppState.notes = parsed.notes;
+        const maxLength = APP.MAX_NOTE_LENGTH;
+        const sanitizedNotes = {};
+        for (const [key, note] of Object.entries(parsed.notes)) {
+          if (!note || typeof note.text !== "string") continue;
+          sanitizedNotes[key] = {
+            text: note.text.length > maxLength ? note.text.substring(0, maxLength) : note.text,
+            updated: typeof note.updated === "number" ? note.updated : Date.now(),
+          };
+        }
+        AppState.notes = sanitizedNotes;
         safeSetStorage("quran_notes", JSON.stringify(AppState.notes));
       }
       if (typeof parsed.highlights === "object" && parsed.highlights !== null) {

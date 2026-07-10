@@ -3,8 +3,9 @@ self.onmessage = function (e) {
     self.quranData = e.data.data;
   } else if (e.data.type === "search") {
     const query = e.data.query;
+    const requestId = e.data.requestId;
     if (!query || query.trim().length < 2) {
-      self.postMessage({ type: "results", results: [] });
+      self.postMessage({ type: "results", requestId, results: [] });
       return;
     }
     const q = query.trim().toLowerCase();
@@ -18,6 +19,7 @@ self.onmessage = function (e) {
       if (surah && surah.verses[aId - 1]) {
         self.postMessage({
           type: "results",
+          requestId,
           results: [
             {
               surahId: sId,
@@ -32,7 +34,7 @@ self.onmessage = function (e) {
         });
         return;
       }
-      self.postMessage({ type: "results", results: [] });
+      self.postMessage({ type: "results", requestId, results: [] });
       return;
     }
 
@@ -83,6 +85,6 @@ self.onmessage = function (e) {
     }
 
     results.sort((a, b) => b.score - a.score);
-    self.postMessage({ type: "results", results: results.slice(0, 50) });
+    self.postMessage({ type: "results", requestId, results: results.slice(0, 50) });
   }
 };

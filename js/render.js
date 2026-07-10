@@ -97,8 +97,7 @@ class VirtualGrid {
  * Scroll event handler with debouncing for slower devices
  */
   _onScroll() {
-    // Always render on scroll - no need for complex performance.now check
-    requestAnimationFrame(() => this.render());
+    this._debounceRender();
   }
 
   /**
@@ -862,8 +861,9 @@ window.renderAyah = function () {
 
   // 4. Sync Recitation Audio
   const expectedSrc = getAyahAudioUrl(AppState.currentSurah.id, ayah.id);
+  const resolvedExpectedSrc = new URL(expectedSrc, window.location.href).href;
 
-  if (!els.ayahAudio.src.includes(expectedSrc)) {
+  if (els.ayahAudio.src !== resolvedExpectedSrc) {
     els.ayahAudio.pause();
     // Explicitly clear src and load to release memory/buffers for the previous track
     els.ayahAudio.removeAttribute("src");

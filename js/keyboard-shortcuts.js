@@ -12,7 +12,7 @@ function isTypingInInput() {
   return (
     activeElement.tagName === "INPUT" ||
     activeElement.tagName === "TEXTAREA" ||
-    activeElement.id === "search-input"
+    activeElement.isContentEditable
   );
 }
 

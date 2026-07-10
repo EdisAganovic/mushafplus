@@ -9,39 +9,6 @@ let recordStartTime = null;
 
 // Flag to prevent race condition in getUserMedia
 let isRequestingMic = false;
-let micRequestQueue = null; // Queue for pending recording requests
-
-/**
- * Queue or execute microphone recording request.
- * Prevents multiple simultaneous getUserMedia calls.
- */
-function requestMicRecording() {
-  return new Promise((resolve, reject) => {
-    if (!isRequestingMic && !AppState.audioStream) {
-      // No pending request, execute immediately
-      resolve(null);
-    } else if (isRequestingMic) {
-      // Queue this request
-      if (micRequestQueue) {
-        // Already queued, reject duplicate
-        reject(new Error("Recording already in progress"));
-        return;
-      }
-      micRequestQueue = { resolve, reject };
-    } else {
-      // Stream exists, proceed
-      resolve(null);
-    }
-  });
-}
-
-function processMicQueue() {
-  if (micRequestQueue) {
-    const { resolve } = micRequestQueue;
-    micRequestQueue = null;
-    resolve(null);
-  }
-}
 
 /**
  * Initiates the microphone recording session.
@@ -81,8 +48,6 @@ window.startRecording = async function () {
         AppState.audioStream = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
-        // Process any queued request
-        processMicQueue();
       } catch (micError) {
         console.error("[Recording] Microphone access denied:", micError);
         showErrorToast(T.micError);
@@ -115,7 +80,8 @@ window.startRecording = async function () {
       const duration = Math.round((Date.now() - recordStartTime) / 1000);
       AppState.recordings[key] = {
         url: audioUrl,
-        duration: duration
+        duration: duration,
+        createdAt: Date.now()
       };
       AppState.recordingKeys.push(key);
 

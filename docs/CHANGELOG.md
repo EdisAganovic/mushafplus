@@ -2,6 +2,16 @@
 
 All notable changes to the Mushaf Plus project will be documented in this file.
 
+## [0.1.10] - 2026-07-10
+
+### Fixed
+- **Pretraga (Search)**: Dodan jedinstveni `requestId` pri pretrazi kako bi se osiguralo da rezultati sporije pretrage ne prebrišu novije upite (race-condition).
+- **Snimanje glasa**: Pojednostavljena logika pristupa mikrofonu, uklonjen suvišan red čekanja, te dodano vrijeme kreiranja snimka (`createdAt`).
+
+### Improved
+- **Upravljanje memorijom**: Uveden limit za SVG keš (maksimalno 40 stranica) u dvolisnici kako bi se ograničila potrošnja radne memorije tokom dužeg čitanja.
+- **Service Worker**: Optimizovana logika za čišćenje keša i automatsko brisanje starih/nepotrebnih fajlova radi stabilnijeg rada PWA aplikacije.
+
 ## [0.1.9] - 2026-05-18
 
 ### Added

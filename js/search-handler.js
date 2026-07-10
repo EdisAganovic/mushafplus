@@ -7,6 +7,12 @@
 // Debounce timers map for multiple search inputs
 const searchDebounceTimers = new Map();
 
+// Tracks the render targets for each in-flight search request, and the
+// latest request id issued per input so stale responses can be ignored.
+const searchPendingRequests = new Map();
+const searchLatestRequestByInput = new Map();
+let searchRequestCounter = 0;
+
 /**
  * HTML escape helper to prevent XSS
  */
@@ -97,6 +103,22 @@ window.handleSearchInput = function(query, inputEl, containerEl, listEl, emptyEl
   if (!window.searchWorker) {
     window.searchWorker = new Worker("js/searchWorker.js");
     window.searchWorker.postMessage({ type: "init", data: AppState.data });
+
+    // Single persistent handler dispatches each response to the render
+    // targets recorded for its request id, so concurrent searches from
+    // different inputs can never overwrite each other's results.
+    window.searchWorker.onmessage = function(e) {
+      if (e.data.type !== "results") return;
+      const requestId = e.data.requestId;
+      const pending = searchPendingRequests.get(requestId);
+      if (!pending) return;
+      searchPendingRequests.delete(requestId);
+
+      // Ignore stale responses superseded by a newer search on the same input
+      if (searchLatestRequestByInput.get(pending.inputEl) !== requestId) return;
+
+      renderSearchResults(e.data.results, pending.listEl, pending.containerEl, pending.emptyEl, pending.inputEl);
+    };
   }
 
   // Clear existing timer for this specific input
@@ -110,13 +132,11 @@ window.handleSearchInput = function(query, inputEl, containerEl, listEl, emptyEl
 
   // Set new timer for this specific input
   const timer = setTimeout(() => {
-    window.searchWorker.onmessage = function(e) {
-      if (e.data.type === "results") {
-        renderSearchResults(e.data.results, listEl, containerEl, emptyEl, inputEl);
-      }
-    };
+    const requestId = ++searchRequestCounter;
+    searchLatestRequestByInput.set(inputEl, requestId);
+    searchPendingRequests.set(requestId, { inputEl, containerEl, listEl, emptyEl });
 
-    window.searchWorker.postMessage({ type: "search", query: query });
+    window.searchWorker.postMessage({ type: "search", query: query, requestId: requestId });
   }, APP.SEARCH_DEBOUNCE);
 
   // Store timer for this specific input

@@ -10,6 +10,31 @@
 
 const PAGE_SVG_CACHE = new Map();
 const PAGE_LOAD_QUEUE = new Set(); // Track pages being loaded
+const MAX_SVG_CACHE_PAGES = 40; // Bound memory for long reading sessions
+
+/**
+ * Reads a cached page and marks it as most-recently-used.
+ */
+function getCachedPage(pageNum) {
+  const svg = PAGE_SVG_CACHE.get(pageNum);
+  if (svg !== undefined) {
+    PAGE_SVG_CACHE.delete(pageNum);
+    PAGE_SVG_CACHE.set(pageNum, svg);
+  }
+  return svg;
+}
+
+/**
+ * Stores a page's SVG, evicting the least-recently-used entries once over the cap.
+ */
+function setCachedPage(pageNum, svg) {
+  PAGE_SVG_CACHE.delete(pageNum);
+  PAGE_SVG_CACHE.set(pageNum, svg);
+  while (PAGE_SVG_CACHE.size > MAX_SVG_CACHE_PAGES) {
+    const oldestKey = PAGE_SVG_CACHE.keys().next().value;
+    PAGE_SVG_CACHE.delete(oldestKey);
+  }
+}
 
 // Constants - centralized in APP namespace
 const PAGE_LIMITS = {
@@ -71,7 +96,7 @@ window.prefetchAdjacentPages = function(pageNum) {
         .then((res) => res.ok ? res.text() : null)
         .then((text) => {
           if (text && !PAGE_SVG_CACHE.has(p)) {
-            PAGE_SVG_CACHE.set(p, preprocessSvg(text, p));
+            setCachedPage(p, preprocessSvg(text, p));
           }
         })
         .catch(() => {})
@@ -97,7 +122,7 @@ window.preloadCriticalPages = function() {
       fetch(svgUrl)
         .then((res) => res.ok ? res.text() : null)
         .then((text) => {
-          if (text) PAGE_SVG_CACHE.set(p, preprocessSvg(text, p));
+          if (text) setCachedPage(p, preprocessSvg(text, p));
         })
         .catch(() => {});
     }
@@ -178,7 +203,7 @@ async function renderPageColumn(pageNum, idx, isRight, progressBar) {
 
   // OPTIMIZATION: Check cache first (instant render)
   if (PAGE_SVG_CACHE.has(pageNum)) {
-    pageContent.innerHTML = PAGE_SVG_CACHE.get(pageNum);
+    pageContent.innerHTML = getCachedPage(pageNum);
     pageCol.innerHTML = '';
     pageCol.appendChild(pageCard);
     pageCard.appendChild(pageContent);
@@ -219,7 +244,7 @@ async function renderPageColumn(pageNum, idx, isRight, progressBar) {
 
     const svgText = await response.text();
     const processed = preprocessSvg(svgText, pageNum);
-    PAGE_SVG_CACHE.set(pageNum, processed);
+    setCachedPage(pageNum, processed);
 
     // Animate progress bar to 100%
     if (progressBar) {
